@@ -332,57 +332,66 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 5rem;
+  font-size: 4.6rem;
   font-weight: 900;
   line-height: 1;
-  min-width: 90px;
-  height: 110px;
-  border-radius: 26px;
+  min-width: 85px;
+  height: 105px;
+  border-radius: 24px;
   position: relative;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .num-first {
   color: #ffffff;
   background: #ff5722;
-  box-shadow: 0 10px 0 var(--num1-shadow), 0 14px 20px rgba(255, 87, 34, 0.35);
+  box-shadow: 0 9px 0 var(--num1-shadow), 0 12px 18px rgba(255, 87, 34, 0.35);
   border: 4px solid #ff8a65;
 }
 
 .num-second {
   color: #ffffff;
   background: #2e7d32;
-  box-shadow: 0 10px 0 var(--num2-shadow), 0 14px 20px rgba(46, 125, 50, 0.35);
+  box-shadow: 0 9px 0 var(--num2-shadow), 0 12px 18px rgba(46, 125, 50, 0.35);
   border: 4px solid #81c784;
 }
 
 .op-box {
   color: #ffffff;
   background: #0288d1;
-  box-shadow: 0 10px 0 var(--op-shadow), 0 14px 20px rgba(2, 136, 209, 0.35);
+  box-shadow: 0 9px 0 var(--op-shadow), 0 12px 18px rgba(2, 136, 209, 0.35);
   border: 4px solid #4fc3f7;
-  font-size: 4.6rem;
-  width: 80px;
-  min-width: 80px;
+  font-size: 4.2rem;
+  width: 75px;
+  min-width: 75px;
 }
 
 .eq-box {
   color: #ffffff;
   background: #8e24aa;
-  box-shadow: 0 10px 0 #6a1b9a, 0 14px 20px rgba(142, 36, 170, 0.35);
+  box-shadow: 0 9px 0 #6a1b9a, 0 12px 18px rgba(142, 36, 170, 0.35);
   border: 4px solid #ba68c8;
-  font-size: 4.4rem;
-  width: 80px;
-  min-width: 80px;
+  font-size: 4.2rem;
+  width: 75px;
+  min-width: 75px;
 }
 
 .mystery-box {
   color: #ffffff;
   background: #ffb300;
-  box-shadow: 0 10px 0 var(--mystery-shadow), 0 14px 24px rgba(255, 179, 0, 0.45);
+  box-shadow: 0 9px 0 var(--mystery-shadow), 0 14px 24px rgba(255, 179, 0, 0.45);
   border: 4px dashed #fff9c4;
-  font-size: 5rem;
+  font-size: 4.6rem;
+  min-width: 120px;
+  padding: 0 10px;
+  letter-spacing: 1px;
   animation: pulseCard 2s infinite ease-in-out;
+}
+
+.mystery-box.has-val {
+  background: #f59e0b;
+  border-style: solid;
+  animation: none;
 }
 
 /* ==========================================================================
@@ -409,14 +418,14 @@ body {
 .helper-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   justify-content: center;
   align-items: center;
-  max-width: 220px;
+  max-width: 240px;
 }
 
 .helper-item {
-  font-size: 2.2rem;
+  font-size: 1.85rem;
   display: inline-block;
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -457,58 +466,75 @@ body {
 }
 
 /* ==========================================================================
-   Multiple Choice Bubbly Buttons
+   Kid-Friendly Interactive Number Keypad
    ========================================================================== */
-.choices-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.keypad-container {
+  max-width: 440px;
+  margin: 0 auto;
 }
 
-.choice-btn {
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.key-btn {
   font-family: var(--font-family);
-  font-size: 3.8rem;
+  font-size: 2.8rem;
   font-weight: 900;
-  padding: 14px 10px;
-  border-radius: 26px;
+  height: 74px;
+  border-radius: 22px;
   border: none;
   cursor: pointer;
   color: #ffffff;
   position: relative;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.12s, box-shadow 0.12s;
   display: flex;
   justify-content: center;
   align-items: center;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.choice-btn:nth-child(1) {
-  background: #ff5252;
-  box-shadow: 0 9px 0 #d32f2f, 0 12px 18px rgba(255, 82, 82, 0.3);
+.key-btn:hover {
+  transform: translateY(-3px);
 }
 
-.choice-btn:nth-child(2) {
-  background: #29b6f6;
-  box-shadow: 0 9px 0 #0288d1, 0 12px 18px rgba(41, 182, 246, 0.3);
+.key-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
 }
 
-.choice-btn:nth-child(3) {
-  background: #66bb6a;
-  box-shadow: 0 9px 0 #388e3c, 0 12px 18px rgba(102, 187, 106, 0.3);
+/* Individual vibrant colors for each number */
+.key-num[data-val="1"] { background: #ff5722; box-shadow: 0 7px 0 #d84315; }
+.key-num[data-val="2"] { background: #ff9800; box-shadow: 0 7px 0 #e65100; }
+.key-num[data-val="3"] { background: #fbc02d; box-shadow: 0 7px 0 #f57f17; }
+.key-num[data-val="4"] { background: #8bc34a; box-shadow: 0 7px 0 #689f38; }
+.key-num[data-val="5"] { background: #4caf50; box-shadow: 0 7px 0 #2e7d32; }
+.key-num[data-val="6"] { background: #009688; box-shadow: 0 7px 0 #004d40; }
+.key-num[data-val="7"] { background: #03a9f4; box-shadow: 0 7px 0 #0277bd; }
+.key-num[data-val="8"] { background: #3f51b5; box-shadow: 0 7px 0 #283593; }
+.key-num[data-val="9"] { background: #9c27b0; box-shadow: 0 7px 0 #6a1b9a; }
+.key-num[data-val="0"] { background: #ec4899; box-shadow: 0 7px 0 #be185d; }
+
+/* Action Keys */
+.key-clear {
+  background: #f59e0b;
+  box-shadow: 0 7px 0 #b45309;
+  font-size: 1.45rem;
+  font-weight: 800;
 }
 
-.choice-btn:nth-child(4) {
-  background: #ffa726;
-  box-shadow: 0 9px 0 #f57c00, 0 12px 18px rgba(255, 167, 38, 0.3);
+.key-submit {
+  background: #10b981;
+  box-shadow: 0 7px 0 #047857;
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
 }
 
-.choice-btn:hover {
-  transform: translateY(-4px);
-}
-
-.choice-btn:active {
-  transform: translateY(6px);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3) !important;
+.key-submit.ready {
+  animation: pulseCard 1.2s infinite ease-in-out;
 }
 
 /* ==========================================================================
@@ -857,14 +883,21 @@ body {
   .equation-card {
     gap: 6px;
   }
-  .choice-btn {
-    font-size: 3rem;
-    padding: 10px 6px;
+  .key-btn {
+    font-size: 2.2rem;
+    height: 60px;
+    border-radius: 18px;
+  }
+  .key-clear {
+    font-size: 1.2rem;
+  }
+  .key-submit {
+    font-size: 1.3rem;
   }
   .hint-text {
     font-size: 1.15rem;
   }
   .helper-item {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 }

@@ -264,11 +264,11 @@
 
       // Game State
       this.mode = 'add'; // 'add', 'sub', 'mix'
-      this.maxRange = 5; // 5, 10, 18
       this.num1 = 0;
       this.num2 = 0;
       this.op = '+';
       this.answer = 0;
+      this.currentInput = '';
       this.score = 0;
       this.streak = 0;
       this.trophies = 0;
@@ -293,7 +293,11 @@
       this.num2El = document.getElementById('num2');
       this.opSymbolEl = document.getElementById('opSymbol');
       this.mysteryBoxEl = document.getElementById('mysteryBox');
-      this.choicesGridEl = document.getElementById('choicesGrid');
+      this.keypadEl = document.getElementById('keypad');
+      this.keyClear = document.getElementById('keyClear');
+      this.keySubmit = document.getElementById('keySubmit');
+      this.hintTextEl = document.getElementById('hintText');
+
       this.visualHelpersEl = document.getElementById('visualHelpers');
       this.helperLeftEl = document.getElementById('helperLeft');
       this.helperRightEl = document.getElementById('helperRight');
@@ -364,16 +368,33 @@
         });
       });
 
-      // Range pills
-      const rangePills = document.querySelectorAll('.range-pill');
-      rangePills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          rangePills.forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          this.maxRange = parseInt(pill.dataset.range, 10);
-          this.sound.playPop();
-          this.generateNewProblem();
+      // Number Keypad (0-9)
+      const numKeys = document.querySelectorAll('.key-num');
+      numKeys.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.handleDigit(btn.dataset.val);
         });
+      });
+
+      // Keypad Clear
+      this.keyClear.addEventListener('click', () => {
+        this.handleBackspace();
+      });
+
+      // Keypad Check/OK
+      this.keySubmit.addEventListener('click', () => {
+        this.checkAnswer();
+      });
+
+      // Physical Keyboard input
+      window.addEventListener('keydown', (e) => {
+        if (e.key >= '0' && e.key <= '9') {
+          this.handleDigit(e.key);
+        } else if (e.key === 'Backspace' || e.key === 'Delete') {
+          this.handleBackspace();
+        } else if (e.key === 'Enter') {
+          this.checkAnswer();
+        }
       });
 
       // Celebration Next Button
@@ -405,12 +426,11 @@
     }
 
     /**
-     * Generates an age-appropriate problem for 5-6 year olds:
-     * - Single digit numbers
-     * - In subtraction: ANSWER IS ALWAYS A POSITIVE NUMBER (a > b >= 0, so result >= 1)
+     * Generates additions of 2 single digit numbers (e.g. 9 + 8 = 17, 7 + 6 = 13)
+     * In subtraction: ANSWER IS ALWAYS STRICTLY POSITIVE (a > b >= 1, result >= 1)
      */
     generateNewProblem() {
-      // Pick random fruit for counters
+      this.currentInput = '';
       this.currentFruit = this.fruitList[Math.floor(Math.random() * this.fruitList.length)];
 
       let activeOp = this.mode;
@@ -420,48 +440,21 @@
 
       if (activeOp === 'add') {
         this.op = '+';
-        if (this.maxRange === 5) {
-          // Sum up to 5, positive single digits
-          this.answer = Math.floor(Math.random() * 4) + 2; // 2, 3, 4, 5
-          this.num1 = Math.floor(Math.random() * (this.answer - 1)) + 1;
-          this.num2 = this.answer - this.num1;
-        } else if (this.maxRange === 10) {
-          // Sum up to 10
-          this.answer = Math.floor(Math.random() * 8) + 2; // 2 to 10
-          this.num1 = Math.floor(Math.random() * (this.answer - 1)) + 1;
-          this.num2 = this.answer - this.num1;
-        } else {
-          // Single digits up to 9 + 9 = 18
-          this.num1 = Math.floor(Math.random() * 9) + 1; // 1 to 9
-          this.num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
-          this.answer = this.num1 + this.num2;
-        }
+        // 2 numbers of single digits (1 to 9), sums up to 18 (e.g. 9 + 8)
+        this.num1 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+        this.num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+        this.answer = this.num1 + this.num2;
       } else {
         // Subtraction: STRICTLY POSITIVE RESULT (answer >= 1)
         this.op = '−';
-        if (this.maxRange === 5) {
-          // Num1 between 2 and 5
-          this.num1 = Math.floor(Math.random() * 4) + 2; // 2, 3, 4, 5
-          // Num2 is strictly less than Num1 so answer > 0
-          this.num2 = Math.floor(Math.random() * (this.num1 - 1)) + 1; // 1 to num1-1
-          this.answer = this.num1 - this.num2; // always >= 1
-        } else if (this.maxRange === 10) {
-          // Num1 between 3 and 9 (single digit)
-          this.num1 = Math.floor(Math.random() * 7) + 3; // 3 to 9
-          this.num2 = Math.floor(Math.random() * (this.num1 - 1)) + 1;
-          this.answer = this.num1 - this.num2; // always >= 1
-        } else {
-          // Single digit subtraction (1 to 9)
-          this.num1 = Math.floor(Math.random() * 8) + 2; // 2 to 9
-          this.num2 = Math.floor(Math.random() * (this.num1 - 1)) + 1;
-          this.answer = this.num1 - this.num2; // always >= 1
-        }
+        this.num1 = Math.floor(Math.random() * 8) + 2; // 2 to 9
+        this.num2 = Math.floor(Math.random() * (this.num1 - 1)) + 1; // 1 to num1-1
+        this.answer = this.num1 - this.num2; // always >= 1
       }
 
       // Render problem to UI
       this.renderProblem();
       this.renderVisualCounters();
-      this.renderChoices();
     }
 
     renderProblem() {
@@ -469,7 +462,8 @@
       this.num2El.textContent = this.num2;
       this.opSymbolEl.textContent = this.op;
       this.mysteryBoxEl.textContent = '?';
-      this.mysteryBoxEl.style.color = '#ffffff';
+      this.mysteryBoxEl.classList.remove('has-val');
+      this.keySubmit.classList.remove('ready');
 
       // Subtle pulse on update
       this.num1El.style.transform = 'scale(1.15)';
@@ -480,111 +474,58 @@
       }, 250);
     }
 
-    renderVisualCounters() {
-      this.helperLeftEl.innerHTML = '';
-      this.helperRightEl.innerHTML = '';
+    handleDigit(digit) {
+      if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
+        return;
+      }
+      // Maximum answer for 2 single-digit numbers is 9 + 9 = 18 (2 digits)
+      if (this.currentInput.length >= 2) return;
 
-      if (this.op === '+') {
-        this.helperOpEl.textContent = '+';
-        this.helperOpEl.style.display = 'block';
+      this.currentInput += digit;
+      this.mysteryBoxEl.textContent = this.currentInput;
+      this.mysteryBoxEl.classList.add('has-val');
+      this.keySubmit.classList.add('ready');
+      this.sound.playPop();
+    }
 
-        // Left items
-        for (let i = 0; i < this.num1; i++) {
-          const item = document.createElement('span');
-          item.className = 'helper-item';
-          item.textContent = this.currentFruit;
-          item.title = `Count ${i + 1}`;
-          item.addEventListener('click', () => {
-            this.sound.playPop();
-            item.style.transform = 'scale(1.5) rotate(15deg)';
-            setTimeout(() => item.style.transform = '', 200);
-          });
-          this.helperLeftEl.appendChild(item);
+    handleBackspace() {
+      if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
+        return;
+      }
+      if (this.currentInput.length > 0) {
+        this.currentInput = this.currentInput.slice(0, -1);
+        if (this.currentInput.length === 0) {
+          this.mysteryBoxEl.textContent = '?';
+          this.mysteryBoxEl.classList.remove('has-val');
+          this.keySubmit.classList.remove('ready');
+        } else {
+          this.mysteryBoxEl.textContent = this.currentInput;
         }
-
-        // Right items
-        for (let i = 0; i < this.num2; i++) {
-          const item = document.createElement('span');
-          item.className = 'helper-item';
-          item.textContent = this.currentFruit;
-          item.title = `Count ${this.num1 + i + 1}`;
-          item.addEventListener('click', () => {
-            this.sound.playPop();
-            item.style.transform = 'scale(1.5) rotate(15deg)';
-            setTimeout(() => item.style.transform = '', 200);
-          });
-          this.helperRightEl.appendChild(item);
-        }
-      } else {
-        // Subtraction: Show total num1 items, with num2 items crossed out
-        this.helperOpEl.style.display = 'none';
-
-        const remaining = this.num1 - this.num2;
-        for (let i = 0; i < this.num1; i++) {
-          const item = document.createElement('span');
-          item.className = 'helper-item';
-          item.textContent = this.currentFruit;
-
-          if (i >= remaining) {
-            // Crossed out
-            item.classList.add('crossed-out');
-            item.title = 'Taken away';
-          } else {
-            item.title = `Count remaining ${i + 1}`;
-          }
-
-          item.addEventListener('click', () => {
-            this.sound.playPop();
-            item.style.transform = 'scale(1.4)';
-            setTimeout(() => item.style.transform = '', 200);
-          });
-          this.helperLeftEl.appendChild(item);
-        }
+        this.sound.playPop();
       }
     }
 
-    renderChoices() {
-      this.choicesGridEl.innerHTML = '';
-
-      // Generate 4 distinct positive choices including correct answer
-      const choices = new Set([this.answer]);
-      const maxPossible = this.op === '+' ? 18 : Math.max(this.num1, 10);
-
-      // Nearby plausible options (answer +- 1, +- 2, +- 3)
-      const offsets = [-3, -2, -1, 1, 2, 3, -4, 4].sort(() => Math.random() - 0.5);
-      for (const offset of offsets) {
-        const cand = this.answer + offset;
-        if (cand >= 1 && cand <= maxPossible) {
-          choices.add(cand);
-          if (choices.size === 4) break;
-        }
+    checkAnswer() {
+      if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
+        return;
+      }
+      if (!this.currentInput) {
+        this.mysteryBoxEl.style.transform = 'scale(1.2)';
+        this.hintTextEl.textContent = 'Please tap a number first! 👆';
+        setTimeout(() => {
+          this.mysteryBoxEl.style.transform = '';
+          this.hintTextEl.textContent = 'Tap the number keys, then press OK! 👇';
+        }, 600);
+        this.sound.playPop();
+        return;
       }
 
-      // Safe fallback to guarantee 4 choices
-      while (choices.size < 4) {
-        const randomPick = Math.floor(Math.random() * maxPossible) + 1;
-        choices.add(randomPick);
-      }
-
-      // Shuffle choices array
-      const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
-
-      shuffled.forEach(val => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.textContent = val;
-        btn.addEventListener('click', () => this.handleChoice(val, btn));
-        this.choicesGridEl.appendChild(btn);
-      });
-    }
-
-    handleChoice(selectedVal, btn) {
-      if (selectedVal === this.answer) {
+      const typedVal = parseInt(this.currentInput, 10);
+      if (typedVal === this.answer) {
         // CORRECT!
         this.sound.playCorrectFanfare();
         this.sound.playSparkle();
         this.mysteryBoxEl.textContent = this.answer;
-        this.mysteryBoxEl.style.color = '#ffffff';
 
         this.score += 10;
         this.streak += 1;
@@ -595,10 +536,10 @@
       } else {
         // WRONG!
         this.sound.playTryAgainSound();
-        btn.style.transform = 'translateX(-8px)';
-        setTimeout(() => btn.style.transform = 'translateX(8px)', 80);
-        setTimeout(() => btn.style.transform = 'translateX(-4px)', 160);
-        setTimeout(() => btn.style.transform = '', 240);
+        this.mysteryBoxEl.style.transform = 'translateX(-10px)';
+        setTimeout(() => this.mysteryBoxEl.style.transform = 'translateX(10px)', 80);
+        setTimeout(() => this.mysteryBoxEl.style.transform = 'translateX(-5px)', 160);
+        setTimeout(() => this.mysteryBoxEl.style.transform = '', 240);
 
         this.showSadModal();
       }
@@ -688,6 +629,10 @@
 
     closeSadModal() {
       this.sadModal.classList.remove('active');
+      this.currentInput = '';
+      this.mysteryBoxEl.textContent = '?';
+      this.mysteryBoxEl.classList.remove('has-val');
+      this.keySubmit.classList.remove('ready');
     }
 
     speakProblem() {

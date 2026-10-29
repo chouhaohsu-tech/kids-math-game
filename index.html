@@ -73,21 +73,13 @@
       </button>
     </div>
 
-    <!-- Difficulty Range Selector -->
-    <div class="range-selector">
-      <span class="range-label">Level:</span>
-      <button class="range-pill active" data-range="5">Up to 5 🌱</button>
-      <button class="range-pill" data-range="10">Up to 10 🚀</button>
-      <button class="range-pill" data-range="18">Up to 18 🌟</button>
-    </div>
-
     <!-- Main Game Board -->
     <main class="math-board">
       <!-- Equation Display with huge colorful fonts -->
       <div class="equation-card">
-        <div class="num-box num-first" id="num1">3</div>
+        <div class="num-box num-first" id="num1">9</div>
         <div class="op-box" id="opSymbol">+</div>
-        <div class="num-box num-second" id="num2">2</div>
+        <div class="num-box num-second" id="num2">8</div>
         <div class="eq-box">=</div>
         <div class="mystery-box" id="mysteryBox">?</div>
       </div>
@@ -100,11 +92,27 @@
       </div>
 
       <!-- Instruction / Hint Prompt -->
-      <div class="hint-text" id="hintText">Tap the correct answer below! 👇</div>
+      <div class="hint-text" id="hintText">Tap the number keys, then press OK! 👇</div>
 
-      <!-- Multiple Choice Options (Big Colorful Bouncy Buttons) -->
-      <div class="choices-grid" id="choicesGrid">
-        <!-- Generated dynamically with vibrant colors -->
+      <!-- Kid-Friendly Interactive Number Keypad -->
+      <div class="keypad-container" id="keypad">
+        <div class="keypad-grid">
+          <button class="key-btn key-num" data-val="1">1</button>
+          <button class="key-btn key-num" data-val="2">2</button>
+          <button class="key-btn key-num" data-val="3">3</button>
+
+          <button class="key-btn key-num" data-val="4">4</button>
+          <button class="key-btn key-num" data-val="5">5</button>
+          <button class="key-btn key-num" data-val="6">6</button>
+
+          <button class="key-btn key-num" data-val="7">7</button>
+          <button class="key-btn key-num" data-val="8">8</button>
+          <button class="key-btn key-num" data-val="9">9</button>
+
+          <button class="key-btn key-action key-clear" id="keyClear" title="Clear/Delete">⌫ Del</button>
+          <button class="key-btn key-num" data-val="0">0</button>
+          <button class="key-btn key-action key-submit" id="keySubmit" title="Check Answer">OK ✅</button>
+        </div>
       </div>
     </main>
 

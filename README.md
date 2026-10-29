@@ -18,16 +18,13 @@ Play directly in any browser (desktop, tablet, or phone):
 ## ✨ Kid-Centric Design & Features
 
 1. **👦 Designed for Ages 5 & 6:**
-   - **Strictly Positive Answers Guarantee:** Negative numbers have not been taught yet at this age. In subtraction ($a - b$), the first number is always strictly greater than the second number ($a > b$), guaranteeing that every answer is always a positive number ($\ge 1$).
-   - **Single-Digit Numbers:** Intuitive single-digit operations ($1$ to $9$).
-   - **Progressive Levels:**
-     - 🌱 *Up to 5*: Starter sums for beginners
-     - 🚀 *Up to 10*: Standard kindergarten/1st grade milestone
-     - 🌟 *Up to 18*: Fun challenge (e.g. $7 + 8$, $9 + 9$)
+   - **Full Single-Digit Operations (e.g. 9 + 8):** Additions of two single-digit numbers ($1$ to $9$) with answers reaching up to $18$ ($9 + 9$), helping children master bridging through ten.
+   - **Strictly Positive Answers Guarantee:** Negative numbers have not been taught yet at this age. In subtraction ($a - b$), the first number is always strictly greater than the second number ($a > b \ge 1$), guaranteeing that every answer is always a positive number ($\ge 1$).
 
-2. **🎨 Ultra Kids-Friendly Typography & UI:**
-   - Extra-large, vibrant, candy-colored numbers and math notation ($+$, $-$, $=$).
-   - High-contrast, tactile 3D bubbly buttons made for little hands and tablets.
+2. **⌨️ Colorful On-Screen Kid Number Keyboard:**
+   - Big, tactile candy-colored number keys ($0$ to $9$, $\text{⌫ Del}$, and $\text{OK ✅}$).
+   - Kids type their answer directly onto the screen instead of guessing multiple choices!
+   - Full support for physical keyboards (0-9, Backspace, Enter) on PC and touchscreens on tablets/phones.
    - Playful rounded typography (`Fredoka` & `Nunito`).
 
 3. **🍎 Interactive Visual Counters:**
