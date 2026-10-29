@@ -112,9 +112,102 @@
       osc.start(now);
       osc.stop(now + 0.35);
     }
+
+    playKeyNote(digit) {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      // Glockenspiel / Musical Toy xylophone frequencies for 0-9
+      const noteMap = {
+        '1': 261.63, // C4
+        '2': 293.66, // D4
+        '3': 329.63, // E4
+        '4': 349.23, // F4
+        '5': 392.00, // G4
+        '6': 440.00, // A4
+        '7': 493.88, // B4
+        '8': 523.25, // C5
+        '9': 587.33, // D5
+        '0': 659.25  // E5
+      };
+
+      const freq = noteMap[digit] || 440;
+      const now = this.ctx.currentTime;
+
+      // Primary acoustic bell/glockenspiel tone
+      const osc1 = this.ctx.createOscillator();
+      const gain1 = this.ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(freq, now);
+
+      // Bright harmonic shimmer
+      const osc2 = this.ctx.createOscillator();
+      const gain2 = this.ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2.75, now);
+
+      gain1.gain.setValueAtTime(0.32, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+      gain2.gain.setValueAtTime(0.12, now);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      osc1.connect(gain1);
+      gain1.connect(this.ctx.destination);
+      osc2.connect(gain2);
+      gain2.connect(this.ctx.destination);
+
+      osc1.start(now);
+      osc1.stop(now + 0.35);
+      osc2.start(now);
+      osc2.stop(now + 0.18);
+    }
+
+    playDelete() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(160, now + 0.12);
+
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    }
+
+    playCuteGiggle() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const freqs = [587, 784, 880, 1046];
+      const now = this.ctx.currentTime;
+      freqs.forEach((f, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.25, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.06 + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.15);
+      });
+    }
   }
 
-  // --- Visual Particles Engine (Fireworks & Flowers) ---
+  // --- Visual Particles Engine (Fireworks, Flowers & Sparkles) ---
   class FXEngine {
     constructor(canvasId) {
       this.canvas = document.getElementById(canvasId);
@@ -130,6 +223,29 @@
     resize() {
       this.width = this.canvas.width = window.innerWidth;
       this.height = this.canvas.height = window.innerHeight;
+    }
+
+    spawnSparkleTrail(x, y) {
+      const count = 3;
+      const colors = ['#FDE047', '#60A5FA', '#F472B6', '#4ADE80', '#C084FC'];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.8 + Math.random() * 2;
+        this.particles.push({
+          x: x + (Math.random() - 0.5) * 8,
+          y: y + (Math.random() - 0.5) * 8,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          radius: 2 + Math.random() * 3,
+          life: 1,
+          decay: 0.035 + Math.random() * 0.02,
+          gravity: 0.05
+        });
+      }
+      if (!this.animationId) {
+        this.loop();
+      }
     }
 
     launchCelebration() {
@@ -306,6 +422,30 @@
       this.keySubmit = document.getElementById('keySubmit');
       this.hintTextEl = document.getElementById('hintText');
 
+      // Mascot & Theme Elements
+      this.mascotAvatar = document.getElementById('mascotAvatar');
+      this.mascotBubble = document.getElementById('mascotBubble');
+      this.themeBtn = document.getElementById('themeBtn');
+      this.themeIcon = document.getElementById('themeIcon');
+      this.themeLabel = document.getElementById('themeLabel');
+      this.comboBadge = document.getElementById('comboBadge');
+      this.comboText = document.getElementById('comboText');
+
+      this.themes = [
+        { id: 'theme-sky', name: 'Sky', icon: '🎨' },
+        { id: 'theme-space', name: 'Space', icon: '🚀' },
+        { id: 'theme-candy', name: 'Candy', icon: '🍭' }
+      ];
+      this.currentThemeIndex = 0;
+
+      this.mascotPhrases = [
+        'You got this, Math Hero! 🌟',
+        'Pip believes in you! 🐰✨',
+        'Tap the keys to make music! 🎵',
+        'Ready for the next challenge? 🚀',
+        'You are doing super awesome! 💖'
+      ];
+
       this.visualHelpersWrapper = document.getElementById('visualHelpersWrapper');
       this.helpersBadgeEl = document.getElementById('helpersBadge');
       this.visualHelpersEl = document.getElementById('visualHelpers');
@@ -346,6 +486,56 @@
     }
 
     bindEvents() {
+      // Theme Switcher Button
+      if (this.themeBtn) {
+        this.themeBtn.addEventListener('click', () => {
+          this.currentThemeIndex = (this.currentThemeIndex + 1) % this.themes.length;
+          const nextTheme = this.themes[this.currentThemeIndex];
+          document.body.className = nextTheme.id;
+          if (this.themeIcon) this.themeIcon.textContent = nextTheme.icon;
+          if (this.themeLabel) this.themeLabel.textContent = nextTheme.name;
+          this.sound.playSparkle();
+          this.setMascotMessage(`Switched to ${nextTheme.name} theme! ✨`);
+        });
+      }
+
+      // Interactive Mascot Pip Tap
+      if (this.mascotAvatar) {
+        this.mascotAvatar.addEventListener('click', () => {
+          this.sound.playCuteGiggle();
+          this.mascotAvatar.style.transform = 'scale(1.25) rotate(12deg)';
+          setTimeout(() => {
+            if (this.mascotAvatar) this.mascotAvatar.style.transform = '';
+          }, 250);
+          const cheerfulPip = [
+            'Pip loves you! Keep shining! 🐰💖',
+            'You are a true math superstar! 🌟',
+            'Pip is dancing for your success! 💃',
+            'Let\'s make more math magic! ✨'
+          ];
+          this.setMascotMessage(cheerfulPip[Math.floor(Math.random() * cheerfulPip.length)]);
+        });
+      }
+
+      // Interactive Touch & Mouse Magic Sparkle Trail
+      let lastTrailTime = 0;
+      const handlePointer = (e) => {
+        const now = Date.now();
+        if (now - lastTrailTime < 32) return;
+        lastTrailTime = now;
+        let x = e.clientX;
+        let y = e.clientY;
+        if (e.touches && e.touches[0]) {
+          x = e.touches[0].clientX;
+          y = e.touches[0].clientY;
+        }
+        if (typeof x === 'number' && typeof y === 'number') {
+          this.fx.spawnSparkleTrail(x, y);
+        }
+      };
+      window.addEventListener('pointermove', handlePointer, { passive: true });
+      window.addEventListener('touchmove', handlePointer, { passive: true });
+
       // Sound toggle
       this.soundBtn.addEventListener('click', () => {
         this.sound.enabled = !this.sound.enabled;
@@ -475,6 +665,13 @@
       // Render problem to UI
       this.renderProblem();
       this.renderVisualCounters();
+
+      // Pip gives an encouraging tip for this problem
+      if (this.op === '+') {
+        this.setMascotMessage(`Can you add ${this.num1} and ${this.num2} together? 🌟`);
+      } else {
+        this.setMascotMessage(`Start with ${this.num1} and take away ${this.num2}! 🎈`);
+      }
     }
 
     renderProblem() {
@@ -591,7 +788,17 @@
       this.mysteryBoxEl.textContent = this.currentInput;
       this.mysteryBoxEl.classList.add('has-val');
       this.keySubmit.classList.add('ready');
-      this.sound.playPop();
+
+      // Musical toy glockenspiel note
+      this.sound.playKeyNote(digit);
+
+      // Pip reacts curiously
+      if (this.mascotAvatar) {
+        this.mascotAvatar.style.transform = 'scale(1.12) rotate(-5deg)';
+        setTimeout(() => {
+          if (this.mascotAvatar) this.mascotAvatar.style.transform = '';
+        }, 180);
+      }
     }
 
     handleBackspace() {
@@ -607,7 +814,7 @@
         } else {
           this.mysteryBoxEl.textContent = this.currentInput;
         }
-        this.sound.playPop();
+        this.sound.playDelete();
       }
     }
 
@@ -638,10 +845,17 @@
         this.scoreValEl.textContent = this.score;
 
         this.updateStreakStars();
+        this.updateComboBadge();
+        this.spawnFloatingScore('+10 ⭐');
+        this.setMascotMessage('Wooohoo! Incredible math hero! 🎉⭐');
         this.showCelebrationModal();
       } else {
         // WRONG!
         this.sound.playTryAgainSound();
+        this.streak = 0;
+        this.updateComboBadge();
+        this.setMascotMessage('Don\'t worry! Pip believes in you! 💕');
+
         this.mysteryBoxEl.style.transform = 'translateX(-10px)';
         setTimeout(() => this.mysteryBoxEl.style.transform = 'translateX(10px)', 80);
         setTimeout(() => this.mysteryBoxEl.style.transform = 'translateX(-5px)', 160);
@@ -649,6 +863,48 @@
 
         this.showSadModal();
       }
+    }
+
+    setMascotMessage(msg) {
+      if (!this.mascotBubble) return;
+      this.mascotBubble.textContent = msg;
+      this.mascotBubble.style.transform = 'scale(1.06)';
+      setTimeout(() => {
+        if (this.mascotBubble) this.mascotBubble.style.transform = '';
+      }, 200);
+    }
+
+    updateComboBadge() {
+      if (!this.comboBadge || !this.comboText) return;
+      if (this.streak >= 2) {
+        this.comboBadge.classList.remove('hidden');
+        if (this.streak === 2) {
+          this.comboText.textContent = '🔥 COMBO x2!';
+        } else if (this.streak === 3) {
+          this.comboText.textContent = '⚡ SUPER x3!';
+        } else if (this.streak === 4) {
+          this.comboText.textContent = '🚀 MEGA x4!';
+        } else {
+          this.comboText.textContent = `👑 GODLIKE x${this.streak}!`;
+        }
+        this.comboBadge.style.transform = 'scale(1.22)';
+        setTimeout(() => {
+          if (this.comboBadge) this.comboBadge.style.transform = '';
+        }, 220);
+      } else {
+        this.comboBadge.classList.add('hidden');
+      }
+    }
+
+    spawnFloatingScore(text) {
+      const el = document.createElement('div');
+      el.className = 'floating-score';
+      el.textContent = text;
+      const rect = this.scoreValEl ? this.scoreValEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: 80 };
+      el.style.left = `${Math.max(16, rect.left - 10)}px`;
+      el.style.top = `${rect.top}px`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1200);
     }
 
     updateStreakStars() {

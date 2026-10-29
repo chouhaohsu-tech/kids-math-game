@@ -9,11 +9,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.2.0">
+  <link rel="stylesheet" href="style.css?v=3.0.0">
 </head>
-<body>
-  <!-- Canvas for celebration fireworks & floating flowers -->
+<body class="theme-sky">
+  <!-- Canvas for celebration fireworks, flowers & magic touch sparkles -->
   <canvas id="fxCanvas"></canvas>
+
+  <!-- Ambient background clouds & world elements -->
+  <div class="bg-decorations" aria-hidden="true">
+    <div class="bg-cloud cloud-1">☁️</div>
+    <div class="bg-cloud cloud-2">⛅</div>
+    <div class="bg-cloud cloud-3">☁️</div>
+    <div class="bg-cloud cloud-4">✨</div>
+  </div>
 
   <div class="game-container">
     <!-- Top Header & Controls -->
@@ -25,6 +33,11 @@
       </div>
 
       <div class="header-tools">
+        <!-- Theme Switcher -->
+        <button id="themeBtn" class="tool-btn theme-btn" title="Switch Theme (Sky, Space, Candy)" aria-label="Switch Theme">
+          <span id="themeIcon">🎨</span>
+          <span class="btn-label" id="themeLabel">Sky</span>
+        </button>
         <!-- Sound toggle -->
         <button id="soundBtn" class="tool-btn" title="Toggle Sound" aria-label="Toggle Sound">
           <span id="soundIcon">🔊</span>
@@ -32,7 +45,7 @@
         <!-- Speech Read-Aloud button -->
         <button id="speechBtn" class="tool-btn" title="Read Problem Aloud" aria-label="Read Problem Aloud">
           <span>🗣️</span>
-          <span class="btn-label">Read to Me</span>
+          <span class="btn-label">Read</span>
         </button>
         <!-- Visual Helpers toggle -->
         <button id="visualToggleBtn" class="tool-btn active" title="Show/Hide Fruit Counters" aria-label="Toggle Counters">
@@ -42,13 +55,20 @@
       </div>
     </header>
 
-    <!-- Score & Streak Bar -->
+    <!-- Score & Streak Bar with Cool Combo Meter -->
     <div class="score-banner">
       <div class="streak-box">
         <span class="star-icon">⭐</span>
         <span class="streak-label">Score:</span>
         <span id="scoreVal" class="score-num">0</span>
       </div>
+
+      <!-- Arcade Combo Flame Badge -->
+      <div class="combo-badge hidden" id="comboBadge">
+        <span class="combo-flame">🔥</span>
+        <span class="combo-text" id="comboText">COMBO x2!</span>
+      </div>
+
       <div class="stars-tray" id="starsTray">
         <span class="star-slot empty">⭐</span>
         <span class="star-slot empty">⭐</span>
@@ -56,6 +76,7 @@
         <span class="star-slot empty">⭐</span>
         <span class="star-slot empty">⭐</span>
       </div>
+
       <div class="trophy-badge" id="trophyBadge" title="Collect 5 stars for a prize!">
         <span class="trophy-icon">🏆</span>
         <span id="trophyCount">0</span>
@@ -80,11 +101,36 @@
       <div class="board-layout">
         <!-- Problem & Counters Section -->
         <div class="board-problem-section">
-          <!-- Equation Display with huge colorful fonts -->
+          <!-- Animated Mascot Pip with Speech Bubble -->
+          <div class="mascot-bar">
+            <div class="mascot-avatar" id="mascotAvatar" title="Tap Pip for good luck!">
+              <svg viewBox="0 0 100 100" width="56" height="56" class="svg-mascot">
+                <ellipse cx="36" cy="22" rx="8" ry="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" class="mascot-ear left-ear"/>
+                <ellipse cx="36" cy="22" rx="4.5" ry="15" fill="#F472B6" class="mascot-ear left-ear"/>
+                <ellipse cx="64" cy="22" rx="8" ry="22" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5" class="mascot-ear right-ear"/>
+                <ellipse cx="64" cy="22" rx="4.5" ry="15" fill="#F472B6" class="mascot-ear right-ear"/>
+                <circle cx="50" cy="58" r="28" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2.5"/>
+                <g class="mascot-eyes">
+                  <circle cx="41" cy="54" r="5" fill="#1E293B"/>
+                  <circle cx="39" cy="52" r="1.8" fill="#FFFFFF"/>
+                  <circle cx="59" cy="54" r="5" fill="#1E293B"/>
+                  <circle cx="57" cy="52" r="1.8" fill="#FFFFFF"/>
+                </g>
+                <ellipse cx="33" cy="62" rx="4" ry="2.5" fill="#FDA4AF" opacity="0.8"/>
+                <ellipse cx="67" cy="62" rx="4" ry="2.5" fill="#FDA4AF" opacity="0.8"/>
+                <polygon points="50,59 47,56 53,56" fill="#EC4899"/>
+                <path d="M 47 62 Q 50 65 53 62" stroke="#1E293B" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <polygon points="82,42 85,47 91,47 86,51 88,57 82,53 76,57 78,51 73,47 79,47" fill="#F59E0B" class="wand-star"/>
+              </svg>
+            </div>
+            <div class="mascot-bubble" id="mascotBubble">You got this, Math Hero! 🌟</div>
+          </div>
+
+          <!-- Equation Display with 3D Glossy Arcade blocks -->
           <div class="equation-card">
-            <div class="num-box num-first" id="num1">9</div>
+            <div class="num-box num-first" id="num1">2</div>
             <div class="op-box" id="opSymbol">+</div>
-            <div class="num-box num-second" id="num2">8</div>
+            <div class="num-box num-second" id="num2">3</div>
             <div class="eq-box">=</div>
             <div class="mystery-box" id="mysteryBox">?</div>
           </div>
@@ -340,6 +386,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=2.2.0"></script>
+  <script src="game.js?v=3.0.0"></script>
 </body>
 </html>

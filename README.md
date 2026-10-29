@@ -21,33 +21,51 @@ Play directly in any browser (desktop, tablet, or phone):
    - **Full Single-Digit Operations (e.g. 9 + 8):** Additions of two single-digit numbers ($1$ to $9$) with answers reaching up to $18$ ($9 + 9$), helping children master bridging through ten.
    - **Strictly Positive Answers Guarantee:** Negative numbers have not been taught yet at this age. In subtraction ($a - b$), the first number is always strictly greater than the second number ($a > b \ge 1$), guaranteeing that every answer is always a positive number ($\ge 1$).
 
-2. **⌨️ Colorful On-Screen Kid Number Keyboard:**
-   - Big, tactile candy-colored number keys ($0$ to $9$, $\text{⌫ Del}$, and $\text{OK ✅}$).
-   - Kids type their answer directly onto the screen instead of guessing multiple choices!
-   - Full support for physical keyboards (0-9, Backspace, Enter) on PC and touchscreens on tablets/phones.
-   - Playful rounded typography (`Fredoka` & `Nunito`).
+2. **🐰 Animated Mascot Pip the Hero Bunny:**
+   - Adorable live-animated mascot with wiggling ears, blinking eyes, and pulsing magic wand.
+   - Pip talks to the kids, encourages them before every question, celebrates their wins, and giggles when tapped!
 
-3. **🍎 Interactive Visual Counters:**
-   - Tap-to-count fruit helpers (🍎, 🍊, 🍌, ⭐, 🎈).
+3. **🎵 Musical Toy Glockenspiel Keypad:**
+   - Each number key ($0$ through $9$) is tuned to a real acoustic glockenspiel note (C4, D4, E4, F4, G4, A4, B4, C5, D5, E5).
+   - Tapping keys turns math practice into playing a cheerful musical instrument!
+   - 3D glossy arcade buttons with specular glass reflections and bouncy tactile clicks.
+
+4. **✨ Magic Touch Sparkle Trail:**
+   - Every tap or drag on touchscreens (iPad/tablets) or mouse produces a trail of glowing multi-colored fairy dust and twinkling stars.
+
+5. **🎨 3 Gorgeous Themes:**
+   - **☀️ Sky Wonder:** Warm sunny blue sky with drifting pastel clouds.
+   - **🚀 Space Quest:** Deep cosmic nebula with glowing neon cyber arcade buttons and luminous stars.
+   - **🍭 Candy Land:** Sweet strawberry & marshmallow pastel wonderland.
+
+6. **🔥 Arcade Combo Multiplier Meter:**
+   - Correct streaks trigger an arcade combo flame badge (`🔥 COMBO x2!`, `⚡ SUPER x3!`, `🚀 MEGA x4!`, `👑 GODLIKE x5!`).
+   - Floating `+10 ⭐` score indicators float up with celebratory sound effects.
+
+7. **🍎 Interactive Visual Counters:**
+   - Tap-to-count fruit helpers (🍎, 🍊, 🍌, 🍓, 🍇, ⭐, 🎈).
    - For **addition**: shows items for both numbers so kids can count along ($3$ apples $+$ $2$ apples).
    - For **subtraction**: displays total items with the subtracted amount crossed out with ❌ so kids can clearly see what's left.
 
-4. **🎉 Rich Celebrations on Correct Answer:**
+8. **🎉 Rich Celebrations on Correct Answer:**
    - **💥 Fireworks:** Full-screen canvas particle explosions with glowing sparks.
    - **🌸 Cascading Flowers:** Cherry blossoms, sunflowers, and petals raining down.
    - **🦁 Cheering Animated Animals:** Joyful animated SVG characters (Happy Lion with a crown, Bouncy Bunny with a star, and Cheerful Puppy wagging its tail).
    - **🎺 Musical Fanfares:** Built-in Web Audio chime arpeggios.
 
-5. **🥺 Gentle & Encouraging Feedback on Mistake:**
-   - A super sweet, adorable teary-eyed cartoon puppy holding a gentle heart saying *"Don't be sad! You can do it! 💕"*.
+9. **🥺 Gentle & Encouraging Feedback on Mistake:**
+   - A super sweet, adorable cartoon puppy holding a gentle heart saying *"Don't be sad! You can do it! 💕"*.
    - Suggests counting the visual fruit helpers together so the child is never discouraged or frustrated.
 
-6. **🔊 Built-In Sound & Speech Read-Aloud:**
-   - **Read to Me (🗣️):** Uses the Web Speech API to read problems aloud (*"What is 4 plus 2?"*), essential for young kids still learning to read.
-   - **Web Audio Sound Effects:** Real-time synthesized chimes, pops, and fanfares with zero external audio assets (100% reliable offline & instant).
+10. **📱 iPad Zero-Scroll Optimization:**
+    - Seamlessly fits 100% of the screen on iPad Safari in both **Portrait** and **Landscape** modes without any vertical scrolling!
 
-7. **🎁 Sticker Collection Album:**
-   - Every 5 correct answers awards a trophy 🏆 and unlocks a shiny new sticker (🦄 Unicorn, 🚀 Rocket, 🦖 Dino, 🌈 Rainbow, 🍦 Ice Cream, 👑 Crown)!
+11. **🔊 Built-In Sound & Speech Read-Aloud:**
+    - **Read to Me (🗣️):** Uses the Web Speech API to read problems aloud (*"What is 4 plus 2?"*), essential for young kids still learning to read.
+    - **Web Audio Sound Effects:** Real-time synthesized chimes, pops, and fanfares with zero external audio assets (100% reliable offline & instant).
+
+12. **🎁 Sticker Collection Album:**
+    - Every 5 correct answers awards a trophy 🏆 and unlocks a shiny new sticker (🦄 Unicorn, 🚀 Rocket, 🦖 Dino, 🌈 Rainbow, 🍦 Ice Cream, 👑 Crown)!
 
 ---
 
