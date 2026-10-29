@@ -275,9 +275,17 @@
       this.unlockedStickers = 0;
       this.showCounters = true;
 
-      // Available fruits for counters
-      this.fruitList = ['🍎', '🍓', '🍊', '🍌', '🍇', '🍒', '🍉', '🍍', '⭐', '🎈'];
-      this.currentFruit = '🍎';
+      // Available items for visual counting (icon + name)
+      this.fruitList = [
+        { icon: '🍎', name: 'apples' },
+        { icon: '🍊', name: 'oranges' },
+        { icon: '🍌', name: 'bananas' },
+        { icon: '🍓', name: 'strawberries' },
+        { icon: '🍇', name: 'grapes' },
+        { icon: '⭐', name: 'stars' },
+        { icon: '🎈', name: 'balloons' }
+      ];
+      this.currentFruit = this.fruitList[0];
 
       this.praisePhrases = [
         'YOU ARE A SUPERSTAR! 🌟',
@@ -298,6 +306,8 @@
       this.keySubmit = document.getElementById('keySubmit');
       this.hintTextEl = document.getElementById('hintText');
 
+      this.visualHelpersWrapper = document.getElementById('visualHelpersWrapper');
+      this.helpersBadgeEl = document.getElementById('helpersBadge');
       this.visualHelpersEl = document.getElementById('visualHelpers');
       this.helperLeftEl = document.getElementById('helperLeft');
       this.helperRightEl = document.getElementById('helperRight');
@@ -352,7 +362,11 @@
       this.visualToggleBtn.addEventListener('click', () => {
         this.showCounters = !this.showCounters;
         this.visualToggleBtn.classList.toggle('active', this.showCounters);
-        this.visualHelpersEl.classList.toggle('hidden', !this.showCounters);
+        if (this.visualHelpersWrapper) {
+          this.visualHelpersWrapper.classList.toggle('hidden', !this.showCounters);
+        } else {
+          this.visualHelpersEl.classList.toggle('hidden', !this.showCounters);
+        }
         this.sound.playPop();
       });
 
@@ -432,6 +446,9 @@
     generateNewProblem() {
       this.currentInput = '';
       this.currentFruit = this.fruitList[Math.floor(Math.random() * this.fruitList.length)];
+      if (this.helpersBadgeEl) {
+        this.helpersBadgeEl.textContent = `${this.currentFruit.icon} Tap to Count`;
+      }
 
       let activeOp = this.mode;
       if (activeOp === 'mix') {
@@ -472,6 +489,68 @@
         this.num1El.style.transform = '';
         this.num2El.style.transform = '';
       }, 250);
+    }
+
+    renderVisualCounters() {
+      this.helperLeftEl.innerHTML = '';
+      this.helperRightEl.innerHTML = '';
+
+      if (this.op === '+') {
+        this.helperOpEl.textContent = '+';
+        this.helperOpEl.style.display = 'block';
+
+        // Left items
+        for (let i = 0; i < this.num1; i++) {
+          const item = document.createElement('span');
+          item.className = 'helper-item';
+          item.textContent = this.currentFruit.icon;
+          item.title = `${this.currentFruit.name} ${i + 1}`;
+          item.addEventListener('click', () => {
+            this.sound.playPop();
+            item.style.transform = 'scale(1.5) rotate(15deg)';
+            setTimeout(() => item.style.transform = '', 200);
+          });
+          this.helperLeftEl.appendChild(item);
+        }
+
+        // Right items
+        for (let i = 0; i < this.num2; i++) {
+          const item = document.createElement('span');
+          item.className = 'helper-item';
+          item.textContent = this.currentFruit.icon;
+          item.title = `${this.currentFruit.name} ${this.num1 + i + 1}`;
+          item.addEventListener('click', () => {
+            this.sound.playPop();
+            item.style.transform = 'scale(1.5) rotate(15deg)';
+            setTimeout(() => item.style.transform = '', 200);
+          });
+          this.helperRightEl.appendChild(item);
+        }
+      } else {
+        // Subtraction: Show total num1 items, with num2 items crossed out
+        this.helperOpEl.style.display = 'none';
+
+        const remaining = this.num1 - this.num2;
+        for (let i = 0; i < this.num1; i++) {
+          const item = document.createElement('span');
+          item.className = 'helper-item';
+          item.textContent = this.currentFruit.icon;
+
+          if (i >= remaining) {
+            item.classList.add('crossed-out');
+            item.title = 'Taken away';
+          } else {
+            item.title = `${this.currentFruit.name} ${i + 1}`;
+          }
+
+          item.addEventListener('click', () => {
+            this.sound.playPop();
+            item.style.transform = 'scale(1.4)';
+            setTimeout(() => item.style.transform = '', 200);
+          });
+          this.helperLeftEl.appendChild(item);
+        }
+      }
     }
 
     handleDigit(digit) {
@@ -613,16 +692,16 @@
 
     showSadModal() {
       if (this.op === '+') {
-        this.sadHintEl.textContent = `Try counting the ${this.currentFruit} fruits together! You can do it!`;
+        this.sadHintEl.textContent = `Try counting the ${this.currentFruit.icon} ${this.currentFruit.name} together! You can do it! 💕`;
       } else {
-        this.sadHintEl.textContent = `Start with ${this.num1} fruits and count how many are left! 💕`;
+        this.sadHintEl.textContent = `Start with ${this.num1} ${this.currentFruit.name} and count how many are left! 💕`;
       }
 
       this.sadModal.classList.add('active');
 
       if (this.sound.enabled && 'speechSynthesis' in window) {
         setTimeout(() => {
-          this.speakText(`Almost! Let's try again! You can do it!`);
+          this.speakText(`Almost! Let's count the ${this.currentFruit.name} and try again!`);
         }, 200);
       }
     }
