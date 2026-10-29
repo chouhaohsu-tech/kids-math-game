@@ -1,0 +1,870 @@
+/* ==========================================================================
+   Magic Math Adventure - Kids-Friendly CSS Theme (Ages 5-6)
+   ========================================================================== */
+
+:root {
+  --font-family: 'Fredoka', 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Bright, playful candy color palette */
+  --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 50%, #fce7f3 100%);
+  --num1-color: #ff5722;
+  --num1-shadow: #d84315;
+  --num2-color: #2e7d32;
+  --num2-shadow: #1b5e20;
+  --op-color: #0288d1;
+  --op-shadow: #01579b;
+  --eq-color: #8e24aa;
+  --mystery-bg: #ffb300;
+  --mystery-shadow: #f57f17;
+  
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --choice-1: #ff5252;
+  --choice-2: #448aff;
+  --choice-3: #4caf50;
+  --choice-4: #ffa000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+  color: #37474f;
+}
+
+/* Canvas full screen on top for fireworks and flower petals */
+#fxCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 900;
+}
+
+/* Main Container */
+.game-container {
+  width: 100%;
+  max-width: 680px;
+  min-height: 94vh;
+  margin: 16px auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   Header & Toolbar
+   ========================================================================== */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 0 #e2e8f0;
+  margin-bottom: 14px;
+}
+
+.logo-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.game-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #ff1744, #ff9100, #00b0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.header-tools {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-btn {
+  font-family: var(--font-family);
+  background: #f1f5f9;
+  border: 3px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 0 #cbd5e1;
+}
+
+.tool-btn:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+}
+
+.tool-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #cbd5e1;
+}
+
+.tool-btn.active {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #047857;
+  box-shadow: 0 4px 0 #059669;
+}
+
+.tool-btn .btn-label {
+  font-size: 0.95rem;
+  display: inline-block;
+}
+
+@media (max-width: 580px) {
+  .tool-btn .btn-label {
+    display: none;
+  }
+  .game-title {
+    font-size: 1.35rem;
+  }
+}
+
+/* ==========================================================================
+   Score, Stars & Trophies Bar
+   ========================================================================== */
+.score-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px 18px;
+  border-radius: 24px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.streak-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ff9800;
+}
+
+.score-num {
+  font-size: 1.6rem;
+  color: #e65100;
+}
+
+.stars-tray {
+  display: flex;
+  gap: 6px;
+}
+
+.star-slot {
+  font-size: 1.5rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.star-slot.filled {
+  filter: drop-shadow(0 2px 6px rgba(255, 193, 7, 0.8));
+  animation: starPop 0.5s ease-out;
+}
+
+.star-slot.empty {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.trophy-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8e1;
+  border: 2px solid #ffca28;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #ff8f00;
+}
+
+.trophy-icon {
+  font-size: 1.4rem;
+}
+
+/* ==========================================================================
+   Mode & Range Selectors
+   ========================================================================== */
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mode-tab {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 10px 6px;
+  border: 3px solid #e0e7ff;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #cbd5e1;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.mode-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #cbd5e1;
+}
+
+.mode-tab:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #cbd5e1;
+}
+
+.mode-tab.active {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #3730a3;
+  box-shadow: 0 5px 0 #312e81;
+}
+
+.range-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.range-label {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.range-pill {
+  font-family: var(--font-family);
+  border: 2px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 6px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #cbd5e1;
+  transition: all 0.2s;
+}
+
+.range-pill:hover {
+  background: #ffffff;
+}
+
+.range-pill.active {
+  background: #06b6d4;
+  border-color: #0891b2;
+  color: #ffffff;
+  box-shadow: 0 3px 0 #0e7490;
+}
+
+/* ==========================================================================
+   Math Board & Large Colorful Numbers
+   ========================================================================== */
+.math-board {
+  background: var(--card-bg);
+  border-radius: 36px;
+  padding: 24px 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1), 0 6px 0 #e2e8f0;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.equation-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: nowrap;
+}
+
+/* Huge Numbers with 3D Depth & Bright Playful Colors */
+.num-box, .op-box, .eq-box, .mystery-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  min-width: 90px;
+  height: 110px;
+  border-radius: 26px;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.num-first {
+  color: #ffffff;
+  background: #ff5722;
+  box-shadow: 0 10px 0 var(--num1-shadow), 0 14px 20px rgba(255, 87, 34, 0.35);
+  border: 4px solid #ff8a65;
+}
+
+.num-second {
+  color: #ffffff;
+  background: #2e7d32;
+  box-shadow: 0 10px 0 var(--num2-shadow), 0 14px 20px rgba(46, 125, 50, 0.35);
+  border: 4px solid #81c784;
+}
+
+.op-box {
+  color: #ffffff;
+  background: #0288d1;
+  box-shadow: 0 10px 0 var(--op-shadow), 0 14px 20px rgba(2, 136, 209, 0.35);
+  border: 4px solid #4fc3f7;
+  font-size: 4.6rem;
+  width: 80px;
+  min-width: 80px;
+}
+
+.eq-box {
+  color: #ffffff;
+  background: #8e24aa;
+  box-shadow: 0 10px 0 #6a1b9a, 0 14px 20px rgba(142, 36, 170, 0.35);
+  border: 4px solid #ba68c8;
+  font-size: 4.4rem;
+  width: 80px;
+  min-width: 80px;
+}
+
+.mystery-box {
+  color: #ffffff;
+  background: #ffb300;
+  box-shadow: 0 10px 0 var(--mystery-shadow), 0 14px 24px rgba(255, 179, 0, 0.45);
+  border: 4px dashed #fff9c4;
+  font-size: 5rem;
+  animation: pulseCard 2s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   Visual Counting Helpers (Fruit & Star Counters)
+   ========================================================================== */
+.visual-helpers-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  background: #f8fafc;
+  border: 3px dashed #cbd5e1;
+  border-radius: 24px;
+  padding: 12px 14px;
+  min-height: 80px;
+  margin-bottom: 18px;
+  transition: all 0.3s ease;
+}
+
+.visual-helpers-container.hidden {
+  display: none;
+}
+
+.helper-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  max-width: 220px;
+}
+
+.helper-item {
+  font-size: 2.2rem;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.helper-item:hover {
+  transform: scale(1.3) rotate(8deg);
+}
+
+.helper-item.crossed-out {
+  opacity: 0.3;
+  filter: grayscale(0.8);
+  position: relative;
+}
+
+.helper-item.crossed-out::after {
+  content: "❌";
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.helper-op {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* Hint Text */
+.hint-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 18px;
+}
+
+/* ==========================================================================
+   Multiple Choice Bubbly Buttons
+   ========================================================================== */
+.choices-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.choice-btn {
+  font-family: var(--font-family);
+  font-size: 3.8rem;
+  font-weight: 900;
+  padding: 14px 10px;
+  border-radius: 26px;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.choice-btn:nth-child(1) {
+  background: #ff5252;
+  box-shadow: 0 9px 0 #d32f2f, 0 12px 18px rgba(255, 82, 82, 0.3);
+}
+
+.choice-btn:nth-child(2) {
+  background: #29b6f6;
+  box-shadow: 0 9px 0 #0288d1, 0 12px 18px rgba(41, 182, 246, 0.3);
+}
+
+.choice-btn:nth-child(3) {
+  background: #66bb6a;
+  box-shadow: 0 9px 0 #388e3c, 0 12px 18px rgba(102, 187, 106, 0.3);
+}
+
+.choice-btn:nth-child(4) {
+  background: #ffa726;
+  box-shadow: 0 9px 0 #f57c00, 0 12px 18px rgba(255, 167, 38, 0.3);
+}
+
+.choice-btn:hover {
+  transform: translateY(-4px);
+}
+
+.choice-btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ==========================================================================
+   Sticker Album Shelf
+   ========================================================================== */
+.sticker-shelf {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 12px 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.shelf-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stickers-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sticker-item {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  border: 2px dashed #cbd5e1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.9rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sticker-item.unlocked {
+  background: #fef08a;
+  border: 2px solid #eab308;
+  transform: scale(1.1) rotate(-4deg);
+  box-shadow: 0 4px 10px rgba(234, 179, 8, 0.4);
+  animation: starPop 0.6s ease-out;
+}
+
+.sticker-item.locked {
+  filter: grayscale(1) opacity(0.35);
+}
+
+/* ==========================================================================
+   Celebration Modal (Fireworks, Flowers & Cheering Animals)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 16px;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.celebration-card {
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25), 0 0 0 10px #fef08a;
+  transform: scale(0.7) translateY(40px);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-overlay.active .celebration-card {
+  transform: scale(1) translateY(0);
+}
+
+.celebration-ribbon {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff1744, #ff9100);
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 900;
+  padding: 8px 24px;
+  border-radius: 30px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 16px rgba(255, 23, 68, 0.4);
+  animation: pulseCard 1.5s infinite ease-in-out;
+}
+
+/* Cheering Animal Stage */
+.animal-stage {
+  height: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin: 10px 0;
+}
+
+.cheering-animal {
+  display: none;
+  animation: animalCheer 0.9s infinite alternate ease-in-out;
+}
+
+.cheering-animal.active {
+  display: block;
+}
+
+.praise-message {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #10b981;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.praise-equation {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #4338ca;
+  background: #eef2ff;
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+/* Floating Flower icons around celebration card */
+.celebration-decorations {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.decor-flower {
+  position: absolute;
+  font-size: 2rem;
+  animation: flowerWiggle 2s infinite ease-in-out;
+}
+
+.flower-1 { top: 20px; left: 24px; animation-delay: 0s; }
+.flower-2 { top: 25px; right: 24px; animation-delay: 0.3s; }
+.flower-3 { bottom: 85px; left: 20px; animation-delay: 0.6s; }
+.flower-4 { bottom: 90px; right: 20px; animation-delay: 0.9s; }
+.flower-5 { top: 50%; left: 10px; font-size: 1.5rem; }
+
+.next-btn {
+  font-family: var(--font-family);
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  font-size: 1.7rem;
+  font-weight: 900;
+  padding: 14px 36px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #047857, 0 12px 20px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 85%;
+}
+
+.next-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 11px 0 #047857, 0 16px 24px rgba(16, 185, 129, 0.45);
+}
+
+.next-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #047857;
+}
+
+/* ==========================================================================
+   Sad Picture Modal (Encouraging & Gentle for Ages 5-6)
+   ========================================================================== */
+.sad-card {
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25), 0 0 0 10px #fed7aa;
+  transform: scale(0.7) translateY(40px);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.active .sad-card {
+  transform: scale(1) translateY(0);
+}
+
+.sad-badge {
+  display: inline-block;
+  background: #ffedd5;
+  color: #ea580c;
+  font-size: 1.4rem;
+  font-weight: 900;
+  padding: 6px 20px;
+  border-radius: 24px;
+  margin-bottom: 12px;
+}
+
+.sad-picture-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  animation: gentleBreathe 2.5s infinite ease-in-out;
+}
+
+.sad-tear {
+  animation: tearDrip 1.8s infinite ease-in;
+}
+
+.sad-message {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #e11d48;
+  margin-bottom: 6px;
+}
+
+.sad-hint {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.try-again-btn {
+  font-family: var(--font-family);
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 900;
+  padding: 14px 34px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #c2410c, 0 12px 20px rgba(234, 88, 12, 0.35);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 85%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.try-again-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 11px 0 #c2410c, 0 16px 24px rgba(234, 88, 12, 0.45);
+}
+
+.try-again-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #c2410c;
+}
+
+/* ==========================================================================
+   Keyframe Animations
+   ========================================================================== */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseCard {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes starPop {
+  0% { transform: scale(0.3) rotate(-20deg); }
+  70% { transform: scale(1.3) rotate(15deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes animalCheer {
+  0% {
+    transform: translateY(0) scale(1) rotate(-3deg);
+  }
+  100% {
+    transform: translateY(-16px) scale(1.06) rotate(3deg);
+  }
+}
+
+@keyframes flowerWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-15deg) scale(1.15); }
+  75% { transform: rotate(15deg) scale(1.15); }
+}
+
+@keyframes gentleBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(4px) scale(0.97); }
+}
+
+@keyframes tearDrip {
+  0% { opacity: 0; transform: translateY(-4px) scale(0.5); }
+  50% { opacity: 1; transform: translateY(0px) scale(1); }
+  100% { opacity: 0; transform: translateY(12px) scale(0.8); }
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 520px) {
+  .game-container {
+    padding: 10px;
+    margin: 8px auto;
+  }
+  .num-box, .mystery-box {
+    font-size: 3.4rem;
+    height: 80px;
+    min-width: 65px;
+    border-radius: 18px;
+  }
+  .op-box, .eq-box {
+    font-size: 3rem;
+    height: 80px;
+    width: 55px;
+    min-width: 55px;
+    border-radius: 18px;
+  }
+  .equation-card {
+    gap: 6px;
+  }
+  .choice-btn {
+    font-size: 3rem;
+    padding: 10px 6px;
+  }
+  .hint-text {
+    font-size: 1.15rem;
+  }
+  .helper-item {
+    font-size: 1.8rem;
+  }
+}
