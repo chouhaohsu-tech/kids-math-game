@@ -225,6 +225,17 @@ body {
   background: #fce7f3;
 }
 
+.lang-btn {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+  box-shadow: 0 4px 0 #4ade80;
+}
+
+.lang-btn:hover {
+  background: #dcfce7;
+}
+
 .tool-btn .btn-label {
   font-size: 0.95rem;
   display: inline-block;

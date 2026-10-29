@@ -431,6 +431,16 @@
       this.comboBadge = document.getElementById('comboBadge');
       this.comboText = document.getElementById('comboText');
 
+      // Voice Language ('en' for pure English, 'zh' for pure Traditional Chinese)
+      this.voiceLang = 'en';
+      this.langBtn = document.getElementById('langBtn');
+      this.langLabel = document.getElementById('langLabel');
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          // Pre-warm browser voices list
+        };
+      }
+
       this.themes = [
         { id: 'theme-sky', name: 'Sky', icon: '🎨' },
         { id: 'theme-space', name: 'Space', icon: '🚀' },
@@ -496,6 +506,24 @@
           if (this.themeLabel) this.themeLabel.textContent = nextTheme.name;
           this.sound.playSparkle();
           this.setMascotMessage(`Switched to ${nextTheme.name} theme! ✨`);
+        });
+      }
+
+      // Voice Language Switcher Button (EN / 中文)
+      if (this.langBtn) {
+        this.langBtn.addEventListener('click', () => {
+          this.voiceLang = this.voiceLang === 'en' ? 'zh' : 'en';
+          if (this.langLabel) {
+            this.langLabel.textContent = this.voiceLang === 'en' ? 'EN' : '中文';
+          }
+          this.sound.playSparkle();
+          if (this.voiceLang === 'zh') {
+            this.setMascotMessage('切換為中文純發音！🌟');
+            this.speakText('切換為中文語音', 'zh');
+          } else {
+            this.setMascotMessage('Switched to English voice! 🌟');
+            this.speakText('Switched to English voice', 'en');
+          }
         });
       }
 
@@ -942,6 +970,54 @@
       }
     }
 
+    toEnglishWord(num) {
+      const words = [
+        'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+        'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen'
+      ];
+      return words[num] !== undefined ? words[num] : String(num);
+    }
+
+    toChineseWord(num) {
+      const words = [
+        '零', '一', '二', '三', '四', '五', '六', '七', '八', '九',
+        '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八'
+      ];
+      return words[num] !== undefined ? words[num] : String(num);
+    }
+
+    getBestVoice(lang) {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+
+      if (lang === 'zh') {
+        const zhVoices = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith('zh'));
+        const preferredZh = zhVoices.find(v => 
+          v.lang === 'zh-TW' || 
+          v.name.includes('Mei-Jia') || 
+          v.name.includes('Ting-Ting') || 
+          v.name.includes('HsiaoChen') || 
+          v.name.includes('Hanhan') || 
+          v.name.includes('Google 國語')
+        );
+        return preferredZh || zhVoices[0] || null;
+      } else {
+        const enVoices = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith('en'));
+        const preferredEn = enVoices.find(v => 
+          v.name.includes('Samantha') || 
+          v.name.includes('Google US English') || 
+          v.name.includes('Natural') || 
+          v.name.includes('Zira') || 
+          v.name.includes('Ava') || 
+          v.name.includes('Victoria') || 
+          v.name.includes('Alex') || 
+          v.lang === 'en-US'
+        );
+        return preferredEn || enVoices[0] || null;
+      }
+    }
+
     showCelebrationModal() {
       // Pick random cheering animal
       const chosenAnimalIdx = Math.floor(Math.random() * this.animalElements.length);
@@ -960,10 +1036,22 @@
       // Show modal
       this.celebrationModal.classList.add('active');
 
-      // Speech praise if enabled
+      // Speech praise if enabled (100% pure English or pure Chinese, never mixed!)
       if (this.sound.enabled && 'speechSynthesis' in window) {
         setTimeout(() => {
-          this.speakText(`Super job! ${this.num1} ${this.op === '+' ? 'plus' : 'minus'} ${this.num2} equals ${this.answer}!`);
+          if (this.voiceLang === 'zh') {
+            const n1 = this.toChineseWord(this.num1);
+            const n2 = this.toChineseWord(this.num2);
+            const ans = this.toChineseWord(this.answer);
+            const opWord = this.op === '+' ? '加' : '減';
+            this.speakText(`太棒了！${n1} ${opWord} ${n2} 等於 ${ans}！`, 'zh');
+          } else {
+            const n1 = this.toEnglishWord(this.num1);
+            const n2 = this.toEnglishWord(this.num2);
+            const ans = this.toEnglishWord(this.answer);
+            const opWord = this.op === '+' ? 'plus' : 'minus';
+            this.speakText(`Super job! ${n1} ${opWord} ${n2} equals ${ans}!`, 'en');
+          }
         }, 300);
       }
     }
@@ -984,7 +1072,11 @@
 
       if (this.sound.enabled && 'speechSynthesis' in window) {
         setTimeout(() => {
-          this.speakText(`Almost! Let's count the ${this.currentFruit.name} and try again!`);
+          if (this.voiceLang === 'zh') {
+            this.speakText('差一點點！我們一起數水果再試一次！', 'zh');
+          } else {
+            this.speakText(`Almost! Let's count the fruit and try again!`, 'en');
+          }
         }, 200);
       }
     }
@@ -998,17 +1090,38 @@
     }
 
     speakProblem() {
-      const opWord = this.op === '+' ? 'plus' : 'minus';
-      const prompt = `What is ${this.num1} ${opWord} ${this.num2}?`;
-      this.speakText(prompt);
+      if (this.voiceLang === 'zh') {
+        const n1 = this.toChineseWord(this.num1);
+        const n2 = this.toChineseWord(this.num2);
+        const opWord = this.op === '+' ? '加' : '減';
+        this.speakText(`請問 ${n1} ${opWord} ${n2} 等於多少？`, 'zh');
+      } else {
+        const n1 = this.toEnglishWord(this.num1);
+        const n2 = this.toEnglishWord(this.num2);
+        const opWord = this.op === '+' ? 'plus' : 'minus';
+        this.speakText(`What is ${n1} ${opWord} ${n2}?`, 'en');
+      }
     }
 
-    speakText(text) {
+    speakText(text, customLang) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9; // Friendly gentle pace for kids
-      utterance.pitch = 1.15; // Cheerful higher pitch for children
+      utterance.rate = 0.92; // Friendly gentle pace for kids
+      utterance.pitch = 1.12; // Cheerful higher pitch for children
+
+      const lang = customLang || this.voiceLang || 'en';
+      if (lang === 'zh') {
+        utterance.lang = 'zh-TW';
+      } else {
+        utterance.lang = 'en-US';
+      }
+
+      const voice = this.getBestVoice(lang);
+      if (voice) {
+        utterance.voice = voice;
+      }
+
       window.speechSynthesis.speak(utterance);
     }
   }
