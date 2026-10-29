@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.2.0">
 </head>
 <body>
   <!-- Canvas for celebration fireworks & floating flowers -->
@@ -95,9 +95,26 @@
               <span class="helpers-badge" id="helpersBadge">🍎 Tap to Count</span>
             </div>
             <div class="visual-helpers-container" id="visualHelpers">
-              <div class="helper-group helper-left" id="helperLeft"></div>
+              <!-- Left Fruit Tray -->
+              <div class="counter-card counter-left" id="counterLeftCard">
+                <div class="counter-items" id="helperLeft">
+                  <span class="helper-item" title="apple 1">🍎</span>
+                  <span class="helper-item" title="apple 2">🍎</span>
+                </div>
+                <div class="counter-count" id="countLeft">2 🍎</div>
+              </div>
+
               <div class="helper-op" id="helperOp">+</div>
-              <div class="helper-group helper-right" id="helperRight"></div>
+
+              <!-- Right Fruit Tray -->
+              <div class="counter-card counter-right" id="counterRightCard">
+                <div class="counter-items" id="helperRight">
+                  <span class="helper-item" title="apple 3">🍎</span>
+                  <span class="helper-item" title="apple 4">🍎</span>
+                  <span class="helper-item" title="apple 5">🍎</span>
+                </div>
+                <div class="counter-count" id="countRight">3 🍎</div>
+              </div>
             </div>
           </div>
         </div>
@@ -323,6 +340,6 @@
     </div>
   </div>
 
-  <script src="game.js"></script>
+  <script src="game.js?v=2.2.0"></script>
 </body>
 </html>

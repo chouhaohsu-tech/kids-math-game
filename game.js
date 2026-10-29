@@ -312,6 +312,9 @@
       this.helperLeftEl = document.getElementById('helperLeft');
       this.helperRightEl = document.getElementById('helperRight');
       this.helperOpEl = document.getElementById('helperOp');
+      this.countLeftEl = document.getElementById('countLeft');
+      this.countRightEl = document.getElementById('countRight');
+      this.counterRightCard = document.getElementById('counterRightCard');
       this.scoreValEl = document.getElementById('scoreVal');
       this.starsTrayEl = document.getElementById('starsTray');
       this.trophyCountEl = document.getElementById('trophyCount');
@@ -492,19 +495,33 @@
     }
 
     renderVisualCounters() {
+      if (!this.helperLeftEl || !this.helperRightEl) {
+        this.helperLeftEl = document.getElementById('helperLeft');
+        this.helperRightEl = document.getElementById('helperRight');
+        this.helperOpEl = document.getElementById('helperOp');
+        this.countLeftEl = document.getElementById('countLeft');
+        this.countRightEl = document.getElementById('countRight');
+        this.counterRightCard = document.getElementById('counterRightCard');
+      }
+      if (!this.helperLeftEl || !this.helperRightEl) return;
+
       this.helperLeftEl.innerHTML = '';
       this.helperRightEl.innerHTML = '';
+
+      const icon = (this.currentFruit && this.currentFruit.icon) ? this.currentFruit.icon : '🍎';
+      const name = (this.currentFruit && this.currentFruit.name) ? this.currentFruit.name : 'items';
 
       if (this.op === '+') {
         this.helperOpEl.textContent = '+';
         this.helperOpEl.style.display = 'block';
+        if (this.counterRightCard) this.counterRightCard.style.display = 'flex';
 
-        // Left items
+        // Left items (num1)
         for (let i = 0; i < this.num1; i++) {
           const item = document.createElement('span');
           item.className = 'helper-item';
-          item.textContent = this.currentFruit.icon;
-          item.title = `${this.currentFruit.name} ${i + 1}`;
+          item.textContent = icon;
+          item.title = `${name} ${i + 1}`;
           item.addEventListener('click', () => {
             this.sound.playPop();
             item.style.transform = 'scale(1.5) rotate(15deg)';
@@ -512,13 +529,16 @@
           });
           this.helperLeftEl.appendChild(item);
         }
+        if (this.countLeftEl) {
+          this.countLeftEl.textContent = `${this.num1} ${icon}`;
+        }
 
-        // Right items
+        // Right items (num2)
         for (let i = 0; i < this.num2; i++) {
           const item = document.createElement('span');
           item.className = 'helper-item';
-          item.textContent = this.currentFruit.icon;
-          item.title = `${this.currentFruit.name} ${this.num1 + i + 1}`;
+          item.textContent = icon;
+          item.title = `${name} ${this.num1 + i + 1}`;
           item.addEventListener('click', () => {
             this.sound.playPop();
             item.style.transform = 'scale(1.5) rotate(15deg)';
@@ -526,21 +546,25 @@
           });
           this.helperRightEl.appendChild(item);
         }
+        if (this.countRightEl) {
+          this.countRightEl.textContent = `${this.num2} ${icon}`;
+        }
       } else {
-        // Subtraction: Show total num1 items, with num2 items crossed out
+        // Subtraction: Show num1 total items, with num2 items crossed out
         this.helperOpEl.style.display = 'none';
+        if (this.counterRightCard) this.counterRightCard.style.display = 'none';
 
         const remaining = this.num1 - this.num2;
         for (let i = 0; i < this.num1; i++) {
           const item = document.createElement('span');
           item.className = 'helper-item';
-          item.textContent = this.currentFruit.icon;
+          item.textContent = icon;
 
           if (i >= remaining) {
             item.classList.add('crossed-out');
             item.title = 'Taken away';
           } else {
-            item.title = `${this.currentFruit.name} ${i + 1}`;
+            item.title = `${name} ${i + 1}`;
           }
 
           item.addEventListener('click', () => {
@@ -549,6 +573,9 @@
             setTimeout(() => item.style.transform = '', 200);
           });
           this.helperLeftEl.appendChild(item);
+        }
+        if (this.countLeftEl) {
+          this.countLeftEl.textContent = `${remaining} left (of ${this.num1})`;
         }
       }
     }
