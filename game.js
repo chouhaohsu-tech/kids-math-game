@@ -113,6 +113,44 @@
       osc.stop(now + 0.35);
     }
 
+    playSwoosh() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const now = this.ctx.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.28);
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+
+    playCarryFlightSound() {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5 arpeggio
+      const now = this.ctx.currentTime;
+      notes.forEach((f, i) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now + i * 0.08);
+        gain.gain.setValueAtTime(0.25, now + i * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.22);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + i * 0.08);
+        osc.stop(now + i * 0.08 + 0.22);
+      });
+    }
+
     playKeyNote(digit) {
       if (!this.enabled) return;
       this.init();
@@ -614,6 +652,7 @@
       this.vStepGuide = document.getElementById('vStepGuide');
       this.vGuideText = document.getElementById('vGuideText');
       this.vGuideIcon = document.getElementById('vGuideIcon');
+      this.vGuideDetail = document.getElementById('vGuideDetail');
 
       this.vProblem = null;
       this.vSteps = [];
@@ -1220,10 +1259,11 @@
       const modTop = [...s1];
       const steps = [];
       for (let i = 0; i < len; i++) {
-        let top = modTop[i];
+        const topBeforeBorrow = modTop[i];
         const bot = s2[i] || 0;
         let needsBorrow = false;
         let borrowFromCol = null;
+        let top = topBeforeBorrow;
         if (top < bot) {
           needsBorrow = true;
           let j = i + 1;
@@ -1233,17 +1273,20 @@
           for (let k = j - 1; k > i; k--) {
             modTop[k] += 9;
           }
-          top += 10;
+          top = topBeforeBorrow + 10;
           modTop[i] = top;
         }
         steps.push({
           col: i,
           origTop: s1[i],
+          activeTop: topBeforeBorrow,
           currentTop: top,
           bot,
           diff: top - bot,
           needsBorrow,
-          borrowFromCol
+          borrowFromCol,
+          tenMinusBot: 10 - bot,
+          finalAns: (10 - bot) + topBeforeBorrow
         });
       }
       return steps;
@@ -1298,6 +1341,8 @@
         const cell = document.createElement('div');
         cell.className = 'v-digit-cell';
         cell.id = `vN1Cell_${c}`;
+        cell.dataset.col = c;
+        cell.dataset.val = s1Digits[c] !== undefined ? s1Digits[c] : '';
         cell.textContent = s1Digits[c] !== undefined ? s1Digits[c] : '';
         this.vGrid.appendChild(cell);
       }
@@ -1313,6 +1358,8 @@
         const cell = document.createElement('div');
         cell.className = 'v-digit-cell';
         cell.id = `vN2Cell_${c}`;
+        cell.dataset.col = c;
+        cell.dataset.val = s2Digits[c] !== undefined ? s2Digits[c] : '';
         cell.textContent = s2Digits[c] !== undefined ? s2Digits[c] : '';
         this.vGrid.appendChild(cell);
       }
@@ -1344,7 +1391,83 @@
       }
     }
 
+    clearKeypadHighlight() {
+      document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('guide-pulse'));
+    }
+
+    highlightKeypadKey(digit) {
+      this.clearKeypadHighlight();
+      const targetBtn = document.querySelector(`.key-num[data-val="${digit}"]`);
+      if (targetBtn) {
+        targetBtn.classList.add('guide-pulse');
+      }
+    }
+
+    animateFlyingToken({ text, icon = '✨', fromEl, toEl, color = '#f59e0b', onComplete }) {
+      if (!fromEl || !toEl) {
+        if (onComplete) onComplete();
+        return;
+      }
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
+
+      const startX = fromRect.left + fromRect.width / 2;
+      const startY = fromRect.top + fromRect.height / 2;
+      const endX = toRect.left + toRect.width / 2;
+      const endY = toRect.top + toRect.height / 2;
+
+      const token = document.createElement('div');
+      token.className = 'flying-math-token';
+      token.style.background = color;
+      token.innerHTML = `<span>${icon}</span> <span>${text}</span>`;
+      token.style.left = `${startX}px`;
+      token.style.top = `${startY}px`;
+      document.body.appendChild(token);
+
+      const midX = (startX + endX) / 2;
+      const midY = Math.min(startY, endY) - 55;
+
+      const keyframes = [
+        { left: `${startX}px`, top: `${startY}px`, transform: 'translate(-50%, -50%) scale(0.6) rotate(0deg)', opacity: 0.2 },
+        { left: `${startX}px`, top: `${startY}px`, transform: 'translate(-50%, -50%) scale(1.15) rotate(-6deg)', opacity: 1, offset: 0.2 },
+        { left: `${midX}px`, top: `${midY}px`, transform: 'translate(-50%, -50%) scale(1.3) rotate(8deg)', opacity: 1, offset: 0.6 },
+        { left: `${endX}px`, top: `${endY}px`, transform: 'translate(-50%, -50%) scale(0.9) rotate(0deg)', opacity: 1 }
+      ];
+
+      const anim = token.animate(keyframes, {
+        duration: 750,
+        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+        fill: 'forwards'
+      });
+
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        token.remove();
+        if (onComplete) onComplete();
+      };
+
+      anim.onfinish = done;
+      setTimeout(done, 800);
+    }
+
     updateVerticalStep() {
+      this.clearKeypadHighlight();
+      if (this.vGuideDetail && (!this.vSteps[this.vCurrentStepIndex] || !this.vSteps[this.vCurrentStepIndex].needsBorrow || !this.vBorrowed[this.vSteps[this.vCurrentStepIndex].col])) {
+        this.vGuideDetail.innerHTML = '';
+      }
+      if (this.activeCarryBalloon) {
+        this.activeCarryBalloon.remove();
+        this.activeCarryBalloon = null;
+      }
+
+      // Clear any remaining borrow wobble on all cells
+      document.querySelectorAll('.v-digit-cell').forEach(c => {
+        c.classList.remove('can-borrow-wobble');
+        c.onclick = null;
+      });
+
       if (this.vCurrentStepIndex >= this.vSteps.length) {
         this.completeVerticalProblem();
         return;
@@ -1372,22 +1495,103 @@
 
         this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
         if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+
+        if (this.isGuideMode) {
+          this.highlightKeypadKey(step.writeDigit);
+        }
       } else {
+        // Subtraction: Ning's Method
         if (step.needsBorrow && !this.vBorrowed[colIdx]) {
-          const promptEn = `${colName} column: ${step.origTop} is smaller than ${step.bot}! Tap "Borrow 10" below! 🤝`;
-          const promptZh = `${colZh}：${step.origTop} 小於 ${step.bot}，請點擊下方「借 10」按鈕！🤝`;
-          this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
+          const fromCol = step.borrowFromCol;
+          const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+          if (fromCell) {
+            fromCell.classList.add('can-borrow-wobble');
+            fromCell.title = this.voiceLang === 'zh' ? '點我借 10！' : 'Tap to borrow 10!';
+            fromCell.onclick = () => {
+              this.executeActiveBorrow();
+            };
+          }
+
           if (this.vBorrowActionBtn) {
             this.vBorrowActionBtn.classList.remove('hidden');
             this.vBorrowActionBtn.textContent = this.voiceLang === 'zh' ? '🤝 點我借 10！' : '🤝 Borrow 10!';
           }
+
+          const promptEn = `💡 ${colName} column: ${step.origTop} is smaller than ${step.bot}! Tap the ${fromCell ? fromCell.textContent : 'number'} to borrow 10! 🤝`;
+          const promptZh = `💡 ${colZh}：${step.origTop} 減不夠 ${step.bot}！請點擊十位的 ${fromCell ? fromCell.textContent : ''} 來借 10！🤝`;
+          this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
+
+          const speakEn = `Let's borrow 10 from the next digit! Tap the number!`;
+          const speakZh = `不夠減！請點一下十位的數字來借 10！`;
+          if (this.isGuideMode) {
+            this.speakText(this.voiceLang === 'zh' ? speakZh : speakEn);
+          }
+        } else if (step.needsBorrow && this.vBorrowed[colIdx]) {
+          // Ning's 2-Step formula: 10 - bot = diff1, then diff1 + top = finalDiff
+          this.renderNingBorrowBreakdown(step);
+          if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+
+          if (this.isGuideMode) {
+            this.highlightKeypadKey(step.diff);
+          }
         } else {
-          const topVal = this.vBorrowed[colIdx] ? step.currentTop : step.origTop;
-          const promptEn = `${colName} column: ${topVal} − ${step.bot} = ${step.diff}. Tap ${step.diff}!`;
-          const promptZh = `${colZh}：${topVal} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}！`;
+          // Direct subtraction without borrowing
+          const promptEn = `${colName} column: ${step.activeTop} − ${step.bot} = ${step.diff}. Tap ${step.diff}!`;
+          const promptZh = `${colZh}：${step.activeTop} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}！`;
           this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
           if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+
+          if (this.isGuideMode) {
+            this.highlightKeypadKey(step.diff);
+          }
         }
+      }
+    }
+
+    renderNingBorrowBreakdown(step) {
+      const tenMinusBot = step.tenMinusBot;
+      const topNum = step.activeTop;
+      const finalDiff = step.diff;
+
+      const titleEn = "🌟 Ning's Trick: Borrow 10, Subtract Down First, Then Add Up!";
+      const titleZh = "🌟 寧寧的絕招（借 10 先減下、再加頂）！";
+
+      const html = `
+        <div class="ning-borrow-card">
+          <div class="ning-card-title">${this.voiceLang === 'zh' ? titleZh : titleEn}</div>
+          <div class="ning-card-formula">
+            <div class="ning-formula-step step-sub">
+              <span class="formula-label">${this.voiceLang === 'zh' ? '① 先減下:' : '① Sub Down:'}</span>
+              <span class="badge-ten">10</span> − <span class="badge-bot">${step.bot}</span> = <strong class="badge-res">${tenMinusBot}</strong>
+            </div>
+            <span class="ning-arrow">➡️</span>
+            <div class="ning-formula-step step-add">
+              <span class="formula-label">${this.voiceLang === 'zh' ? '② 再加頂:' : '② Add Top:'}</span>
+              <strong class="badge-res">${tenMinusBot}</strong> + <span class="badge-top">${topNum}</span> = <strong class="badge-final">${finalDiff}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (this.vGuideDetail) {
+        this.vGuideDetail.innerHTML = html;
+        if (this.vStepGuide) {
+          this.vStepGuide.style.transform = 'scale(1.02)';
+          setTimeout(() => { if (this.vStepGuide) this.vStepGuide.style.transform = ''; }, 200);
+        }
+      }
+
+      const guideMsg = this.voiceLang === 'zh'
+        ? `🌟 寧寧的絕招（借 10 先減下、再加頂）：先算 10 − ${step.bot} = ${tenMinusBot}，再算 ${tenMinusBot} + ${topNum} = ${finalDiff}！快按 ${finalDiff}！`
+        : `🌟 Ning's Rule: 10 − ${step.bot} = ${tenMinusBot}, then ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff}!`;
+      this.setGuideText(guideMsg);
+
+      const speakEn = `Ning's method! 10 minus bottom ${step.bot} equals ${tenMinusBot}, then ${tenMinusBot} plus top ${topNum} equals ${finalDiff}! Tap ${finalDiff}!`;
+      const speakZh = `寧寧的絕招！10 先減底下的 ${step.bot} 等於 ${tenMinusBot}，再加上面的 ${topNum} 等於 ${finalDiff}！快按 ${finalDiff}！`;
+      this.setMascotMessage(this.voiceLang === 'zh' ? `10 − ${step.bot} = ${tenMinusBot}，${tenMinusBot} + ${topNum} = ${finalDiff}！按 ${finalDiff}！🌟` : `10 − ${step.bot} = ${tenMinusBot}, ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff}! 🌟`);
+
+      if (this.isGuideMode) {
+        this.speakText(this.voiceLang === 'zh' ? speakZh : speakEn);
       }
     }
 
@@ -1400,51 +1604,70 @@
 
       const fromCol = step.borrowFromCol;
       const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+      const curCell = document.getElementById(`vN1Cell_${step.col}`);
+      const curCarryCell = document.getElementById(`vCarryCell_${step.col}`);
+
       if (fromCell) {
+        fromCell.classList.remove('can-borrow-wobble');
+        fromCell.onclick = null;
+        this.sound.playSwoosh();
         fromCell.classList.add('struck-through');
+
+        // Slashed replacement number badge
         const subBadge = document.createElement('span');
         subBadge.className = 'v-sub-digit';
-        const origVal = parseInt(fromCell.textContent, 10);
+        const origVal = parseInt(fromCell.dataset.val || fromCell.textContent, 10);
         subBadge.textContent = origVal - 1;
         fromCell.appendChild(subBadge);
       }
 
-      const curCarryCell = document.getElementById(`vCarryCell_${step.col}`);
+      // Immediately update carry indicator and Ning's breakdown card
       if (curCarryCell) {
-        curCarryCell.innerHTML = `<span class="v-borrow-badge">+10</span>`;
+        curCarryCell.innerHTML = `<span class="v-borrow-badge">10</span>`;
+      }
+      this.renderNingBorrowBreakdown(step);
+      if (this.isGuideMode) {
+        this.highlightKeypadKey(step.diff);
       }
 
-      const curCell = document.getElementById(`vN1Cell_${step.col}`);
-      if (curCell) {
-        curCell.innerHTML = `<span style="color:#ef4444;font-size:0.9em;">${step.currentTop}</span>`;
+      // Live flying 10 coin animation from fromCell to curCell
+      if (fromCell && curCell) {
+        this.animateFlyingToken({
+          text: '10',
+          icon: '🪙',
+          fromEl: fromCell,
+          toEl: curCell,
+          color: 'linear-gradient(135deg, #f59e0b, #ea580c)',
+          onComplete: () => {
+            this.sound.playSparkle();
+            // Sparkle particles burst at target
+            const rect = curCell.getBoundingClientRect();
+            this.fx.sparkleAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          }
+        });
       }
-
-      this.sound.playSparkle();
-      const colNames = ['Ones', 'Tens', 'Hundreds', 'Thousands'];
-      const colZh = ['個位', '十位', '百位', '千位'];
-      const msgEn = `Borrowed 1 ten! Now ${colNames[step.col]} has ${step.currentTop}!`;
-      const msgZh = `成功借位！${colZh[step.col]} 現在有 ${step.currentTop}！`;
-      this.setMascotMessage(this.voiceLang === 'zh' ? msgZh : msgEn);
-
-      this.updateVerticalStep();
     }
 
     handleVerticalDigit(digit) {
-      if (this.isDemoPlaying || this.vCurrentStepIndex >= this.vSteps.length) return;
+      if (this.vCurrentStepIndex >= this.vSteps.length) return;
 
       const step = this.vSteps[this.vCurrentStepIndex];
       const val = parseInt(digit, 10);
 
+      // In subtraction, if borrow is needed but not yet done
       if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
         if (val === step.diff) {
           this.executeActiveBorrow();
+          return;
         } else {
           this.sound.playTryAgainSound();
-          if (this.vBorrowActionBtn) {
-            this.vBorrowActionBtn.style.transform = 'scale(1.2)';
-            setTimeout(() => { if (this.vBorrowActionBtn) this.vBorrowActionBtn.style.transform = ''; }, 300);
+          const fromCol = step.borrowFromCol;
+          const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+          if (fromCell) {
+            fromCell.style.transform = 'scale(1.25) rotate(6deg)';
+            setTimeout(() => { if (fromCell) fromCell.style.transform = ''; }, 300);
           }
-          const msg = this.voiceLang === 'zh' ? '請先點擊「借 10」按鈕喔！🤝' : 'Tap "Borrow 10" first! 🤝';
+          const msg = this.voiceLang === 'zh' ? '請先點一下數字借 10 喔！🤝' : 'Tap the number to borrow 10 first! 🤝';
           this.setMascotMessage(msg);
           return;
         }
@@ -1462,15 +1685,75 @@
         }
         this.vUserAnswers[step.col] = val;
 
+        // Interactive Addition Carrying with Flying Balloon
         if (this.op === '+' && step.nextCarry > 0) {
           const nextCarryCell = document.getElementById(`vCarryCell_${step.col + 1}`);
-          if (nextCarryCell) {
-            nextCarryCell.textContent = step.nextCarry;
-            nextCarryCell.classList.add('active-carry');
+
+          if (this.activeCarryBalloon) {
+            this.activeCarryBalloon.remove();
+            this.activeCarryBalloon = null;
           }
-          this.sound.playSparkle();
-          const carryMsg = this.voiceLang === 'zh' ? `進位 ${step.nextCarry} 到下一位！✨` : `Carried ${step.nextCarry} to next column! ✨`;
-          this.setMascotMessage(carryMsg);
+
+          if (nextCarryCell && ansCell) {
+            nextCarryCell.classList.add('carry-target-pulse');
+
+            const balloon = document.createElement('div');
+            balloon.className = 'interactive-carry-balloon';
+            balloon.innerHTML = `
+              <span>🎈</span>
+              <span>+${step.nextCarry}</span>
+              <span class="carry-balloon-tip">${this.voiceLang === 'zh' ? '點我進位！' : 'Tap to Carry!'}</span>
+            `;
+            ansCell.style.position = 'relative';
+            ansCell.appendChild(balloon);
+            this.activeCarryBalloon = balloon;
+
+            const flyBalloon = () => {
+              if (!this.activeCarryBalloon) return;
+              this.activeCarryBalloon.remove();
+              this.activeCarryBalloon = null;
+
+              this.sound.playCarryFlightSound();
+              this.animateFlyingToken({
+                text: `+${step.nextCarry}`,
+                icon: '🎈',
+                fromEl: ansCell,
+                toEl: nextCarryCell,
+                color: 'linear-gradient(135deg, #ec4899, #d946ef)',
+                onComplete: () => {
+                  nextCarryCell.classList.remove('carry-target-pulse');
+                  nextCarryCell.innerHTML = `<span class="v-carry-badge active">${step.nextCarry}</span>`;
+                  const r = nextCarryCell.getBoundingClientRect();
+                  this.fx.sparkleAt(r.left + r.width / 2, r.top + r.height / 2);
+
+                  this.vCurrentStepIndex++;
+                  setTimeout(() => {
+                    this.updateVerticalStep();
+                  }, 400);
+                }
+              });
+            };
+
+            balloon.onclick = (e) => {
+              e.stopPropagation();
+              flyBalloon();
+            };
+            nextCarryCell.onclick = (e) => {
+              e.stopPropagation();
+              flyBalloon();
+            };
+
+            const carryMsgEn = `${step.sum} is 10 or more! Tap the balloon to carry ${step.nextCarry} to the Tens! 🎈`;
+            const carryMsgZh = `${step.sum} 超過 10 了！請點一下氣球把 ${step.nextCarry} 進位！🎈`;
+            this.setGuideText(this.voiceLang === 'zh' ? carryMsgZh : carryMsgEn);
+
+            if (this.isGuideMode) {
+              setTimeout(() => {
+                if (this.activeCarryBalloon) flyBalloon();
+              }, 1800);
+            }
+            return;
+          }
         }
 
         this.vCurrentStepIndex++;
@@ -1489,7 +1772,7 @@
     }
 
     handleVerticalBackspace() {
-      if (this.isDemoPlaying || this.vCurrentStepIndex === 0) return;
+      if (this.vCurrentStepIndex === 0) return;
       this.sound.playDelete();
       this.vCurrentStepIndex--;
       const step = this.vSteps[this.vCurrentStepIndex];
@@ -1520,48 +1803,22 @@
     }
 
     playVerticalDemo() {
-      if (this.isDemoPlaying) return;
-      this.isDemoPlaying = true;
-      this.vCurrentStepIndex = 0;
-      this.vUserAnswers = {};
-      this.vCarried = {};
-      this.vBorrowed = {};
-
-      this.renderVerticalGrid();
-
-      const runStep = (idx) => {
-        if (!this.isDemoPlaying || idx >= this.vSteps.length) {
-          this.isDemoPlaying = false;
-          this.completeVerticalProblem();
-          return;
-        }
-
-        this.vCurrentStepIndex = idx;
-        const step = this.vSteps[idx];
-
-        if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
-          this.updateVerticalStep();
-          setTimeout(() => {
-            if (!this.isDemoPlaying) return;
-            this.executeActiveBorrow();
-            setTimeout(() => {
-              if (!this.isDemoPlaying) return;
-              this.handleVerticalDigit(String(step.diff));
-              setTimeout(() => runStep(idx + 1), 1200);
-            }, 1000);
-          }, 800);
+      // Toggle Interactive Guide Mode
+      this.isGuideMode = !this.isGuideMode;
+      if (this.vDemoBtn) {
+        this.vDemoBtn.classList.toggle('active-guiding', this.isGuideMode);
+        if (this.isGuideMode) {
+          this.vDemoBtn.innerHTML = `<span>🪄</span> ${this.voiceLang === 'zh' ? '正在引導中... ✨' : 'Guide Mode ON! ✨'}`;
+          this.sound.playSparkle();
+          const welcome = this.voiceLang === 'zh' ? '皮普來手把手教你！看著提示點擊喔！🐰🌟' : "Pip is here to guide you step-by-step! Follow the glow! 🐰🌟";
+          this.setMascotMessage(welcome);
+          this.speakText(this.voiceLang === 'zh' ? '我是皮普，我們一起一步一步解開這題！' : "I am Pip, let's solve this together step-by-step!");
         } else {
-          this.updateVerticalStep();
-          setTimeout(() => {
-            if (!this.isDemoPlaying) return;
-            const digit = String(this.op === '+' ? step.writeDigit : step.diff);
-            this.handleVerticalDigit(digit);
-            setTimeout(() => runStep(idx + 1), 1200);
-          }, 1000);
+          this.vDemoBtn.innerHTML = `<span>🪄</span> ${this.voiceLang === 'zh' ? '手把手引導我！' : 'Guide Me Step-by-Step!'}`;
+          this.clearKeypadHighlight();
         }
-      };
-
-      runStep(0);
+      }
+      this.updateVerticalStep();
     }
 
     setGuideText(msg) {
@@ -1854,8 +2111,15 @@
     }
   }
 
-  // Initialize once DOM is ready
-  window.addEventListener('DOMContentLoaded', () => {
-    window.game = new MathGame();
-  });
+  function initGame() {
+    if (!window.game) {
+      window.game = new MathGame();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initGame);
+  } else {
+    initGame();
+  }
 })();

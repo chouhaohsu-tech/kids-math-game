@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=4.1.0">
+  <link rel="stylesheet" href="style.css?v=4.2.0">
 </head>
 <body class="theme-sky">
   <!-- Canvas for celebration fireworks, flowers & magic touch sparkles -->
@@ -191,8 +191,8 @@
           <div class="vertical-card hidden" id="verticalCard">
             <!-- Vertical Actions / Toolbar -->
             <div class="v-toolbar">
-              <button id="vDemoBtn" class="v-tool-btn v-demo-btn" title="Watch Pip solve with animated steps">
-                <span>🪄</span> Show Carry / Borrow Demo
+              <button id="vDemoBtn" class="v-tool-btn v-demo-btn" title="Interactive step-by-step guidance with Pip">
+                <span>🪄</span> Guide Me Step-by-Step!
               </button>
               <button id="vBorrowActionBtn" class="v-tool-btn v-borrow-btn hidden" title="Borrow 1 ten from next column">
                 <span>🤝</span> Borrow 1 Ten!
@@ -208,8 +208,11 @@
 
             <!-- Educational Step-by-Step Prompt Banner -->
             <div class="v-step-guide" id="vStepGuide">
-              <span class="v-guide-icon" id="vGuideIcon">💡</span>
-              <span class="v-guide-text" id="vGuideText">Start with the Ones column on the right! 👉</span>
+              <div class="v-guide-main">
+                <span class="v-guide-icon" id="vGuideIcon">💡</span>
+                <span class="v-guide-text" id="vGuideText">Start with the Ones column on the right! 👉</span>
+              </div>
+              <div class="v-guide-detail" id="vGuideDetail"></div>
             </div>
           </div>
         </div>
@@ -435,6 +438,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=4.1.0"></script>
+  <script src="game.js?v=4.2.0"></script>
 </body>
 </html>

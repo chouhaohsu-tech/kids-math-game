@@ -62,11 +62,19 @@ Play directly in any browser (desktop, tablet, or phone):
     - **iPad Zero-Scroll Guarantee:** Seamlessly fits 100% of the screen on iPad Safari and Chrome in both **Landscape** (2-column split board) and **Portrait** without any vertical scrolling!
     - **iPhone Zero-Cutoff Optimization:** All 5 top toolbar buttons, format tabs, column pills, keypad, and equation blocks adapt gracefully to iPhone viewports (e.g. iPhone 12/13/14/15/SE) with zero horizontal overflow or clipping.
 
-11. **📐 Vertical Math Mode (Up to 4 Digits) with Carry & Borrow Visualizations:**
+11. **📐 Vertical Math Mode with Ning's Subtraction Pedagogy & Tactile Animations:**
     - **2, 3, and 4-Digit Support:** Column-by-column calculation matching elementary school math curricula (Ones $\to$ Tens $\to$ Hundreds $\to$ Thousands).
-    - **Carrying (進位) Animation:** Glowing circular carry badges fly up to the next column when sums exceed 10.
-    - **Borrowing (借位) Animation:** Interactive "Borrow 1 Ten!" button strikes through the adjacent digit, writes the decremented value, and flies `+10` to the active column.
-    - **🪄 Animated Demo Mode:** Tap "Show Carry / Borrow Demo" to watch Pip solve step-by-step with visual explanations.
+    - **🌟 Ning's Subtraction Borrow Method (破十法):** Redesigned specifically according to how Ning was taught:
+      - **Step ① Subtract Down First:** Borrow $10$, subtract the bottom digit: $10 - \text{bottom} = \text{diff1}$.
+      - **Step ② Add Top Digit:** Add the top digit to the difference: $\text{diff1} + \text{top} = \text{final answer}$.
+      - Beautiful visual breakdown cards clearly guide children through this intuitive two-step mental arithmetic.
+    - **👆 Interactive Number Tapping & Slicing:**
+      - The borrowable digit wobbles with a golden aura and a `"Tap Me! 🤝"` badge.
+      - Tapping the number directly slashes it with a sword sound effect, pops up the decremented number, and launches a flying `🪙 10` coin into the active column.
+      - In addition, tapping the `🎈 +1 Tap to Carry!` balloon sends the carry coin flying smoothly into the next column basket with a glockenspiel chime.
+    - **🪄 Interactive Tutor ("Guide Me Step-by-Step!"):**
+      - Replaces passive video-style autoplay with active interactive tutoring.
+      - Pip guides the child column by column, highlighting the exact keypad numbers to press.
 
 12. **🌐 Bilingual Voice Read-Aloud (English / 中文):**
     - Seamlessly switch between pure native English (*"What is five plus three?"*) and clear Traditional Chinese (*"五加三等於多少？"*). Numbers and operators are never mixed!
