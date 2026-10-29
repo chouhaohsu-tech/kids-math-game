@@ -243,10 +243,42 @@ body {
 
 @media (max-width: 580px) {
   .tool-btn .btn-label {
-    display: none;
+    display: none !important;
+  }
+  .tool-btn {
+    padding: 3px !important;
+    min-width: 30px !important;
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.9rem !important;
+    border-radius: 9px !important;
+    border-width: 2px !important;
+    gap: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+  .header-tools {
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+  }
+  .logo-badge {
+    gap: 3px !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+    overflow: hidden !important;
   }
   .game-title {
-    font-size: 1.35rem;
+    font-size: 1.05rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .logo-icon:last-child {
+    display: none !important;
+  }
+  .logo-icon {
+    font-size: 1.15rem !important;
   }
 }
 
@@ -363,6 +395,100 @@ body {
 /* ==========================================================================
    Mode & Range Selectors
    ========================================================================== */
+/* Format Selector (Horizontal vs Vertical Multi-Digit) */
+.format-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.format-tab {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 8px 10px;
+  border: 2.5px solid #e0e7ff;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #cbd5e1;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.format-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #cbd5e1;
+}
+
+.format-tab:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #cbd5e1;
+}
+
+.format-tab.active {
+  background: #6366f1;
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 4px 0 #3730a3;
+}
+
+/* Digit Range Selector (2, 3, 4 Digits) */
+.digit-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.digit-selector.hidden {
+  display: none !important;
+}
+
+.digit-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.digit-pill {
+  font-family: var(--font-family);
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 5px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #cbd5e1;
+  transition: all 0.15s;
+}
+
+.digit-pill:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.digit-pill.active {
+  background: #0ea5e9;
+  border-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 3px 0 #0369a1;
+}
+
 .mode-selector {
   display: flex;
   gap: 8px;
@@ -773,6 +899,289 @@ body {
   font-size: 2.2rem;
   font-weight: 900;
   color: #3b82f6;
+}
+
+/* ==========================================================================
+   Vertical Math (Columns Up to 4 Digits with Carry & Borrow)
+   ========================================================================== */
+.vertical-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vertical-card.hidden {
+  display: none !important;
+}
+
+.equation-card.hidden {
+  display: none !important;
+}
+
+.v-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.v-tool-btn {
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 2px solid #cbd5e1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 3px 0 #cbd5e1;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.v-demo-btn {
+  background: #fdf4ff;
+  border-color: #f0abfc;
+  color: #a21caf;
+  box-shadow: 0 3px 0 #d946ef;
+}
+
+.v-demo-btn:hover {
+  background: #fae8ff;
+  transform: translateY(-2px);
+}
+
+.v-borrow-btn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+  box-shadow: 0 3px 0 #f97316;
+  animation: pulseCard 1s infinite alternate;
+}
+
+.v-borrow-btn.hidden {
+  display: none !important;
+}
+
+/* Vertical Grid Container */
+.v-grid-wrapper {
+  background: #ffffff;
+  border: 3.5px solid #e0e7ff;
+  border-radius: 24px;
+  padding: 10px 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 0 #cbd5e1;
+  margin-bottom: 8px;
+  display: inline-block;
+  min-width: 260px;
+  max-width: 100%;
+}
+
+.v-grid {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  row-gap: 4px;
+  column-gap: 12px;
+}
+
+/* Place Value Header (Th, H, T, O) */
+.v-col-header {
+  font-weight: 900;
+  font-size: 0.95rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  line-height: 1.1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.v-col-header.col-tth { background: #8b5cf6; }
+.v-col-header.col-th  { background: #10b981; }
+.v-col-header.col-h   { background: #0ea5e9; }
+.v-col-header.col-t   { background: #f59e0b; }
+.v-col-header.col-o   { background: #ef4444; }
+
+/* Carry Cell with Animated Badge */
+.v-carry-cell {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  border: 2px dashed #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #f59e0b;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.v-carry-cell.active-carry {
+  background: #fef08a;
+  border: 2px solid #eab308;
+  color: #854d0e;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
+  animation: carryPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes carryPop {
+  0% { transform: scale(0.3) translateY(18px); opacity: 0; }
+  60% { transform: scale(1.3) translateY(-3px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Borrow Cell */
+.v-borrow-cell {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #e11d48;
+}
+
+.v-borrow-badge {
+  background: #ffe4e6;
+  border: 1.5px solid #f43f5e;
+  color: #be123c;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  animation: borrowFly 0.4s ease-out;
+}
+
+@keyframes borrowFly {
+  0% { transform: translateX(20px) scale(0.6); opacity: 0; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+/* Number Digits */
+.v-digit-cell {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #1e293b;
+  width: 46px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.v-digit-cell.struck-through {
+  color: #94a3b8;
+}
+
+.v-digit-cell.struck-through::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: 20%;
+  right: 20%;
+  border-top: 3.5px solid #ef4444;
+  transform: rotate(-35deg);
+}
+
+.v-sub-digit {
+  position: absolute;
+  top: -16px;
+  right: -2px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #ef4444;
+  background: #fee2e2;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+/* Operation Symbol */
+.v-op-cell {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+}
+
+/* Divider Line */
+.v-divider-bar {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 4.5px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b);
+  border-radius: 3px;
+  margin: 3px 0;
+}
+
+/* Answer Boxes */
+.v-ans-cell {
+  width: 46px;
+  height: 52px;
+  border: 3px dashed #94a3b8;
+  border-radius: 14px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.v-ans-cell.active-col {
+  border: 3.5px solid #f59e0b;
+  background: #fefce8;
+  color: #b45309;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  animation: activeColPulse 1s infinite alternate;
+}
+
+@keyframes activeColPulse {
+  0% { transform: scale(0.98); }
+  100% { transform: scale(1.05); }
+}
+
+.v-ans-cell.filled {
+  border: 3px solid #10b981;
+  background: #ecfdf5;
+  color: #047857;
+  box-shadow: 0 3px 0 #059669;
+}
+
+/* Step-by-Step Educational Prompt Banner */
+.v-step-guide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  padding: 6px 14px;
+  color: #166534;
+  font-size: 0.95rem;
+  font-weight: 800;
+  box-shadow: 0 3px 0 #4ade80;
+  max-width: 440px;
+  text-align: left;
+}
+
+.v-guide-icon {
+  font-size: 1.3rem;
 }
 
 /* Hint Text */
@@ -1191,159 +1600,637 @@ body {
 }
 
 /* ==========================================================================
-   Responsive Adaptations & iPad Optimization
+   Dynamic Device Adaptations & iPad Zero-Scroll Engine
    ========================================================================== */
 
-/* Mobile Phones (Portrait) */
-@media (max-width: 540px) {
-  .game-container {
-    padding: 8px 10px;
-    margin: 4px auto;
-  }
-  .game-header {
-    padding: 8px 14px;
-    margin-bottom: 8px;
-    border-radius: 20px;
-  }
-  .score-banner {
-    padding: 8px 12px;
-    margin-bottom: 8px;
-  }
-  .mascot-bar {
-    margin-bottom: 8px;
-    gap: 8px;
-  }
-  .mascot-avatar {
-    width: 44px;
-    height: 44px;
-  }
-  .svg-mascot {
-    width: 44px;
-    height: 44px;
-  }
-  .mascot-bubble {
-    font-size: 0.9rem;
-    padding: 6px 10px;
-    max-width: 230px;
-  }
-  .combo-badge {
-    font-size: 0.85rem;
-    padding: 3px 8px;
-  }
-  .num-box, .mystery-box {
-    font-size: 3.2rem;
-    height: 76px;
-    min-width: 60px;
-    border-radius: 16px;
-  }
-  .op-box, .eq-box {
-    font-size: 2.8rem;
-    height: 76px;
-    width: 50px;
-    min-width: 50px;
-    border-radius: 16px;
-  }
-  .equation-card {
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-  .key-btn {
-    font-size: 2.2rem;
-    height: 58px;
-    border-radius: 16px;
-  }
-  .key-clear {
-    font-size: 1.15rem;
-  }
-  .key-submit {
-    font-size: 1.25rem;
-  }
-  .hint-text {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-  }
-  .helper-item {
-    font-size: 1.5rem;
-  }
+/* Universal Dynamic Heights and Fluid Container */
+:root {
+  --app-height: 100vh;
+  --app-width: 100vw;
 }
 
-/* iPad Portrait (768px to 1024px) */
-@media (min-width: 541px) and (max-width: 900px) and (orientation: portrait) {
-  .game-container {
-    max-width: 700px;
-    padding: 14px 20px;
-    min-height: 98dvh;
-    gap: 8px;
-  }
-  .math-board {
-    padding: 20px 18px;
-    border-radius: 30px;
-  }
-  .num-box, .mystery-box {
-    font-size: 4.8rem;
-    height: 105px;
-    min-width: 85px;
-  }
-  .op-box, .eq-box {
-    font-size: 4.2rem;
-    height: 105px;
-    width: 75px;
-  }
-  .key-btn {
-    height: 72px;
-    font-size: 2.8rem;
-  }
-  .helper-item {
-    font-size: 2rem;
-  }
+html, body {
+  width: 100%;
+  height: 100%;
+  height: var(--app-height, 100vh);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-/* iPad Landscape & Tablets Landscape (Fits 100% of iPad Screen with ZERO scrolling) */
-@media (min-width: 700px) and (orientation: landscape), (max-height: 840px) and (min-width: 768px) {
+/* 📱 Mobile Phones & iPhones (Portrait) - Perfect Zero-Cutoff Display */
+@media (max-width: 580px), (max-width: 600px) and (orientation: portrait) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .game-container {
-    max-width: 1020px;
-    min-height: 100dvh;
-    padding: 6px 16px;
+    padding: 3px 6px;
     margin: 0 auto;
+    min-height: var(--app-height, 100dvh);
+    max-height: var(--app-height, 100dvh);
     justify-content: flex-start;
-    gap: 6px;
+    gap: 3px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   .game-header {
-    padding: 6px 16px;
-    margin-bottom: 4px;
-    border-radius: 20px;
+    padding: 4px 6px;
+    margin-bottom: 3px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .logo-badge {
+    gap: 3px;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .game-title {
-    font-size: 1.5rem;
+    font-size: 1.02rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .logo-icon {
+    font-size: 1.15rem !important;
+  }
+
+  .logo-icon:last-child {
+    display: none !important;
+  }
+
+  .header-tools {
+    gap: 3px !important;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .tool-btn {
+    padding: 3px !important;
+    min-width: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.88rem !important;
+    border-radius: 8px !important;
+    border-width: 2px !important;
+    gap: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 0 #cbd5e1;
+  }
+
+  .tool-btn .btn-label {
+    display: none !important;
   }
 
   .score-banner {
-    padding: 6px 16px;
+    padding: 3px 8px;
+    margin-bottom: 3px;
+    border-radius: 12px;
+  }
+
+  .streak-box {
+    font-size: 1rem;
+    gap: 2px;
+  }
+
+  .score-num {
+    font-size: 1.15rem;
+  }
+
+  .star-slot {
+    font-size: 1.05rem;
+  }
+
+  .trophy-badge {
+    font-size: 0.9rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* Full-width balanced tabs */
+  .format-selector {
+    display: flex;
+    width: 100%;
+    margin-bottom: 3px;
+    gap: 4px;
+  }
+
+  .format-tab {
+    flex: 1;
+    padding: 5px 3px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .digit-selector {
+    display: flex;
+    width: 100%;
+    margin-bottom: 3px;
+    padding: 2px 4px;
+    gap: 3px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .digit-label {
+    display: none;
+  }
+
+  .digit-pill {
+    flex: 1;
+    padding: 3px 2px;
+    font-size: 0.76rem;
+    border-radius: 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .mode-selector {
+    display: flex;
+    width: 100%;
+    margin-bottom: 3px;
+    gap: 4px;
+  }
+
+  .mode-tab {
+    flex: 1;
+    padding: 5px 2px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .math-board {
+    padding: 5px 8px;
+    margin-bottom: 3px;
+    border-radius: 16px;
+  }
+
+  .mascot-bar {
+    margin-bottom: 3px;
+    gap: 4px;
+  }
+
+  .mascot-avatar, .svg-mascot {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mascot-bubble {
+    font-size: 0.78rem;
+    padding: 3px 6px;
+    max-width: 200px;
+  }
+
+  .combo-badge {
+    font-size: 0.78rem;
+    padding: 2px 4px;
+  }
+
+  .equation-card {
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+
+  .num-box, .mystery-box {
+    font-size: 2.3rem;
+    height: 50px;
+    min-width: 44px;
+    border-radius: 12px;
+  }
+
+  .op-box, .eq-box {
+    font-size: 2rem;
+    height: 50px;
+    width: 34px;
+    min-width: 34px;
+    border-radius: 12px;
+  }
+
+  .visual-helpers-wrapper {
+    margin-bottom: 3px;
+    width: 100%;
+  }
+
+  .visual-helpers-container {
+    padding: 3px 6px;
+    min-height: 48px;
+    gap: 4px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .helper-item {
+    font-size: 1.15rem;
+  }
+
+  .counter-card {
+    padding: 2px 4px;
+    min-width: 50px;
+    max-width: 45%;
+    overflow: hidden;
+  }
+
+  .counter-items {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .counter-count {
+    font-size: 0.75rem;
+  }
+
+  /* Vertical card in mobile */
+  .v-grid-wrapper {
+    padding: 4px 8px;
+    min-width: 190px;
+    row-gap: 2px;
+    column-gap: 6px;
+  }
+
+  .v-digit-cell {
+    font-size: 1.95rem;
+    width: 32px;
+    height: 36px;
+  }
+
+  .v-op-cell {
+    font-size: 1.95rem;
+    width: 25px;
+  }
+
+  .v-ans-cell {
+    width: 34px;
+    height: 38px;
+    font-size: 1.85rem;
+  }
+
+  .v-carry-cell {
+    width: 20px;
+    height: 20px;
+    font-size: 0.85rem;
+  }
+
+  .v-step-guide {
+    font-size: 0.78rem;
+    padding: 3px 6px;
+  }
+
+  .v-tool-btn {
+    font-size: 0.78rem;
+    padding: 3px 6px;
+  }
+
+  .hint-text {
+    font-size: 0.88rem;
+    margin-bottom: 3px;
+  }
+
+  .keypad-container {
+    max-width: 310px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .keypad-grid {
+    gap: 5px;
+  }
+
+  .key-btn {
+    font-size: 1.65rem;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .key-clear {
+    font-size: 0.9rem;
+  }
+
+  .key-submit {
+    font-size: 1rem;
+  }
+
+  .sticker-shelf {
+    padding: 3px 6px;
+    border-radius: 12px;
+  }
+
+  .shelf-title {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  .sticker-item {
+    width: 26px;
+    height: 26px;
+    font-size: 1.1rem;
+    border-radius: 6px;
+  }
+}
+
+/* 🍎 iPad Portrait & Tablets Portrait (700px to 950px) - ZERO SCROLLING GUARANTEED */
+@media (min-width: 581px) and (max-width: 950px) and (orientation: portrait),
+       (min-width: 600px) and (max-width: 900px) and (min-height: 800px) {
+  body {
+    overflow: hidden !important;
+  }
+
+  .game-container {
+    max-width: 760px;
+    width: 100%;
+    height: 100vh;
+    height: var(--app-height, 100vh);
+    max-height: var(--app-height, 100vh);
+    padding: 6px 14px;
+    margin: 0 auto;
+    justify-content: flex-start;
+    gap: 4px;
+    overflow: hidden !important;
+  }
+
+  .game-header {
+    padding: 6px 14px;
     margin-bottom: 4px;
     border-radius: 18px;
   }
 
-  .combo-badge {
-    font-size: 0.88rem;
-    padding: 3px 10px;
+  .game-title {
+    font-size: 1.35rem;
   }
 
-  .mode-selector {
-    margin-bottom: 6px;
-  }
-
-  .mode-tab {
-    padding: 6px 10px;
-    font-size: 1.05rem;
+  .score-banner {
+    padding: 5px 14px;
+    margin-bottom: 4px;
     border-radius: 16px;
   }
 
+  .format-selector {
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+
+  .format-tab {
+    padding: 5px 8px;
+    font-size: 0.92rem;
+    border-radius: 12px;
+  }
+
+  .digit-selector {
+    margin-bottom: 4px;
+    padding: 3px 8px;
+  }
+
+  .mode-selector {
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+
+  .mode-tab {
+    padding: 5px 8px;
+    font-size: 0.92rem;
+    border-radius: 12px;
+  }
+
   .math-board {
-    padding: 10px 16px;
-    margin-bottom: 6px;
-    border-radius: 24px;
+    padding: 8px 14px;
+    margin-bottom: 4px;
+    border-radius: 20px;
+  }
+
+  /* 2-Column Split board in iPad Portrait guarantees ZERO scrolling */
+  .board-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .board-problem-section {
+    flex: 1.1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mascot-bar {
+    margin-bottom: 4px;
+    gap: 6px;
+  }
+
+  .mascot-avatar, .svg-mascot {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mascot-bubble {
+    font-size: 0.88rem;
+    padding: 4px 10px;
+    max-width: 250px;
+  }
+
+  .board-input-section {
+    flex: 0.9;
+    max-width: 330px;
+    width: 100%;
+  }
+
+  .equation-card {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .num-box, .mystery-box {
+    font-size: 3rem;
+    height: 68px;
+    min-width: 58px;
+    border-radius: 14px;
+  }
+
+  .op-box, .eq-box {
+    font-size: 2.6rem;
+    height: 68px;
+    width: 48px;
+    min-width: 48px;
+    border-radius: 14px;
+  }
+
+  .visual-helpers-wrapper {
+    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  .visual-helpers-container {
+    padding: 5px 8px;
+    min-height: 54px;
+    gap: 6px;
+  }
+
+  .helper-item {
+    font-size: 1.4rem;
+  }
+
+  .v-grid-wrapper {
+    padding: 6px 10px;
+    row-gap: 3px;
+    column-gap: 8px;
+  }
+
+  .v-digit-cell {
+    font-size: 2.2rem;
+    width: 38px;
+    height: 42px;
+  }
+
+  .v-op-cell {
+    font-size: 2.2rem;
+    width: 30px;
+  }
+
+  .v-ans-cell {
+    width: 40px;
+    height: 44px;
+    font-size: 2.1rem;
+  }
+
+  .v-step-guide {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+
+  .hint-text {
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+  }
+
+  .keypad-container {
+    max-width: 320px;
+  }
+
+  .keypad-grid {
+    gap: 6px;
+  }
+
+  .key-btn {
+    height: 48px;
+    font-size: 1.9rem;
+    border-radius: 12px;
+  }
+
+  .sticker-shelf {
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-top: auto;
+  }
+
+  .shelf-title {
+    font-size: 0.82rem;
+    margin-bottom: 2px;
+  }
+
+  .sticker-item {
+    width: 30px;
+    height: 30px;
+    font-size: 1.25rem;
+    border-radius: 8px;
+  }
+}
+
+/* 🍎 iPad Landscape & Tablets Landscape - ZERO SCROLLING GUARANTEED */
+@media (min-width: 700px) and (orientation: landscape), (max-height: 840px) and (min-width: 768px) {
+  body {
+    overflow: hidden !important;
+  }
+
+  .game-container {
+    max-width: 1024px;
+    min-height: 100vh;
+    min-height: var(--app-height, 100vh);
+    max-height: 100vh;
+    max-height: var(--app-height, 100vh);
+    padding: 4px 14px;
+    margin: 0 auto;
+    justify-content: flex-start;
+    gap: 3px;
+    overflow: hidden !important;
+  }
+
+  .game-header {
+    padding: 4px 14px;
+    margin-bottom: 3px;
+    border-radius: 18px;
+  }
+
+  .game-title {
+    font-size: 1.35rem;
+  }
+
+  .score-banner {
+    padding: 4px 14px;
+    margin-bottom: 3px;
+    border-radius: 16px;
+  }
+
+  .combo-badge {
+    font-size: 0.85rem;
+    padding: 2px 8px;
+  }
+
+  .format-selector {
+    margin-bottom: 3px;
+    gap: 6px;
+  }
+
+  .format-tab {
+    padding: 4px 8px;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+
+  .digit-selector {
+    margin-bottom: 3px;
+    padding: 3px 8px;
+  }
+
+  .mode-selector {
+    margin-bottom: 3px;
+    gap: 6px;
+  }
+
+  .mode-tab {
+    padding: 4px 8px;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+
+  .math-board {
+    padding: 6px 14px;
+    margin-bottom: 3px;
+    border-radius: 20px;
   }
 
   /* Split layout on iPad Landscape */
@@ -1352,7 +2239,7 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
   }
 
   .board-problem-section {
@@ -1364,110 +2251,133 @@ body {
   }
 
   .mascot-bar {
-    margin-bottom: 6px;
-    gap: 8px;
+    margin-bottom: 4px;
+    gap: 6px;
   }
 
-  .mascot-avatar {
-    width: 44px;
-    height: 44px;
-  }
-
-  .svg-mascot {
-    width: 44px;
-    height: 44px;
+  .mascot-avatar, .svg-mascot {
+    width: 36px;
+    height: 36px;
   }
 
   .mascot-bubble {
-    font-size: 0.95rem;
-    padding: 6px 12px;
-    max-width: 280px;
+    font-size: 0.9rem;
+    padding: 4px 10px;
+    max-width: 260px;
   }
 
   .board-input-section {
     flex: 0.95;
-    max-width: 380px;
+    max-width: 360px;
     width: 100%;
   }
 
   .equation-card {
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 4px;
   }
 
   .num-box, .mystery-box {
-    font-size: 3.6rem;
-    height: 82px;
-    min-width: 70px;
-    border-radius: 20px;
+    font-size: 3.2rem;
+    height: 70px;
+    min-width: 60px;
+    border-radius: 16px;
   }
 
   .op-box, .eq-box {
-    font-size: 3.2rem;
-    height: 82px;
-    width: 62px;
-    min-width: 62px;
-    border-radius: 20px;
+    font-size: 2.8rem;
+    height: 70px;
+    width: 50px;
+    min-width: 50px;
+    border-radius: 16px;
   }
 
   .visual-helpers-wrapper {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     width: 100%;
   }
 
   .visual-helpers-container {
-    padding: 8px 12px;
-    min-height: 70px;
-    gap: 10px;
-  }
-
-  .helper-item {
-    font-size: 1.75rem;
-  }
-
-  .hint-text {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-  }
-
-  .keypad-container {
-    max-width: 360px;
-  }
-
-  .keypad-grid {
+    padding: 5px 10px;
+    min-height: 56px;
     gap: 8px;
   }
 
+  .helper-item {
+    font-size: 1.5rem;
+  }
+
+  .v-grid-wrapper {
+    padding: 5px 12px;
+    row-gap: 3px;
+    column-gap: 10px;
+  }
+
+  .v-digit-cell {
+    font-size: 2.3rem;
+    width: 40px;
+    height: 44px;
+  }
+
+  .v-op-cell {
+    font-size: 2.3rem;
+    width: 32px;
+  }
+
+  .v-ans-cell {
+    width: 42px;
+    height: 46px;
+    font-size: 2.2rem;
+  }
+
+  .v-step-guide {
+    font-size: 0.88rem;
+    padding: 4px 10px;
+  }
+
+  .hint-text {
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+  }
+
+  .keypad-container {
+    max-width: 330px;
+  }
+
+  .keypad-grid {
+    gap: 6px;
+  }
+
   .key-btn {
-    height: 52px;
-    font-size: 2.1rem;
-    border-radius: 16px;
+    height: 46px;
+    font-size: 1.9rem;
+    border-radius: 14px;
   }
 
   .key-clear {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .key-submit {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .sticker-shelf {
-    padding: 6px 14px;
-    border-radius: 18px;
+    padding: 3px 12px;
+    border-radius: 14px;
     margin-top: auto;
   }
 
   .shelf-title {
-    font-size: 0.95rem;
-    margin-bottom: 4px;
+    font-size: 0.82rem;
+    margin-bottom: 2px;
   }
 
   .sticker-item {
-    width: 38px;
-    height: 38px;
-    font-size: 1.5rem;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 1.3rem;
+    border-radius: 10px;
   }
 }
 

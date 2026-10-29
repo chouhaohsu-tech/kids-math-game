@@ -57,14 +57,24 @@ Play directly in any browser (desktop, tablet, or phone):
    - A super sweet, adorable cartoon puppy holding a gentle heart saying *"Don't be sad! You can do it! 💕"*.
    - Suggests counting the visual fruit helpers together so the child is never discouraged or frustrated.
 
-10. **📱 iPad Zero-Scroll Optimization:**
-    - Seamlessly fits 100% of the screen on iPad Safari in both **Portrait** and **Landscape** modes without any vertical scrolling!
+10. **📱 Dynamic Device Adaptation & iPad Zero-Scroll Guarantee:**
+    - **Intelligent Client Detection:** Real-time dynamic device adapter (`DeviceAdapter`) recognizes iPad, iPhone, Android, and Desktop profiles and orientations.
+    - **iPad Zero-Scroll Guarantee:** Seamlessly fits 100% of the screen on iPad Safari and Chrome in both **Landscape** (2-column split board) and **Portrait** without any vertical scrolling!
+    - **iPhone Zero-Cutoff Optimization:** All 5 top toolbar buttons, format tabs, column pills, keypad, and equation blocks adapt gracefully to iPhone viewports (e.g. iPhone 12/13/14/15/SE) with zero horizontal overflow or clipping.
 
-11. **🔊 Built-In Sound & Speech Read-Aloud:**
-    - **Read to Me (🗣️):** Uses the Web Speech API to read problems aloud (*"What is 4 plus 2?"*), essential for young kids still learning to read.
-    - **Web Audio Sound Effects:** Real-time synthesized chimes, pops, and fanfares with zero external audio assets (100% reliable offline & instant).
+11. **📐 Vertical Math Mode (Up to 4 Digits) with Carry & Borrow Visualizations:**
+    - **2, 3, and 4-Digit Support:** Column-by-column calculation matching elementary school math curricula (Ones $\to$ Tens $\to$ Hundreds $\to$ Thousands).
+    - **Carrying (進位) Animation:** Glowing circular carry badges fly up to the next column when sums exceed 10.
+    - **Borrowing (借位) Animation:** Interactive "Borrow 1 Ten!" button strikes through the adjacent digit, writes the decremented value, and flies `+10` to the active column.
+    - **🪄 Animated Demo Mode:** Tap "Show Carry / Borrow Demo" to watch Pip solve step-by-step with visual explanations.
 
-12. **🎁 Sticker Collection Album:**
+12. **🌐 Bilingual Voice Read-Aloud (English / 中文):**
+    - Seamlessly switch between pure native English (*"What is five plus three?"*) and clear Traditional Chinese (*"五加三等於多少？"*). Numbers and operators are never mixed!
+
+13. **🔊 Built-In Sound Effects:**
+    - Real-time synthesized chimes, pops, and fanfares with zero external audio assets (100% reliable offline & instant).
+
+14. **🎁 Sticker Collection Album:**
     - Every 5 correct answers awards a trophy 🏆 and unlocks a shiny new sticker (🦄 Unicorn, 🚀 Rocket, 🦖 Dino, 🌈 Rainbow, 🍦 Ice Cream, 👑 Crown)!
 
 ---

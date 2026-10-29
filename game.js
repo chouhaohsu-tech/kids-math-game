@@ -372,11 +372,169 @@
     }
   }
 
+  // --- Dynamic Device & Layout Adapter (Responsive Zero-Scroll Engine) ---
+  class DeviceAdapter {
+    constructor(game) {
+      this.game = game;
+      this.device = {
+        isIPad: false,
+        isIPhone: false,
+        isIOS: false,
+        isAndroid: false,
+        isMobile: false,
+        isTablet: false,
+        isDesktop: true,
+        orientation: 'landscape',
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+      this.init();
+    }
+
+    init() {
+      this.detectDevice();
+      this.updateViewport();
+      this.updateAdaptiveLabels();
+
+      window.addEventListener('resize', () => {
+        this.detectDevice();
+        this.updateViewport();
+        this.updateAdaptiveLabels();
+      });
+
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+          this.detectDevice();
+          this.updateViewport();
+          this.updateAdaptiveLabels();
+        }, 120);
+      });
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+          this.updateViewport();
+        });
+      }
+    }
+
+    detectDevice() {
+      const ua = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      const maxTouchPoints = navigator.maxTouchPoints || 0;
+
+      // iPadOS 13+ detection (reports Macintosh in userAgent on Safari, but has touch points)
+      const isIPad = /iPad/.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1 && !/iPhone/.test(ua));
+      const isIPhone = /iPhone|iPod/.test(ua);
+      const isIOS = isIPad || isIPhone;
+      const isAndroid = /Android/.test(ua);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const orientation = w >= h ? 'landscape' : 'portrait';
+
+      const isMobile = isIPhone || (/Android/.test(ua) && /Mobile/.test(ua)) || w < 560;
+      const isTablet = isIPad || (!isMobile && (/Android/.test(ua) || (w >= 560 && w <= 1100 && maxTouchPoints > 0) || (w >= 560 && w <= 1024 && h >= 700)));
+      const isDesktop = !isMobile && !isTablet;
+
+      this.device = {
+        isIPad,
+        isIPhone,
+        isIOS,
+        isAndroid,
+        isMobile,
+        isTablet,
+        isDesktop,
+        orientation,
+        width: w,
+        height: h
+      };
+
+      const root = document.documentElement;
+      root.classList.toggle('device-ipad', isIPad);
+      root.classList.toggle('device-iphone', isIPhone);
+      root.classList.toggle('device-ios', isIOS);
+      root.classList.toggle('device-android', isAndroid);
+      root.classList.toggle('device-mobile', isMobile);
+      root.classList.toggle('device-tablet', isTablet);
+      root.classList.toggle('device-desktop', isDesktop);
+      root.classList.toggle('orientation-landscape', orientation === 'landscape');
+      root.classList.toggle('orientation-portrait', orientation === 'portrait');
+
+      if (document.body) {
+        document.body.classList.toggle('device-mobile', isMobile);
+        document.body.classList.toggle('device-tablet', isTablet);
+        document.body.classList.toggle('device-desktop', isDesktop);
+      }
+    }
+
+    updateViewport() {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+      document.documentElement.style.setProperty('--app-width', `${vw}px`);
+    }
+
+    updateAdaptiveLabels() {
+      const isNarrow = this.device.isMobile || window.innerWidth < 560;
+
+      // Format Selector tabs
+      const tabH = document.getElementById('tabHorizontal');
+      const tabV = document.getElementById('tabVertical');
+      if (tabH && tabV) {
+        if (isNarrow) {
+          tabH.innerHTML = '<span class="tab-icon">🎈</span> 1-Digit';
+          tabV.innerHTML = '<span class="tab-icon">📐</span> Vertical';
+        } else {
+          tabH.innerHTML = '<span class="tab-icon">🎈</span> 1-Digit (5-6 yrs)';
+          tabV.innerHTML = '<span class="tab-icon">📐</span> Vertical (Up to 4 Digits)';
+        }
+      }
+
+      // Digit Range Selector pills
+      const pills = document.querySelectorAll('.digit-pill');
+      if (pills && pills.length === 3) {
+        if (isNarrow) {
+          pills[0].textContent = '2 Digits';
+          pills[1].textContent = '3 Digits';
+          pills[2].textContent = '4 Digits';
+        } else {
+          pills[0].textContent = '2 Digits (Tens)';
+          pills[1].textContent = '3 Digits (Hundreds)';
+          pills[2].textContent = '4 Digits (Thousands)';
+        }
+      }
+
+      // Mode Selector tabs
+      const modeTabs = document.querySelectorAll('.mode-tab');
+      if (modeTabs && modeTabs.length === 3) {
+        if (isNarrow) {
+          modeTabs[0].innerHTML = '<span class="tab-icon">➕</span> Add';
+          modeTabs[1].innerHTML = '<span class="tab-icon">➖</span> Sub';
+          modeTabs[2].innerHTML = '<span class="tab-icon">🔀</span> Both';
+        } else {
+          modeTabs[0].innerHTML = '<span class="tab-icon">➕</span> Addition';
+          modeTabs[1].innerHTML = '<span class="tab-icon">➖</span> Subtraction';
+          modeTabs[2].innerHTML = '<span class="tab-icon">🔀</span> Both (+ & -)';
+        }
+      }
+
+      // Title
+      const titleEl = document.querySelector('.game-title');
+      if (titleEl) {
+        if (window.innerWidth < 380) {
+          titleEl.textContent = 'Magic Math!';
+        } else {
+          titleEl.textContent = 'Magic Math Fun!';
+        }
+      }
+    }
+  }
+
   // --- Main Game Controller ---
   class MathGame {
     constructor() {
       this.sound = new SoundEffects();
       this.fx = new FXEngine('fxCanvas');
+      this.deviceAdapter = new DeviceAdapter(this);
 
       // Game State
       this.mode = 'add'; // 'add', 'sub', 'mix'
@@ -440,6 +598,30 @@
           // Pre-warm browser voices list
         };
       }
+
+      // Format (Horizontal 1-digit vs Vertical multi-digit)
+      this.format = 'horizontal'; // 'horizontal' or 'vertical'
+      this.vDigits = 2; // 2, 3, or 4 digits
+      this.tabHorizontal = document.getElementById('tabHorizontal');
+      this.tabVertical = document.getElementById('tabVertical');
+      this.digitSelector = document.getElementById('digitSelector');
+      this.digitPills = document.querySelectorAll('.digit-pill');
+      this.equationCard = document.querySelector('.equation-card');
+      this.verticalCard = document.getElementById('verticalCard');
+      this.vGrid = document.getElementById('vGrid');
+      this.vDemoBtn = document.getElementById('vDemoBtn');
+      this.vBorrowActionBtn = document.getElementById('vBorrowActionBtn');
+      this.vStepGuide = document.getElementById('vStepGuide');
+      this.vGuideText = document.getElementById('vGuideText');
+      this.vGuideIcon = document.getElementById('vGuideIcon');
+
+      this.vProblem = null;
+      this.vSteps = [];
+      this.vCurrentStepIndex = 0;
+      this.vUserAnswers = {};
+      this.vCarried = {};
+      this.vBorrowed = {};
+      this.isDemoPlaying = false;
 
       this.themes = [
         { id: 'theme-sky', name: 'Sky', icon: '🎨' },
@@ -524,6 +706,73 @@
             this.setMascotMessage('Switched to English voice! 🌟');
             this.speakText('Switched to English voice', 'en');
           }
+        });
+      }
+
+      // Format Switcher Tabs (Horizontal vs Vertical Multi-Digit)
+      if (this.tabHorizontal) {
+        this.tabHorizontal.addEventListener('click', () => {
+          if (this.format === 'horizontal') return;
+          this.format = 'horizontal';
+          this.tabHorizontal.classList.add('active');
+          if (this.tabVertical) this.tabVertical.classList.remove('active');
+          if (this.digitSelector) this.digitSelector.classList.add('hidden');
+          if (this.verticalCard) this.verticalCard.classList.add('hidden');
+          if (this.equationCard) this.equationCard.classList.remove('hidden');
+          if (this.visualHelpersWrapper && this.showCounters) this.visualHelpersWrapper.classList.remove('hidden');
+          if (this.hintTextEl) this.hintTextEl.textContent = 'Tap the number keys, then press OK! 👇';
+          this.sound.playPop();
+          this.generateNewProblem();
+        });
+      }
+
+      if (this.tabVertical) {
+        this.tabVertical.addEventListener('click', () => {
+          if (this.format === 'vertical') return;
+          this.format = 'vertical';
+          this.tabVertical.classList.add('active');
+          if (this.tabHorizontal) this.tabHorizontal.classList.remove('active');
+          if (this.digitSelector) this.digitSelector.classList.remove('hidden');
+          if (this.verticalCard) this.verticalCard.classList.remove('hidden');
+          if (this.equationCard) this.equationCard.classList.add('hidden');
+          if (this.visualHelpersWrapper) this.visualHelpersWrapper.classList.add('hidden');
+          if (this.hintTextEl) this.hintTextEl.textContent = 'Solve column by column starting from Ones! 👉';
+          this.sound.playPop();
+          this.generateNewProblem();
+        });
+      }
+
+      // Digit Range Pills (2, 3, 4 Digits)
+      if (this.digitPills) {
+        this.digitPills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            this.digitPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            this.vDigits = parseInt(pill.dataset.digits, 10);
+            this.sound.playPop();
+            this.generateNewProblem();
+          });
+        });
+      }
+
+      // Vertical Demo button
+      if (this.vDemoBtn) {
+        this.vDemoBtn.addEventListener('click', () => {
+          this.playVerticalDemo();
+        });
+      }
+
+      // Check URL hash for direct mode selection (e.g. #vertical or #horizontal)
+      if (window.location.hash === '#vertical' && this.tabVertical) {
+        setTimeout(() => this.tabVertical.click(), 10);
+      } else if (window.location.hash === '#horizontal' && this.tabHorizontal) {
+        setTimeout(() => this.tabHorizontal.click(), 10);
+      }
+
+      // Vertical Borrow action button
+      if (this.vBorrowActionBtn) {
+        this.vBorrowActionBtn.addEventListener('click', () => {
+          this.executeActiveBorrow();
         });
       }
 
@@ -661,10 +910,14 @@
     }
 
     /**
-     * Generates additions of 2 single digit numbers (e.g. 9 + 8 = 17, 7 + 6 = 13)
-     * In subtraction: ANSWER IS ALWAYS STRICTLY POSITIVE (a > b >= 1, result >= 1)
+     * Generates additions & subtractions for either horizontal 1-digit or vertical multi-digit
      */
     generateNewProblem() {
+      if (this.format === 'vertical') {
+        this.generateVerticalProblem();
+        return;
+      }
+
       this.currentInput = '';
       this.currentFruit = this.fruitList[Math.floor(Math.random() * this.fruitList.length)];
       if (this.helpersBadgeEl) {
@@ -809,6 +1062,12 @@
       if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
         return;
       }
+
+      if (this.format === 'vertical') {
+        this.handleVerticalDigit(digit);
+        return;
+      }
+
       // Maximum answer for 2 single-digit numbers is 9 + 9 = 18 (2 digits)
       if (this.currentInput.length >= 2) return;
 
@@ -833,6 +1092,11 @@
       if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
         return;
       }
+
+      if (this.format === 'vertical') {
+        this.handleVerticalBackspace();
+        return;
+      }
       if (this.currentInput.length > 0) {
         this.currentInput = this.currentInput.slice(0, -1);
         if (this.currentInput.length === 0) {
@@ -843,6 +1107,470 @@
           this.mysteryBoxEl.textContent = this.currentInput;
         }
         this.sound.playDelete();
+      }
+    }
+
+    // --- Vertical Multi-Digit Math Engine (Up to 4 Digits) ---
+
+    generateVerticalProblem() {
+      this.isDemoPlaying = false;
+      this.currentInput = '';
+      this.vUserAnswers = {};
+      this.vCarried = {};
+      this.vBorrowed = {};
+      this.vCurrentStepIndex = 0;
+      if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+
+      let activeOp = this.mode;
+      if (activeOp === 'mix') {
+        activeOp = Math.random() < 0.5 ? 'add' : 'sub';
+      }
+      this.op = activeOp === 'add' ? '+' : '−';
+
+      const minVal = Math.pow(10, this.vDigits - 1);
+      const maxVal = Math.pow(10, this.vDigits) - 1;
+
+      if (this.op === '+') {
+        let attempts = 0;
+        do {
+          this.num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+          this.num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+          attempts++;
+        } while (attempts < 20 && !this.hasCarry(this.num1, this.num2));
+        this.answer = this.num1 + this.num2;
+        this.vSteps = this.analyzeVerticalAddition(this.num1, this.num2);
+      } else {
+        let attempts = 0;
+        do {
+          this.num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+          this.num2 = Math.floor(Math.random() * (this.num1 - minVal + 1)) + minVal;
+          if (this.num1 === this.num2) this.num1 += 1;
+          attempts++;
+        } while (attempts < 20 && !this.hasBorrow(this.num1, this.num2));
+        this.answer = this.num1 - this.num2;
+        this.vSteps = this.analyzeVerticalSubtraction(this.num1, this.num2);
+      }
+
+      this.renderVerticalGrid();
+      this.updateVerticalStep();
+    }
+
+    hasCarry(n1, n2) {
+      const s1 = String(n1).split('').reverse().map(Number);
+      const s2 = String(n2).split('').reverse().map(Number);
+      let carry = 0;
+      for (let i = 0; i < Math.max(s1.length, s2.length); i++) {
+        const sum = (s1[i] || 0) + (s2[i] || 0) + carry;
+        if (sum >= 10) return true;
+        carry = Math.floor(sum / 10);
+      }
+      return false;
+    }
+
+    hasBorrow(n1, n2) {
+      const s1 = String(n1).split('').reverse().map(Number);
+      const s2 = String(n2).split('').reverse().map(Number);
+      for (let i = 0; i < s2.length; i++) {
+        if ((s1[i] || 0) < (s2[i] || 0)) return true;
+      }
+      return false;
+    }
+
+    analyzeVerticalAddition(n1, n2) {
+      const s1 = String(n1).split('').reverse().map(Number);
+      const s2 = String(n2).split('').reverse().map(Number);
+      const len = Math.max(s1.length, s2.length);
+      const steps = [];
+      let carry = 0;
+      for (let i = 0; i < len; i++) {
+        const d1 = s1[i] || 0;
+        const d2 = s2[i] || 0;
+        const sum = d1 + d2 + carry;
+        const writeDigit = sum % 10;
+        const nextCarry = Math.floor(sum / 10);
+        steps.push({
+          col: i,
+          d1,
+          d2,
+          inCarry: carry,
+          sum,
+          writeDigit,
+          nextCarry
+        });
+        carry = nextCarry;
+      }
+      if (carry > 0) {
+        steps.push({
+          col: len,
+          d1: 0,
+          d2: 0,
+          inCarry: carry,
+          sum: carry,
+          writeDigit: carry,
+          nextCarry: 0
+        });
+      }
+      return steps;
+    }
+
+    analyzeVerticalSubtraction(n1, n2) {
+      const s1 = String(n1).split('').reverse().map(Number);
+      const s2 = String(n2).split('').reverse().map(Number);
+      const len = Math.max(s1.length, s2.length);
+      const modTop = [...s1];
+      const steps = [];
+      for (let i = 0; i < len; i++) {
+        let top = modTop[i];
+        const bot = s2[i] || 0;
+        let needsBorrow = false;
+        let borrowFromCol = null;
+        if (top < bot) {
+          needsBorrow = true;
+          let j = i + 1;
+          while (j < modTop.length && modTop[j] === 0) j++;
+          borrowFromCol = j;
+          modTop[j] -= 1;
+          for (let k = j - 1; k > i; k--) {
+            modTop[k] += 9;
+          }
+          top += 10;
+          modTop[i] = top;
+        }
+        steps.push({
+          col: i,
+          origTop: s1[i],
+          currentTop: top,
+          bot,
+          diff: top - bot,
+          needsBorrow,
+          borrowFromCol
+        });
+      }
+      return steps;
+    }
+
+    renderVerticalGrid() {
+      if (!this.vGrid) return;
+      this.vGrid.innerHTML = '';
+
+      const totalCols = this.vSteps.length;
+      this.vGrid.style.gridTemplateColumns = `auto repeat(${totalCols}, 1fr)`;
+
+      const colNamesEn = ['O', 'T', 'H', 'Th', 'TTh'];
+      const colNamesZh = ['個', '十', '百', '千', '萬'];
+      const colClasses = ['col-o', 'col-t', 'col-h', 'col-th', 'col-tth'];
+
+      // Row 1: Place Value Headers
+      const emptyH = document.createElement('div');
+      this.vGrid.appendChild(emptyH);
+      for (let c = totalCols - 1; c >= 0; c--) {
+        const h = document.createElement('div');
+        h.className = `v-col-header ${colClasses[c] || 'col-o'}`;
+        const zh = this.voiceLang === 'zh' ? `<br><small>${colNamesZh[c] || ''}</small>` : '';
+        h.innerHTML = `${colNamesEn[c] || ''}${zh}`;
+        h.title = `${colNamesEn[c]} Column`;
+        this.vGrid.appendChild(h);
+      }
+
+      // Row 2: Carry or Borrow indicator row
+      const carryOp = document.createElement('div');
+      carryOp.className = 'v-cell';
+      carryOp.innerHTML = this.op === '+' 
+        ? '<span style="font-size:0.75rem;font-weight:800;color:#f59e0b;">Carry</span>' 
+        : '<span style="font-size:0.75rem;font-weight:800;color:#ef4444;">Borrow</span>';
+      this.vGrid.appendChild(carryOp);
+
+      for (let c = totalCols - 1; c >= 0; c--) {
+        const cell = document.createElement('div');
+        cell.className = 'v-carry-cell';
+        cell.id = `vCarryCell_${c}`;
+        cell.dataset.col = c;
+        this.vGrid.appendChild(cell);
+      }
+
+      // Row 3: Number 1 row
+      const n1Op = document.createElement('div');
+      n1Op.className = 'v-cell';
+      this.vGrid.appendChild(n1Op);
+
+      const s1Digits = String(this.num1).split('').reverse().map(Number);
+      for (let c = totalCols - 1; c >= 0; c--) {
+        const cell = document.createElement('div');
+        cell.className = 'v-digit-cell';
+        cell.id = `vN1Cell_${c}`;
+        cell.textContent = s1Digits[c] !== undefined ? s1Digits[c] : '';
+        this.vGrid.appendChild(cell);
+      }
+
+      // Row 4: Operator & Number 2 row
+      const opCell = document.createElement('div');
+      opCell.className = 'v-op-cell';
+      opCell.textContent = this.op;
+      this.vGrid.appendChild(opCell);
+
+      const s2Digits = String(this.num2).split('').reverse().map(Number);
+      for (let c = totalCols - 1; c >= 0; c--) {
+        const cell = document.createElement('div');
+        cell.className = 'v-digit-cell';
+        cell.id = `vN2Cell_${c}`;
+        cell.textContent = s2Digits[c] !== undefined ? s2Digits[c] : '';
+        this.vGrid.appendChild(cell);
+      }
+
+      // Row 5: Divider bar spanning all columns
+      const divBar = document.createElement('div');
+      divBar.className = 'v-divider-bar';
+      this.vGrid.appendChild(divBar);
+
+      // Row 6: Answer boxes
+      const ansOp = document.createElement('div');
+      ansOp.className = 'v-cell';
+      ansOp.innerHTML = '=';
+      ansOp.style.fontSize = '2rem';
+      ansOp.style.fontWeight = '900';
+      ansOp.style.color = '#8e24aa';
+      ansOp.style.display = 'flex';
+      ansOp.style.alignItems = 'center';
+      ansOp.style.justifyContent = 'center';
+      this.vGrid.appendChild(ansOp);
+
+      for (let c = totalCols - 1; c >= 0; c--) {
+        const cell = document.createElement('div');
+        cell.className = 'v-ans-cell';
+        cell.id = `vAnsCell_${c}`;
+        cell.dataset.col = c;
+        cell.textContent = '?';
+        this.vGrid.appendChild(cell);
+      }
+    }
+
+    updateVerticalStep() {
+      if (this.vCurrentStepIndex >= this.vSteps.length) {
+        this.completeVerticalProblem();
+        return;
+      }
+
+      const step = this.vSteps[this.vCurrentStepIndex];
+      const colIdx = step.col;
+
+      for (let c = 0; c < this.vSteps.length; c++) {
+        const ansCell = document.getElementById(`vAnsCell_${c}`);
+        if (ansCell) {
+          ansCell.classList.toggle('active-col', c === colIdx);
+        }
+      }
+
+      const colNames = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten Thousands'];
+      const colNamesZh = ['個位', '十位', '百位', '千位', '萬位'];
+      const colName = colNames[colIdx] || `Column ${colIdx}`;
+      const colZh = colNamesZh[colIdx] || `${colIdx}位`;
+
+      if (this.op === '+') {
+        const carryText = step.inCarry > 0 ? ` + ${step.inCarry} (carry)` : '';
+        const promptEn = `${colName} column: ${step.d1} + ${step.d2}${carryText} = ${step.sum}. Tap ${step.writeDigit}!`;
+        const promptZh = `${colZh}：${step.d1} 加 ${step.d2}${step.inCarry > 0 ? ` 加進位 ${step.inCarry}` : ''} 等於 ${step.sum}，請按 ${step.writeDigit}！`;
+
+        this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
+        if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+      } else {
+        if (step.needsBorrow && !this.vBorrowed[colIdx]) {
+          const promptEn = `${colName} column: ${step.origTop} is smaller than ${step.bot}! Tap "Borrow 10" below! 🤝`;
+          const promptZh = `${colZh}：${step.origTop} 小於 ${step.bot}，請點擊下方「借 10」按鈕！🤝`;
+          this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
+          if (this.vBorrowActionBtn) {
+            this.vBorrowActionBtn.classList.remove('hidden');
+            this.vBorrowActionBtn.textContent = this.voiceLang === 'zh' ? '🤝 點我借 10！' : '🤝 Borrow 10!';
+          }
+        } else {
+          const topVal = this.vBorrowed[colIdx] ? step.currentTop : step.origTop;
+          const promptEn = `${colName} column: ${topVal} − ${step.bot} = ${step.diff}. Tap ${step.diff}!`;
+          const promptZh = `${colZh}：${topVal} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}！`;
+          this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
+          if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    executeActiveBorrow() {
+      const step = this.vSteps[this.vCurrentStepIndex];
+      if (!step || !step.needsBorrow || this.vBorrowed[step.col]) return;
+
+      this.vBorrowed[step.col] = true;
+      if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
+
+      const fromCol = step.borrowFromCol;
+      const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+      if (fromCell) {
+        fromCell.classList.add('struck-through');
+        const subBadge = document.createElement('span');
+        subBadge.className = 'v-sub-digit';
+        const origVal = parseInt(fromCell.textContent, 10);
+        subBadge.textContent = origVal - 1;
+        fromCell.appendChild(subBadge);
+      }
+
+      const curCarryCell = document.getElementById(`vCarryCell_${step.col}`);
+      if (curCarryCell) {
+        curCarryCell.innerHTML = `<span class="v-borrow-badge">+10</span>`;
+      }
+
+      const curCell = document.getElementById(`vN1Cell_${step.col}`);
+      if (curCell) {
+        curCell.innerHTML = `<span style="color:#ef4444;font-size:0.9em;">${step.currentTop}</span>`;
+      }
+
+      this.sound.playSparkle();
+      const colNames = ['Ones', 'Tens', 'Hundreds', 'Thousands'];
+      const colZh = ['個位', '十位', '百位', '千位'];
+      const msgEn = `Borrowed 1 ten! Now ${colNames[step.col]} has ${step.currentTop}!`;
+      const msgZh = `成功借位！${colZh[step.col]} 現在有 ${step.currentTop}！`;
+      this.setMascotMessage(this.voiceLang === 'zh' ? msgZh : msgEn);
+
+      this.updateVerticalStep();
+    }
+
+    handleVerticalDigit(digit) {
+      if (this.isDemoPlaying || this.vCurrentStepIndex >= this.vSteps.length) return;
+
+      const step = this.vSteps[this.vCurrentStepIndex];
+      const val = parseInt(digit, 10);
+
+      if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
+        if (val === step.diff) {
+          this.executeActiveBorrow();
+        } else {
+          this.sound.playTryAgainSound();
+          if (this.vBorrowActionBtn) {
+            this.vBorrowActionBtn.style.transform = 'scale(1.2)';
+            setTimeout(() => { if (this.vBorrowActionBtn) this.vBorrowActionBtn.style.transform = ''; }, 300);
+          }
+          const msg = this.voiceLang === 'zh' ? '請先點擊「借 10」按鈕喔！🤝' : 'Tap "Borrow 10" first! 🤝';
+          this.setMascotMessage(msg);
+          return;
+        }
+      }
+
+      const expectedDigit = this.op === '+' ? step.writeDigit : step.diff;
+
+      if (val === expectedDigit) {
+        this.sound.playKeyNote(digit);
+
+        const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+        if (ansCell) {
+          ansCell.textContent = val;
+          ansCell.classList.add('filled');
+        }
+        this.vUserAnswers[step.col] = val;
+
+        if (this.op === '+' && step.nextCarry > 0) {
+          const nextCarryCell = document.getElementById(`vCarryCell_${step.col + 1}`);
+          if (nextCarryCell) {
+            nextCarryCell.textContent = step.nextCarry;
+            nextCarryCell.classList.add('active-carry');
+          }
+          this.sound.playSparkle();
+          const carryMsg = this.voiceLang === 'zh' ? `進位 ${step.nextCarry} 到下一位！✨` : `Carried ${step.nextCarry} to next column! ✨`;
+          this.setMascotMessage(carryMsg);
+        }
+
+        this.vCurrentStepIndex++;
+        this.updateVerticalStep();
+      } else {
+        this.sound.playTryAgainSound();
+        const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+        if (ansCell) {
+          ansCell.style.transform = 'translateX(-8px)';
+          setTimeout(() => { if (ansCell) ansCell.style.transform = 'translateX(8px)'; }, 80);
+          setTimeout(() => { if (ansCell) ansCell.style.transform = ''; }, 160);
+        }
+        const hint = this.voiceLang === 'zh' ? '再試試看這個位數！你可以的！💕' : 'Try this digit again! You got this! 💕';
+        this.setMascotMessage(hint);
+      }
+    }
+
+    handleVerticalBackspace() {
+      if (this.isDemoPlaying || this.vCurrentStepIndex === 0) return;
+      this.sound.playDelete();
+      this.vCurrentStepIndex--;
+      const step = this.vSteps[this.vCurrentStepIndex];
+      const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+      if (ansCell) {
+        ansCell.textContent = '?';
+        ansCell.classList.remove('filled');
+      }
+      this.updateVerticalStep();
+    }
+
+    completeVerticalProblem() {
+      this.sound.playCorrectFanfare();
+      this.sound.playSparkle();
+
+      this.score += 20;
+      this.streak += 1;
+      this.scoreValEl.textContent = this.score;
+
+      this.updateStreakStars();
+      this.updateComboBadge();
+      this.spawnFloatingScore('+20 ⭐');
+
+      const praise = this.voiceLang === 'zh' ? '太厲害了！直式運算全部答對！🎉👑' : 'Magnificent! You solved the vertical math! 🎉👑';
+      this.setMascotMessage(praise);
+
+      this.showCelebrationModal();
+    }
+
+    playVerticalDemo() {
+      if (this.isDemoPlaying) return;
+      this.isDemoPlaying = true;
+      this.vCurrentStepIndex = 0;
+      this.vUserAnswers = {};
+      this.vCarried = {};
+      this.vBorrowed = {};
+
+      this.renderVerticalGrid();
+
+      const runStep = (idx) => {
+        if (!this.isDemoPlaying || idx >= this.vSteps.length) {
+          this.isDemoPlaying = false;
+          this.completeVerticalProblem();
+          return;
+        }
+
+        this.vCurrentStepIndex = idx;
+        const step = this.vSteps[idx];
+
+        if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
+          this.updateVerticalStep();
+          setTimeout(() => {
+            if (!this.isDemoPlaying) return;
+            this.executeActiveBorrow();
+            setTimeout(() => {
+              if (!this.isDemoPlaying) return;
+              this.handleVerticalDigit(String(step.diff));
+              setTimeout(() => runStep(idx + 1), 1200);
+            }, 1000);
+          }, 800);
+        } else {
+          this.updateVerticalStep();
+          setTimeout(() => {
+            if (!this.isDemoPlaying) return;
+            const digit = String(this.op === '+' ? step.writeDigit : step.diff);
+            this.handleVerticalDigit(digit);
+            setTimeout(() => runStep(idx + 1), 1200);
+          }, 1000);
+        }
+      };
+
+      runStep(0);
+    }
+
+    setGuideText(msg) {
+      if (this.vGuideText) {
+        this.vGuideText.textContent = msg;
+        if (this.vStepGuide) {
+          this.vStepGuide.style.transform = 'scale(1.02)';
+          setTimeout(() => { if (this.vStepGuide) this.vStepGuide.style.transform = ''; }, 200);
+        }
       }
     }
 

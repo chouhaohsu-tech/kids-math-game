@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=3.1.0">
+  <link rel="stylesheet" href="style.css?v=4.1.0">
 </head>
 <body class="theme-sky">
   <!-- Canvas for celebration fireworks, flowers & magic touch sparkles -->
@@ -86,6 +86,24 @@
         <span class="trophy-icon">🏆</span>
         <span id="trophyCount">0</span>
       </div>
+    </div>
+
+    <!-- Level / Format Selector: Single Digit vs Vertical Multi-Digit -->
+    <div class="format-selector">
+      <button class="format-tab active" id="tabHorizontal" data-format="horizontal">
+        <span class="tab-icon">🎈</span> 1-Digit (5-6 yrs)
+      </button>
+      <button class="format-tab" id="tabVertical" data-format="vertical">
+        <span class="tab-icon">📐</span> Vertical (Up to 4 Digits)
+      </button>
+    </div>
+
+    <!-- Multi-Digit Range Selector (Visible only in Vertical mode) -->
+    <div class="digit-selector hidden" id="digitSelector">
+      <span class="digit-label">Columns:</span>
+      <button class="digit-pill active" data-digits="2">2 Digits (Tens)</button>
+      <button class="digit-pill" data-digits="3">3 Digits (Hundreds)</button>
+      <button class="digit-pill" data-digits="4">4 Digits (Thousands)</button>
     </div>
 
     <!-- Mode Selector Tabs -->
@@ -166,6 +184,32 @@
                 </div>
                 <div class="counter-count" id="countRight">3 🍎</div>
               </div>
+            </div>
+          </div>
+
+          <!-- Vertical Multi-Digit Math Board with Carry & Borrow Animations -->
+          <div class="vertical-card hidden" id="verticalCard">
+            <!-- Vertical Actions / Toolbar -->
+            <div class="v-toolbar">
+              <button id="vDemoBtn" class="v-tool-btn v-demo-btn" title="Watch Pip solve with animated steps">
+                <span>🪄</span> Show Carry / Borrow Demo
+              </button>
+              <button id="vBorrowActionBtn" class="v-tool-btn v-borrow-btn hidden" title="Borrow 1 ten from next column">
+                <span>🤝</span> Borrow 1 Ten!
+              </button>
+            </div>
+
+            <!-- Dynamic Place Value Grid Container -->
+            <div class="v-grid-wrapper">
+              <div class="v-grid" id="vGrid">
+                <!-- Dynamically populated columns -->
+              </div>
+            </div>
+
+            <!-- Educational Step-by-Step Prompt Banner -->
+            <div class="v-step-guide" id="vStepGuide">
+              <span class="v-guide-icon" id="vGuideIcon">💡</span>
+              <span class="v-guide-text" id="vGuideText">Start with the Ones column on the right! 👉</span>
             </div>
           </div>
         </div>
@@ -391,6 +435,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=3.1.0"></script>
+  <script src="game.js?v=4.1.0"></script>
 </body>
 </html>
