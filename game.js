@@ -286,6 +286,29 @@
       }
     }
 
+    sparkleAt(x, y, count = 14) {
+      if (!this.canvas) return;
+      const colors = ['#FDE047', '#60A5FA', '#F472B6', '#4ADE80', '#C084FC', '#F59E0B'];
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.4;
+        const speed = 1.5 + Math.random() * 3.5;
+        this.particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          radius: 2.5 + Math.random() * 3,
+          life: 1,
+          decay: 0.025 + Math.random() * 0.02,
+          gravity: 0.08
+        });
+      }
+      if (!this.animationId) {
+        this.loop();
+      }
+    }
+
     launchCelebration() {
       this.particles = [];
       this.flowers = [];
@@ -1403,7 +1426,7 @@
       }
     }
 
-    animateFlyingToken({ text, icon = '✨', fromEl, toEl, color = '#f59e0b', onComplete }) {
+    animateFlyingToken({ text, icon = '✨', fromEl, toEl, color = '#f59e0b', duration = 500, onComplete }) {
       if (!fromEl || !toEl) {
         if (onComplete) onComplete();
         return;
@@ -1423,6 +1446,7 @@
       token.style.left = `${startX}px`;
       token.style.top = `${startY}px`;
       document.body.appendChild(token);
+      this.activeFlyingToken = token;
 
       const midX = (startX + endX) / 2;
       const midY = Math.min(startY, endY) - 55;
@@ -1435,7 +1459,7 @@
       ];
 
       const anim = token.animate(keyframes, {
-        duration: 750,
+        duration,
         easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
         fill: 'forwards'
       });
@@ -1444,22 +1468,33 @@
       const done = () => {
         if (finished) return;
         finished = true;
+        this.activeFlyingToken = null;
         token.remove();
         if (onComplete) onComplete();
       };
 
       anim.onfinish = done;
-      setTimeout(done, 800);
+      setTimeout(done, duration + 50);
     }
 
     updateVerticalStep() {
       this.clearKeypadHighlight();
+      if (this.pendingCarryResolver) {
+        const resolveFn = this.pendingCarryResolver;
+        this.pendingCarryResolver = null;
+        resolveFn();
+        return;
+      }
       if (this.vGuideDetail && (!this.vSteps[this.vCurrentStepIndex] || !this.vSteps[this.vCurrentStepIndex].needsBorrow || !this.vBorrowed[this.vSteps[this.vCurrentStepIndex].col])) {
         this.vGuideDetail.innerHTML = '';
       }
       if (this.activeCarryBalloon) {
         this.activeCarryBalloon.remove();
         this.activeCarryBalloon = null;
+      }
+      if (this.pendingCarryTimer) {
+        clearTimeout(this.pendingCarryTimer);
+        this.pendingCarryTimer = null;
       }
 
       // Clear any remaining borrow wobble on all cells
@@ -1489,9 +1524,16 @@
       const colZh = colNamesZh[colIdx] || `${colIdx}位`;
 
       if (this.op === '+') {
-        const carryText = step.inCarry > 0 ? ` + ${step.inCarry} (carry)` : '';
-        const promptEn = `${colName} column: ${step.d1} + ${step.d2}${carryText} = ${step.sum}. Tap ${step.writeDigit}!`;
-        const promptZh = `${colZh}：${step.d1} 加 ${step.d2}${step.inCarry > 0 ? ` 加進位 ${step.inCarry}` : ''} 等於 ${step.sum}，請按 ${step.writeDigit}！`;
+        let promptEn = '';
+        let promptZh = '';
+        if (step.d1 === 0 && step.d2 === 0 && step.inCarry > 0) {
+          promptEn = `💡 ${colName} column: Bring down carry ${step.inCarry}! Tap ${step.writeDigit}! 🎈`;
+          promptZh = `💡 ${colZh}：把進位的 ${step.inCarry} 寫下來！請按 ${step.writeDigit}！🎈`;
+        } else {
+          const carryText = step.inCarry > 0 ? ` + ${step.inCarry} (carry)` : '';
+          promptEn = `${colName} column: ${step.d1} + ${step.d2}${carryText} = ${step.sum}. Tap ${step.writeDigit}!`;
+          promptZh = `${colZh}：${step.d1} 加 ${step.d2}${step.inCarry > 0 ? ` 加進位 ${step.inCarry}` : ''} 等於 ${step.sum}，請按 ${step.writeDigit}！`;
+        }
 
         this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
         if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
@@ -1649,6 +1691,11 @@
     }
 
     handleVerticalDigit(digit) {
+      if (this.pendingCarryResolver) {
+        const resolveFn = this.pendingCarryResolver;
+        this.pendingCarryResolver = null;
+        resolveFn();
+      }
       if (this.vCurrentStepIndex >= this.vSteps.length) return;
 
       const step = this.vSteps[this.vCurrentStepIndex];
@@ -1688,10 +1735,18 @@
         // Interactive Addition Carrying with Flying Balloon
         if (this.op === '+' && step.nextCarry > 0) {
           const nextCarryCell = document.getElementById(`vCarryCell_${step.col + 1}`);
+          const colNames = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten Thousands'];
+          const colNamesZh = ['個位', '十位', '百位', '千位', '萬位'];
+          const targetColName = colNames[step.col + 1] || 'next column';
+          const targetColZh = colNamesZh[step.col + 1] || '下一位';
 
           if (this.activeCarryBalloon) {
             this.activeCarryBalloon.remove();
             this.activeCarryBalloon = null;
+          }
+          if (this.pendingCarryTimer) {
+            clearTimeout(this.pendingCarryTimer);
+            this.pendingCarryTimer = null;
           }
 
           if (nextCarryCell && ansCell) {
@@ -1708,10 +1763,45 @@
             ansCell.appendChild(balloon);
             this.activeCarryBalloon = balloon;
 
+            let carryFinished = false;
+            const finishCarry = () => {
+              if (carryFinished) return;
+              carryFinished = true;
+              this.pendingCarryResolver = null;
+              if (this.pendingCarryTimer) {
+                clearTimeout(this.pendingCarryTimer);
+                this.pendingCarryTimer = null;
+              }
+              if (this.activeCarryBalloon) {
+                this.activeCarryBalloon.remove();
+                this.activeCarryBalloon = null;
+              }
+              if (this.activeFlyingToken) {
+                this.activeFlyingToken.remove();
+                this.activeFlyingToken = null;
+              }
+
+              nextCarryCell.classList.remove('carry-target-pulse');
+              nextCarryCell.innerHTML = `<span class="v-carry-badge active">${step.nextCarry}</span>`;
+              const r = nextCarryCell.getBoundingClientRect();
+              this.fx.sparkleAt(r.left + r.width / 2, r.top + r.height / 2);
+
+              this.vCurrentStepIndex++;
+              this.updateVerticalStep();
+            };
+
+            this.pendingCarryResolver = finishCarry;
+
             const flyBalloon = () => {
-              if (!this.activeCarryBalloon) return;
-              this.activeCarryBalloon.remove();
-              this.activeCarryBalloon = null;
+              if (carryFinished) return;
+              if (this.pendingCarryTimer) {
+                clearTimeout(this.pendingCarryTimer);
+                this.pendingCarryTimer = null;
+              }
+              if (this.activeCarryBalloon) {
+                this.activeCarryBalloon.remove();
+                this.activeCarryBalloon = null;
+              }
 
               this.sound.playCarryFlightSound();
               this.animateFlyingToken({
@@ -1720,16 +1810,9 @@
                 fromEl: ansCell,
                 toEl: nextCarryCell,
                 color: 'linear-gradient(135deg, #ec4899, #d946ef)',
+                duration: 450,
                 onComplete: () => {
-                  nextCarryCell.classList.remove('carry-target-pulse');
-                  nextCarryCell.innerHTML = `<span class="v-carry-badge active">${step.nextCarry}</span>`;
-                  const r = nextCarryCell.getBoundingClientRect();
-                  this.fx.sparkleAt(r.left + r.width / 2, r.top + r.height / 2);
-
-                  this.vCurrentStepIndex++;
-                  setTimeout(() => {
-                    this.updateVerticalStep();
-                  }, 400);
+                  finishCarry();
                 }
               });
             };
@@ -1743,15 +1826,15 @@
               flyBalloon();
             };
 
-            const carryMsgEn = `${step.sum} is 10 or more! Tap the balloon to carry ${step.nextCarry} to the Tens! 🎈`;
-            const carryMsgZh = `${step.sum} 超過 10 了！請點一下氣球把 ${step.nextCarry} 進位！🎈`;
+            const carryMsgEn = `💡 ${step.sum} is 10 or more! Carrying ${step.nextCarry} to the ${targetColName}! 🎈`;
+            const carryMsgZh = `💡 ${step.sum} 超過 10 了！進位 ${step.nextCarry} 到${targetColZh}！🎈`;
             this.setGuideText(this.voiceLang === 'zh' ? carryMsgZh : carryMsgEn);
 
-            if (this.isGuideMode) {
-              setTimeout(() => {
-                if (this.activeCarryBalloon) flyBalloon();
-              }, 1800);
-            }
+            // Auto-advance carry smoothly after 450ms so child is never blocked
+            this.pendingCarryTimer = setTimeout(() => {
+              flyBalloon();
+            }, 450);
+
             return;
           }
         }
@@ -1803,6 +1886,11 @@
     }
 
     playVerticalDemo() {
+      if (this.pendingCarryResolver) {
+        const resolveFn = this.pendingCarryResolver;
+        this.pendingCarryResolver = null;
+        resolveFn();
+      }
       // Toggle Interactive Guide Mode
       this.isGuideMode = !this.isGuideMode;
       if (this.vDemoBtn) {
