@@ -1497,6 +1497,20 @@ body.mode-vertical .visual-helpers-container {
   box-shadow: 0 0 14px rgba(99, 102, 241, 0.45);
 }
 
+.v-ans-cell.wrong-shake {
+  animation: wrongShake 0.45s ease-in-out;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  background: #fef2f2 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5) !important;
+}
+
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-7px); }
+  40%, 80% { transform: translateX(7px); }
+}
+
 /* Step-by-Step Educational Prompt Banner */
 .v-step-guide {
   display: flex;
