@@ -1720,6 +1720,7 @@
 
       const fromCol = step.borrowFromCol;
       const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+      const fromCarryCell = document.getElementById(`vCarryCell_${fromCol}`);
       const curCell = document.getElementById(`vN1Cell_${step.col}`);
       const curCarryCell = document.getElementById(`vCarryCell_${step.col}`);
 
@@ -1727,18 +1728,32 @@
         fromCell.classList.remove('can-borrow-wobble');
         fromCell.onclick = null;
         this.sound.playSwoosh();
-        fromCell.classList.add('struck-through');
-
-        // Borrow indicator badge showing -1 on top of next digit
-        const subBadge = document.createElement('span');
-        subBadge.className = 'v-sub-digit';
-        subBadge.textContent = '-1';
-        fromCell.appendChild(subBadge);
       }
 
-      // Immediately update carry indicator and Ning's breakdown card
+      // Put -1 on top of the next digit (in the Borrow row directly above it)
+      if (fromCarryCell) {
+        fromCarryCell.innerHTML = `<span class="v-borrow-badge borrow-minus">-1</span>`;
+        fromCarryCell.style.border = 'none';
+        fromCarryCell.classList.add('has-borrow-minus');
+      }
+
+      // If borrowing over zeros (e.g. 503 - 278), intermediate zeros become 9
+      if (fromCol > step.col + 1) {
+        for (let k = fromCol - 1; k > step.col; k--) {
+          const midCarry = document.getElementById(`vCarryCell_${k}`);
+          if (midCarry) {
+            midCarry.innerHTML = `<span class="v-borrow-badge borrow-nine">9</span>`;
+            midCarry.style.border = 'none';
+            midCarry.classList.add('has-borrow-nine');
+          }
+        }
+      }
+
+      // Immediately update carry indicator (10 on current column) and Ning's breakdown card
       if (curCarryCell) {
         curCarryCell.innerHTML = `<span class="v-borrow-badge">10</span>`;
+        curCarryCell.style.border = 'none';
+        curCarryCell.classList.add('has-borrow-10');
       }
       this.renderNingBorrowBreakdown(step);
       if (this.isGuideMode) {

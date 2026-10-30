@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=4.3.1">
+  <link rel="stylesheet" href="style.css?v=4.4.0">
 </head>
 <body class="theme-sky">
   <!-- Canvas for celebration fireworks, flowers & magic touch sparkles -->
@@ -91,35 +91,38 @@
       </div>
     </div>
 
-    <!-- Level / Format Selector: Single Digit vs Vertical Multi-Digit -->
-    <div class="format-selector">
-      <button class="format-tab active" id="tabHorizontal" data-format="horizontal">
-        <span class="tab-icon">🎈</span> 1-Digit (5-6 yrs)
-      </button>
-      <button class="format-tab" id="tabVertical" data-format="vertical">
-        <span class="tab-icon">📐</span> Vertical (Up to 4 Digits)
-      </button>
-    </div>
+    <!-- Combined Responsive Controls Toolbar -->
+    <div class="controls-toolbar" id="controlsToolbar">
+      <!-- Level / Format Selector: Single Digit vs Vertical Multi-Digit -->
+      <div class="format-selector">
+        <button class="format-tab active" id="tabHorizontal" data-format="horizontal">
+          <span class="tab-icon">🎈</span> 1-Digit (5-6 yrs)
+        </button>
+        <button class="format-tab" id="tabVertical" data-format="vertical">
+          <span class="tab-icon">📐</span> Vertical (Up to 4 Digits)
+        </button>
+      </div>
 
-    <!-- Multi-Digit Range Selector (Visible only in Vertical mode) -->
-    <div class="digit-selector hidden" id="digitSelector">
-      <span class="digit-label">Columns:</span>
-      <button class="digit-pill active" data-digits="2">2 Digits (Tens)</button>
-      <button class="digit-pill" data-digits="3">3 Digits (Hundreds)</button>
-      <button class="digit-pill" data-digits="4">4 Digits (Thousands)</button>
-    </div>
+      <!-- Multi-Digit Range Selector (Visible only in Vertical mode) -->
+      <div class="digit-selector hidden" id="digitSelector">
+        <span class="digit-label">Columns:</span>
+        <button class="digit-pill active" data-digits="2">2 Digits (Tens)</button>
+        <button class="digit-pill" data-digits="3">3 Digits (Hundreds)</button>
+        <button class="digit-pill" data-digits="4">4 Digits (Thousands)</button>
+      </div>
 
-    <!-- Mode Selector Tabs -->
-    <div class="mode-selector">
-      <button class="mode-tab active" data-mode="add">
-        <span class="tab-icon">➕</span> Addition
-      </button>
-      <button class="mode-tab" data-mode="sub">
-        <span class="tab-icon">➖</span> Subtraction
-      </button>
-      <button class="mode-tab" data-mode="mix">
-        <span class="tab-icon">🔀</span> Both (+ & -)
-      </button>
+      <!-- Mode Selector Tabs -->
+      <div class="mode-selector">
+        <button class="mode-tab active" data-mode="add">
+          <span class="tab-icon">➕</span> Addition
+        </button>
+        <button class="mode-tab" data-mode="sub">
+          <span class="tab-icon">➖</span> Subtraction
+        </button>
+        <button class="mode-tab" data-mode="mix">
+          <span class="tab-icon">🔀</span> Both (+ & -)
+        </button>
+      </div>
     </div>
 
     <!-- Main Game Board -->
@@ -441,6 +444,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=4.3.1"></script>
+  <script src="game.js?v=4.4.0"></script>
 </body>
 </html>
