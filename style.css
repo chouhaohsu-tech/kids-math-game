@@ -214,8 +214,15 @@ body {
   box-shadow: 0 4px 0 #059669;
 }
 
-.tool-btn.hidden {
+.tool-btn.hidden,
+#visualToggleBtn.hidden,
+body.mode-vertical #visualToggleBtn,
+body.mode-vertical #visualHelpersWrapper,
+body.mode-vertical .visual-helpers-wrapper,
+body.mode-vertical .visual-helpers-container {
   display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .theme-btn {
@@ -786,8 +793,9 @@ body {
   transition: all 0.3s ease;
 }
 
-.visual-helpers-wrapper.hidden {
-  display: none;
+.visual-helpers-wrapper.hidden,
+#visualHelpersWrapper.hidden {
+  display: none !important;
 }
 
 .helpers-header {

@@ -746,7 +746,10 @@
         this.themeBtn.addEventListener('click', () => {
           this.currentThemeIndex = (this.currentThemeIndex + 1) % this.themes.length;
           const nextTheme = this.themes[this.currentThemeIndex];
-          document.body.className = nextTheme.id;
+          this.themes.forEach(t => document.body.classList.remove(t.id));
+          document.body.classList.add(nextTheme.id);
+          document.body.classList.toggle('mode-vertical', this.format === 'vertical');
+          document.body.classList.toggle('mode-horizontal', this.format === 'horizontal');
           if (this.themeIcon) this.themeIcon.textContent = nextTheme.icon;
           if (this.themeLabel) this.themeLabel.textContent = nextTheme.name;
           this.sound.playSparkle();
@@ -777,13 +780,25 @@
         this.tabHorizontal.addEventListener('click', () => {
           if (this.format === 'horizontal') return;
           this.format = 'horizontal';
+          document.body.classList.add('mode-horizontal');
+          document.body.classList.remove('mode-vertical');
           this.tabHorizontal.classList.add('active');
           if (this.tabVertical) this.tabVertical.classList.remove('active');
-          if (this.visualToggleBtn) this.visualToggleBtn.classList.remove('hidden');
+          if (this.visualToggleBtn) {
+            this.visualToggleBtn.classList.remove('hidden');
+            this.visualToggleBtn.style.removeProperty('display');
+          }
           if (this.digitSelector) this.digitSelector.classList.add('hidden');
           if (this.verticalCard) this.verticalCard.classList.add('hidden');
           if (this.equationCard) this.equationCard.classList.remove('hidden');
-          if (this.visualHelpersWrapper && this.showCounters) this.visualHelpersWrapper.classList.remove('hidden');
+          if (this.visualHelpersWrapper) {
+            this.visualHelpersWrapper.classList.toggle('hidden', !this.showCounters);
+            if (this.showCounters) {
+              this.visualHelpersWrapper.style.removeProperty('display');
+            } else {
+              this.visualHelpersWrapper.style.setProperty('display', 'none', 'important');
+            }
+          }
           if (this.hintTextEl) this.hintTextEl.textContent = 'Tap the number keys, then press OK! 👇';
           this.sound.playPop();
           this.generateNewProblem();
@@ -794,13 +809,21 @@
         this.tabVertical.addEventListener('click', () => {
           if (this.format === 'vertical') return;
           this.format = 'vertical';
+          document.body.classList.add('mode-vertical');
+          document.body.classList.remove('mode-horizontal');
           this.tabVertical.classList.add('active');
           if (this.tabHorizontal) this.tabHorizontal.classList.remove('active');
-          if (this.visualToggleBtn) this.visualToggleBtn.classList.add('hidden');
+          if (this.visualToggleBtn) {
+            this.visualToggleBtn.classList.add('hidden');
+            this.visualToggleBtn.style.setProperty('display', 'none', 'important');
+          }
           if (this.digitSelector) this.digitSelector.classList.remove('hidden');
           if (this.verticalCard) this.verticalCard.classList.remove('hidden');
           if (this.equationCard) this.equationCard.classList.add('hidden');
-          if (this.visualHelpersWrapper) this.visualHelpersWrapper.classList.add('hidden');
+          if (this.visualHelpersWrapper) {
+            this.visualHelpersWrapper.classList.add('hidden');
+            this.visualHelpersWrapper.style.setProperty('display', 'none', 'important');
+          }
           if (this.hintTextEl) this.hintTextEl.textContent = 'Solve column by column, then press OK! 👉';
           this.sound.playPop();
           this.generateNewProblem();
@@ -895,11 +918,26 @@
 
       // Visual Counter Toggle (Only active in 1-digit horizontal mode)
       this.visualToggleBtn.addEventListener('click', () => {
-        if (this.format !== 'horizontal') return;
+        if (this.format !== 'horizontal') {
+          if (this.visualToggleBtn) {
+            this.visualToggleBtn.classList.add('hidden');
+            this.visualToggleBtn.style.setProperty('display', 'none', 'important');
+          }
+          if (this.visualHelpersWrapper) {
+            this.visualHelpersWrapper.classList.add('hidden');
+            this.visualHelpersWrapper.style.setProperty('display', 'none', 'important');
+          }
+          return;
+        }
         this.showCounters = !this.showCounters;
         this.visualToggleBtn.classList.toggle('active', this.showCounters);
         if (this.visualHelpersWrapper) {
           this.visualHelpersWrapper.classList.toggle('hidden', !this.showCounters);
+          if (this.showCounters) {
+            this.visualHelpersWrapper.style.removeProperty('display');
+          } else {
+            this.visualHelpersWrapper.style.setProperty('display', 'none', 'important');
+          }
         } else {
           this.visualHelpersEl.classList.toggle('hidden', !this.showCounters);
         }
@@ -1186,6 +1224,16 @@
       this.vCarried = {};
       this.vBorrowed = {};
       this.vCurrentStepIndex = 0;
+      document.body.classList.add('mode-vertical');
+      document.body.classList.remove('mode-horizontal');
+      if (this.visualToggleBtn) {
+        this.visualToggleBtn.classList.add('hidden');
+        this.visualToggleBtn.style.setProperty('display', 'none', 'important');
+      }
+      if (this.visualHelpersWrapper) {
+        this.visualHelpersWrapper.classList.add('hidden');
+        this.visualHelpersWrapper.style.setProperty('display', 'none', 'important');
+      }
       if (this.keySubmit) {
         this.keySubmit.classList.remove('ready');
         this.keySubmit.classList.remove('guide-pulse');
@@ -2347,6 +2395,7 @@
   function initGame() {
     if (!window.game) {
       window.game = new MathGame();
+      console.log('🌟 Magic Math Adventure v4.3.1 ready!');
     }
   }
 
