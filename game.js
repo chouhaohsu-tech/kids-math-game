@@ -680,6 +680,7 @@
       this.vProblem = null;
       this.vSteps = [];
       this.vCurrentStepIndex = 0;
+      this.vCurrentColInput = '';
       this.vUserAnswers = {};
       this.vCarried = {};
       this.vBorrowed = {};
@@ -778,6 +779,7 @@
           this.format = 'horizontal';
           this.tabHorizontal.classList.add('active');
           if (this.tabVertical) this.tabVertical.classList.remove('active');
+          if (this.visualToggleBtn) this.visualToggleBtn.classList.remove('hidden');
           if (this.digitSelector) this.digitSelector.classList.add('hidden');
           if (this.verticalCard) this.verticalCard.classList.add('hidden');
           if (this.equationCard) this.equationCard.classList.remove('hidden');
@@ -794,11 +796,12 @@
           this.format = 'vertical';
           this.tabVertical.classList.add('active');
           if (this.tabHorizontal) this.tabHorizontal.classList.remove('active');
+          if (this.visualToggleBtn) this.visualToggleBtn.classList.add('hidden');
           if (this.digitSelector) this.digitSelector.classList.remove('hidden');
           if (this.verticalCard) this.verticalCard.classList.remove('hidden');
           if (this.equationCard) this.equationCard.classList.add('hidden');
           if (this.visualHelpersWrapper) this.visualHelpersWrapper.classList.add('hidden');
-          if (this.hintTextEl) this.hintTextEl.textContent = 'Solve column by column starting from Ones! 👉';
+          if (this.hintTextEl) this.hintTextEl.textContent = 'Solve column by column, then press OK! 👉';
           this.sound.playPop();
           this.generateNewProblem();
         });
@@ -890,8 +893,9 @@
         this.speakProblem();
       });
 
-      // Visual Counter Toggle
+      // Visual Counter Toggle (Only active in 1-digit horizontal mode)
       this.visualToggleBtn.addEventListener('click', () => {
+        if (this.format !== 'horizontal') return;
         this.showCounters = !this.showCounters;
         this.visualToggleBtn.classList.toggle('active', this.showCounters);
         if (this.visualHelpersWrapper) {
@@ -1177,10 +1181,15 @@
     generateVerticalProblem() {
       this.isDemoPlaying = false;
       this.currentInput = '';
+      this.vCurrentColInput = '';
       this.vUserAnswers = {};
       this.vCarried = {};
       this.vBorrowed = {};
       this.vCurrentStepIndex = 0;
+      if (this.keySubmit) {
+        this.keySubmit.classList.remove('ready');
+        this.keySubmit.classList.remove('guide-pulse');
+      }
       if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
 
       let activeOp = this.mode;
@@ -1503,6 +1512,12 @@
         c.onclick = null;
       });
 
+      this.vCurrentColInput = '';
+      if (this.keySubmit) {
+        this.keySubmit.classList.remove('ready');
+        this.keySubmit.classList.remove('guide-pulse');
+      }
+
       if (this.vCurrentStepIndex >= this.vSteps.length) {
         this.completeVerticalProblem();
         return;
@@ -1515,6 +1530,10 @@
         const ansCell = document.getElementById(`vAnsCell_${c}`);
         if (ansCell) {
           ansCell.classList.toggle('active-col', c === colIdx);
+          if (c === colIdx && !ansCell.classList.contains('filled')) {
+            ansCell.classList.remove('has-val');
+            ansCell.textContent = '?';
+          }
         }
       }
 
@@ -1527,12 +1546,12 @@
         let promptEn = '';
         let promptZh = '';
         if (step.d1 === 0 && step.d2 === 0 && step.inCarry > 0) {
-          promptEn = `💡 ${colName} column: Bring down carry ${step.inCarry}! Tap ${step.writeDigit}! 🎈`;
-          promptZh = `💡 ${colZh}：把進位的 ${step.inCarry} 寫下來！請按 ${step.writeDigit}！🎈`;
+          promptEn = `💡 ${colName} column: Bring down carry ${step.inCarry}! Tap ${step.writeDigit}, then press OK! 🎈✅`;
+          promptZh = `💡 ${colZh}：把進位的 ${step.inCarry} 寫下來！請按 ${step.writeDigit}，再按 OK！🎈✅`;
         } else {
           const carryText = step.inCarry > 0 ? ` + ${step.inCarry} (carry)` : '';
-          promptEn = `${colName} column: ${step.d1} + ${step.d2}${carryText} = ${step.sum}. Tap ${step.writeDigit}!`;
-          promptZh = `${colZh}：${step.d1} 加 ${step.d2}${step.inCarry > 0 ? ` 加進位 ${step.inCarry}` : ''} 等於 ${step.sum}，請按 ${step.writeDigit}！`;
+          promptEn = `${colName} column: ${step.d1} + ${step.d2}${carryText} = ${step.sum}. Tap ${step.writeDigit}, then press OK! ✅`;
+          promptZh = `${colZh}：${step.d1} 加 ${step.d2}${step.inCarry > 0 ? ` 加進位 ${step.inCarry}` : ''} 等於 ${step.sum}，請按 ${step.writeDigit}，再按 OK！✅`;
         }
 
         this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
@@ -1578,8 +1597,15 @@
           }
         } else {
           // Direct subtraction without borrowing
-          const promptEn = `${colName} column: ${step.activeTop} − ${step.bot} = ${step.diff}. Tap ${step.diff}!`;
-          const promptZh = `${colZh}：${step.activeTop} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}！`;
+          let promptEn = '';
+          let promptZh = '';
+          if (step.origTop !== step.activeTop) {
+            promptEn = `${colName} column: ${step.origTop} − 1 (borrowed) = ${step.activeTop}, then ${step.activeTop} − ${step.bot} = ${step.diff}. Tap ${step.diff}, then press OK! ✅`;
+            promptZh = `${colZh}：${step.origTop} 減去借走的 1 變成 ${step.activeTop}，${step.activeTop} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}，再按 OK！✅`;
+          } else {
+            promptEn = `${colName} column: ${step.activeTop} − ${step.bot} = ${step.diff}. Tap ${step.diff}, then press OK! ✅`;
+            promptZh = `${colZh}：${step.activeTop} 減 ${step.bot} 等於 ${step.diff}，請按 ${step.diff}，再按 OK！✅`;
+          }
           this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
           if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
 
@@ -1624,13 +1650,13 @@
       }
 
       const guideMsg = this.voiceLang === 'zh'
-        ? `🌟 寧寧的絕招（借 10 先減下、再加頂）：先算 10 − ${step.bot} = ${tenMinusBot}，再算 ${tenMinusBot} + ${topNum} = ${finalDiff}！快按 ${finalDiff}！`
-        : `🌟 Ning's Rule: 10 − ${step.bot} = ${tenMinusBot}, then ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff}!`;
+        ? `🌟 寧寧的絕招（借 10 先減下、再加頂）：先算 10 − ${step.bot} = ${tenMinusBot}，再算 ${tenMinusBot} + ${topNum} = ${finalDiff}！請按 ${finalDiff}，再按 OK！✅`
+        : `🌟 Ning's Rule: 10 − ${step.bot} = ${tenMinusBot}, then ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff}, then press OK! ✅`;
       this.setGuideText(guideMsg);
 
-      const speakEn = `Ning's method! 10 minus bottom ${step.bot} equals ${tenMinusBot}, then ${tenMinusBot} plus top ${topNum} equals ${finalDiff}! Tap ${finalDiff}!`;
-      const speakZh = `寧寧的絕招！10 先減底下的 ${step.bot} 等於 ${tenMinusBot}，再加上面的 ${topNum} 等於 ${finalDiff}！快按 ${finalDiff}！`;
-      this.setMascotMessage(this.voiceLang === 'zh' ? `10 − ${step.bot} = ${tenMinusBot}，${tenMinusBot} + ${topNum} = ${finalDiff}！按 ${finalDiff}！🌟` : `10 − ${step.bot} = ${tenMinusBot}, ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff}! 🌟`);
+      const speakEn = `Ning's method! 10 minus bottom ${step.bot} equals ${tenMinusBot}, then ${tenMinusBot} plus top ${topNum} equals ${finalDiff}! Tap ${finalDiff}, then press OK!`;
+      const speakZh = `寧寧的絕招！10 先減底下的 ${step.bot} 等於 ${tenMinusBot}，再加上面的 ${topNum} 等於 ${finalDiff}！請按 ${finalDiff}，再按 OK！`;
+      this.setMascotMessage(this.voiceLang === 'zh' ? `10 − ${step.bot} = ${tenMinusBot}，${tenMinusBot} + ${topNum} = ${finalDiff}！按 ${finalDiff} 再按 OK！🌟` : `10 − ${step.bot} = ${tenMinusBot}, ${tenMinusBot} + ${topNum} = ${finalDiff}! Tap ${finalDiff} then OK! 🌟`);
 
       if (this.isGuideMode) {
         this.speakText(this.voiceLang === 'zh' ? speakZh : speakEn);
@@ -1655,11 +1681,10 @@
         this.sound.playSwoosh();
         fromCell.classList.add('struck-through');
 
-        // Slashed replacement number badge
+        // Borrow indicator badge showing -1 on top of next digit
         const subBadge = document.createElement('span');
         subBadge.className = 'v-sub-digit';
-        const origVal = parseInt(fromCell.dataset.val || fromCell.textContent, 10);
-        subBadge.textContent = origVal - 1;
+        subBadge.textContent = '-1';
         fromCell.appendChild(subBadge);
       }
 
@@ -1699,38 +1724,141 @@
       if (this.vCurrentStepIndex >= this.vSteps.length) return;
 
       const step = this.vSteps[this.vCurrentStepIndex];
-      const val = parseInt(digit, 10);
 
       // In subtraction, if borrow is needed but not yet done
       if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
-        if (val === step.diff) {
-          this.executeActiveBorrow();
-          return;
-        } else {
-          this.sound.playTryAgainSound();
-          const fromCol = step.borrowFromCol;
-          const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
-          if (fromCell) {
-            fromCell.style.transform = 'scale(1.25) rotate(6deg)';
-            setTimeout(() => { if (fromCell) fromCell.style.transform = ''; }, 300);
-          }
-          const msg = this.voiceLang === 'zh' ? '請先點一下數字借 10 喔！🤝' : 'Tap the number to borrow 10 first! 🤝';
-          this.setMascotMessage(msg);
-          return;
+        this.sound.playTryAgainSound();
+        const fromCol = step.borrowFromCol;
+        const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+        if (fromCell) {
+          fromCell.style.transform = 'scale(1.25) rotate(6deg)';
+          setTimeout(() => { if (fromCell) fromCell.style.transform = ''; }, 300);
         }
+        const msg = this.voiceLang === 'zh' ? '請先點一下數字借 10 喔！🤝' : 'Tap the number to borrow 10 first! 🤝';
+        this.setMascotMessage(msg);
+        return;
       }
 
+      this.vCurrentColInput = String(digit);
+      this.sound.playKeyNote(digit);
+
+      const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+      if (ansCell) {
+        ansCell.textContent = digit;
+        ansCell.classList.add('has-val');
+      }
+
+      if (this.keySubmit) {
+        this.keySubmit.classList.add('ready');
+      }
+
+      const checkMsg = this.voiceLang === 'zh' ? '請按下 OK 送出答案！✅' : 'Press OK to check your answer! ✅';
+      if (this.hintTextEl) this.hintTextEl.textContent = checkMsg;
+
+      if (this.isGuideMode) {
+        this.clearKeypadHighlight();
+        if (this.keySubmit) this.keySubmit.classList.add('guide-pulse');
+      }
+
+      // Pip reacts curiously
+      if (this.mascotAvatar) {
+        this.mascotAvatar.style.transform = 'scale(1.12) rotate(-5deg)';
+        setTimeout(() => {
+          if (this.mascotAvatar) this.mascotAvatar.style.transform = '';
+        }, 180);
+      }
+    }
+
+    handleVerticalBackspace() {
+      const step = this.vSteps[this.vCurrentStepIndex];
+      // If current column has a pending input, clear it first
+      if (this.vCurrentColInput && step) {
+        this.vCurrentColInput = '';
+        const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+        if (ansCell) {
+          ansCell.textContent = '?';
+          ansCell.classList.remove('has-val');
+        }
+        if (this.keySubmit) {
+          this.keySubmit.classList.remove('ready');
+          this.keySubmit.classList.remove('guide-pulse');
+        }
+        if (this.isGuideMode) {
+          const expectedDigit = this.op === '+' ? step.writeDigit : step.diff;
+          this.highlightKeypadKey(expectedDigit);
+        }
+        this.sound.playDelete();
+        return;
+      }
+
+      // Otherwise step back to the previous column
+      if (this.vCurrentStepIndex === 0) return;
+      this.sound.playDelete();
+      this.vCurrentStepIndex--;
+      const prevStep = this.vSteps[this.vCurrentStepIndex];
+      delete this.vUserAnswers[prevStep.col];
+      const prevAnsCell = document.getElementById(`vAnsCell_${prevStep.col}`);
+      if (prevAnsCell) {
+        prevAnsCell.textContent = '?';
+        prevAnsCell.classList.remove('filled');
+        prevAnsCell.classList.remove('has-val');
+      }
+      this.updateVerticalStep();
+    }
+
+    checkVerticalAnswer() {
+      if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
+        return;
+      }
+      if (this.vCurrentStepIndex >= this.vSteps.length) return;
+
+      const step = this.vSteps[this.vCurrentStepIndex];
+
+      // In subtraction, if borrow is needed but not yet done
+      if (this.op === '−' && step.needsBorrow && !this.vBorrowed[step.col]) {
+        this.sound.playTryAgainSound();
+        const fromCol = step.borrowFromCol;
+        const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
+        if (fromCell) {
+          fromCell.style.transform = 'scale(1.25) rotate(6deg)';
+          setTimeout(() => { if (fromCell) fromCell.style.transform = ''; }, 300);
+        }
+        const msg = this.voiceLang === 'zh' ? '請先點一下數字借 10 喔！🤝' : 'Tap the number to borrow 10 first! 🤝';
+        this.setMascotMessage(msg);
+        return;
+      }
+
+      const ansCell = document.getElementById(`vAnsCell_${step.col}`);
+
+      if (!this.vCurrentColInput) {
+        if (ansCell) {
+          ansCell.style.transform = 'scale(1.2)';
+          setTimeout(() => { if (ansCell) ansCell.style.transform = ''; }, 300);
+        }
+        const promptMsg = this.voiceLang === 'zh' ? '請先按一個數字喔！👆' : 'Please tap a number first! 👆';
+        if (this.hintTextEl) this.hintTextEl.textContent = promptMsg;
+        this.setMascotMessage(promptMsg);
+        this.sound.playPop();
+        return;
+      }
+
+      const val = parseInt(this.vCurrentColInput, 10);
       const expectedDigit = this.op === '+' ? step.writeDigit : step.diff;
 
       if (val === expectedDigit) {
-        this.sound.playKeyNote(digit);
+        this.sound.playKeyNote(this.vCurrentColInput);
 
-        const ansCell = document.getElementById(`vAnsCell_${step.col}`);
         if (ansCell) {
           ansCell.textContent = val;
+          ansCell.classList.remove('has-val');
           ansCell.classList.add('filled');
         }
         this.vUserAnswers[step.col] = val;
+        this.vCurrentColInput = '';
+        if (this.keySubmit) {
+          this.keySubmit.classList.remove('ready');
+          this.keySubmit.classList.remove('guide-pulse');
+        }
 
         // Interactive Addition Carrying with Flying Balloon
         if (this.op === '+' && step.nextCarry > 0) {
@@ -1787,7 +1915,11 @@
               this.fx.sparkleAt(r.left + r.width / 2, r.top + r.height / 2);
 
               this.vCurrentStepIndex++;
-              this.updateVerticalStep();
+              if (this.vCurrentStepIndex >= this.vSteps.length) {
+                this.completeVerticalProblem();
+              } else {
+                this.updateVerticalStep();
+              }
             };
 
             this.pendingCarryResolver = finishCarry;
@@ -1830,7 +1962,6 @@
             const carryMsgZh = `💡 ${step.sum} 超過 10 了！進位 ${step.nextCarry} 到${targetColZh}！🎈`;
             this.setGuideText(this.voiceLang === 'zh' ? carryMsgZh : carryMsgEn);
 
-            // Auto-advance carry smoothly after 450ms so child is never blocked
             this.pendingCarryTimer = setTimeout(() => {
               flyBalloon();
             }, 450);
@@ -1839,11 +1970,17 @@
           }
         }
 
+        // Advance to next step or complete!
         this.vCurrentStepIndex++;
-        this.updateVerticalStep();
+        if (this.vCurrentStepIndex >= this.vSteps.length) {
+          this.completeVerticalProblem();
+        } else {
+          this.sound.playSparkle();
+          this.updateVerticalStep();
+        }
       } else {
+        // Wrong digit!
         this.sound.playTryAgainSound();
-        const ansCell = document.getElementById(`vAnsCell_${step.col}`);
         if (ansCell) {
           ansCell.style.transform = 'translateX(-8px)';
           setTimeout(() => { if (ansCell) ansCell.style.transform = 'translateX(8px)'; }, 80);
@@ -1851,20 +1988,10 @@
         }
         const hint = this.voiceLang === 'zh' ? '再試試看這個位數！你可以的！💕' : 'Try this digit again! You got this! 💕';
         this.setMascotMessage(hint);
+        if (this.hintTextEl) {
+          this.hintTextEl.textContent = this.voiceLang === 'zh' ? '答案不對喔，換個數字再按 OK！👇' : 'Try another number, then press OK! 👇';
+        }
       }
-    }
-
-    handleVerticalBackspace() {
-      if (this.vCurrentStepIndex === 0) return;
-      this.sound.playDelete();
-      this.vCurrentStepIndex--;
-      const step = this.vSteps[this.vCurrentStepIndex];
-      const ansCell = document.getElementById(`vAnsCell_${step.col}`);
-      if (ansCell) {
-        ansCell.textContent = '?';
-        ansCell.classList.remove('filled');
-      }
-      this.updateVerticalStep();
     }
 
     completeVerticalProblem() {
@@ -1921,6 +2048,10 @@
 
     checkAnswer() {
       if (this.celebrationModal.classList.contains('active') || this.sadModal.classList.contains('active')) {
+        return;
+      }
+      if (this.format === 'vertical') {
+        this.checkVerticalAnswer();
         return;
       }
       if (!this.currentInput) {
@@ -2135,20 +2266,34 @@
     }
 
     showSadModal() {
-      if (this.op === '+') {
-        this.sadHintEl.textContent = `Try counting the ${this.currentFruit.icon} ${this.currentFruit.name} together! You can do it! 💕`;
+      if (this.format === 'horizontal') {
+        if (this.op === '+') {
+          this.sadHintEl.textContent = `Try counting the ${this.currentFruit.icon} ${this.currentFruit.name} together! You can do it! 💕`;
+        } else {
+          this.sadHintEl.textContent = `Start with ${this.num1} ${this.currentFruit.name} and count how many are left! 💕`;
+        }
       } else {
-        this.sadHintEl.textContent = `Start with ${this.num1} ${this.currentFruit.name} and count how many are left! 💕`;
+        this.sadHintEl.textContent = this.voiceLang === 'zh'
+          ? '一步一步看著提示算，你可以的！🌟'
+          : 'Take it step-by-step column by column! You got this! 🌟';
       }
 
       this.sadModal.classList.add('active');
 
       if (this.sound.enabled && 'speechSynthesis' in window) {
         setTimeout(() => {
-          if (this.voiceLang === 'zh') {
-            this.speakText('差一點點！我們一起數水果再試一次！', 'zh');
+          if (this.format === 'horizontal') {
+            if (this.voiceLang === 'zh') {
+              this.speakText('差一點點！我們一起數水果再試一次！', 'zh');
+            } else {
+              this.speakText(`Almost! Let's count the fruit and try again!`, 'en');
+            }
           } else {
-            this.speakText(`Almost! Let's count the fruit and try again!`, 'en');
+            if (this.voiceLang === 'zh') {
+              this.speakText('差一點點！看著提示再試一次！', 'zh');
+            } else {
+              this.speakText('Almost! Take it step-by-step and try again!', 'en');
+            }
           }
         }, 200);
       }

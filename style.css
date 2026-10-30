@@ -214,6 +214,10 @@ body {
   box-shadow: 0 4px 0 #059669;
 }
 
+.tool-btn.hidden {
+  display: none !important;
+}
+
 .theme-btn {
   background: #fdf2f8;
   border-color: #f472b6;
@@ -1138,10 +1142,13 @@ body {
 
 .v-sub-digit {
   position: absolute;
-  top: -18px;
+  top: -20px;
   right: -4px;
-  font-size: 1.15rem;
+  min-width: 28px;
+  text-align: center;
+  font-size: 1.05rem;
   font-weight: 900;
+  letter-spacing: -0.5px;
   color: #ffffff;
   background: linear-gradient(135deg, #ef4444, #f43f5e);
   border-radius: 8px;
@@ -1419,6 +1426,14 @@ body {
   background: #ecfdf5;
   color: #047857;
   box-shadow: 0 3px 0 #059669;
+}
+
+.v-ans-cell.has-val {
+  border-color: #6366f1;
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 900;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.45);
 }
 
 /* Step-by-Step Educational Prompt Banner */
