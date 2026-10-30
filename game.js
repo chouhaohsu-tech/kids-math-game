@@ -684,6 +684,7 @@
       this.vUserAnswers = {};
       this.vCarried = {};
       this.vBorrowed = {};
+      this.vLentFrom = {};
       this.isDemoPlaying = false;
 
       this.themes = [
@@ -1223,6 +1224,7 @@
       this.vUserAnswers = {};
       this.vCarried = {};
       this.vBorrowed = {};
+      this.vLentFrom = {};
       this.vCurrentStepIndex = 0;
       document.body.classList.add('mode-vertical');
       document.body.classList.remove('mode-horizontal');
@@ -1651,12 +1653,14 @@
             this.vBorrowActionBtn.textContent = this.voiceLang === 'zh' ? '🤝 點我借 10！' : '🤝 Borrow 10!';
           }
 
-          const promptEn = `💡 ${colName} column: ${step.origTop} is smaller than ${step.bot}! Tap the ${fromCell ? fromCell.textContent : 'number'} to borrow 10! 🤝`;
-          const promptZh = `💡 ${colZh}：${step.origTop} 減不夠 ${step.bot}！請點擊十位的 ${fromCell ? fromCell.textContent : ''} 來借 10！🤝`;
+          const fromColZh = colNamesZh[fromCol] || '下一位';
+          const fromColEn = colNames[fromCol] || 'next column';
+          const promptEn = `💡 ${colName} column: ${step.origTop !== step.activeTop ? `${step.origTop} minus 1 is ${step.activeTop}, ` : ''}${step.activeTop} is smaller than ${step.bot}! Tap the ${fromColEn} ${fromCell ? fromCell.textContent : 'number'} to borrow 10! 🤝`;
+          const promptZh = `💡 ${colZh}：${step.origTop !== step.activeTop ? `${step.origTop} 借走 1 剩下 ${step.activeTop}，` : ''}${step.activeTop} 減不夠 ${step.bot}！請點擊${fromColZh}的 ${fromCell ? fromCell.textContent : ''} 來借 10！🤝`;
           this.setGuideText(this.voiceLang === 'zh' ? promptZh : promptEn);
 
-          const speakEn = `Let's borrow 10 from the next digit! Tap the number!`;
-          const speakZh = `不夠減！請點一下十位的數字來借 10！`;
+          const speakEn = `Let's borrow 10 from the ${fromColEn}! Tap the number!`;
+          const speakZh = `不夠減！請點一下${fromColZh}的數字來借 10！`;
           if (this.isGuideMode) {
             this.speakText(this.voiceLang === 'zh' ? speakZh : speakEn);
           }
@@ -1754,6 +1758,8 @@
       if (this.vBorrowActionBtn) this.vBorrowActionBtn.classList.add('hidden');
 
       const fromCol = step.borrowFromCol;
+      this.vLentFrom[fromCol] = true;
+
       const fromCell = document.getElementById(`vN1Cell_${fromCol}`);
       const fromCarryCell = document.getElementById(`vCarryCell_${fromCol}`);
       const curCell = document.getElementById(`vN1Cell_${step.col}`);
@@ -1766,10 +1772,16 @@
       }
 
       // Put -1 on top of the next digit (in the Borrow row directly above it)
+      // If fromCarryCell already has 10 from borrowing earlier, keep BOTH!
       if (fromCarryCell) {
-        fromCarryCell.innerHTML = `<span class="v-borrow-badge borrow-minus">-1</span>`;
         fromCarryCell.style.border = 'none';
         fromCarryCell.classList.add('has-borrow-minus');
+        if (this.vBorrowed[fromCol]) {
+          fromCarryCell.classList.add('has-multi-badge');
+          fromCarryCell.innerHTML = `<span class="v-borrow-badge borrow-minus">-1</span><span class="v-borrow-badge">10</span>`;
+        } else {
+          fromCarryCell.innerHTML = `<span class="v-borrow-badge borrow-minus">-1</span>`;
+        }
       }
 
       // If borrowing over zeros (e.g. 503 - 278), intermediate zeros become 9
@@ -1785,10 +1797,16 @@
       }
 
       // Immediately update carry indicator (10 on current column) and Ning's breakdown card
+      // If current column already lent 1 to previous column, keep BOTH -1 and 10!
       if (curCarryCell) {
-        curCarryCell.innerHTML = `<span class="v-borrow-badge">10</span>`;
         curCarryCell.style.border = 'none';
         curCarryCell.classList.add('has-borrow-10');
+        if (this.vLentFrom[step.col]) {
+          curCarryCell.classList.add('has-multi-badge');
+          curCarryCell.innerHTML = `<span class="v-borrow-badge borrow-minus">-1</span><span class="v-borrow-badge">10</span>`;
+        } else {
+          curCarryCell.innerHTML = `<span class="v-borrow-badge">10</span>`;
+        }
       }
       this.renderNingBorrowBreakdown(step);
       if (this.isGuideMode) {
