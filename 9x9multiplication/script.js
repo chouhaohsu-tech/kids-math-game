@@ -898,7 +898,7 @@
 
     const stopInfo = getAnimalCurrentStop(focusAnimal);
     let targetEl = null;
-    const isMobileScreen = window.innerWidth <= 680;
+    const isMobileScreen = window.innerWidth <= 740;
     if (stopInfo.type === 'HOME') {
       targetEl = document.getElementById(`rightHome-${focusAnimal}`);
     } else if (stopInfo.type === 'TOP') {
@@ -989,10 +989,13 @@
         ? ANIMALS[state.activeAnimal]
         : ANIMALS[r];
 
+    const isCompactPhone = window.innerWidth <= 740;
     dom.activeAnimalBadge.textContent =
       state.mode === 'test'
-        ? t.testChallengeLabel
-        : t.activeStepLabel(animalForStep.emoji, animalForStep.name[state.lang]);
+        ? (isCompactPhone ? '⚡' : t.testChallengeLabel)
+        : isCompactPhone
+          ? `${animalForStep.emoji} ${animalForStep.name[state.lang]}`
+          : t.activeStepLabel(animalForStep.emoji, animalForStep.name[state.lang]);
 
     dom.eqFactorA.textContent = String(r);
     dom.eqFactorA.className = `eq-num band-${r}`;
@@ -1701,20 +1704,56 @@
     const isIPhone = /iPhone|iPod/.test(ua);
     const isAndroid = /Android/.test(ua);
 
-    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const vw = Math.round(window.visualViewport ? window.visualViewport.width : window.innerWidth);
+    const vh = Math.round(window.visualViewport ? window.visualViewport.height : window.innerHeight);
     const orientation = vw >= vh ? 'landscape' : 'portrait';
 
-    const isMobile = isIPhone || (isAndroid && /Mobile/.test(ua)) || vw <= 640;
+    const isMobile = isIPhone || (isAndroid && /Mobile/.test(ua)) || vw <= 740;
     const isTablet =
       isIPad ||
       (!isMobile &&
-        (isAndroid || (vw > 640 && vw <= 1180 && maxTouch > 0)));
+        (isAndroid || (vw > 740 && vw <= 1220 && maxTouch > 0)));
     const isDesktop = !isMobile && !isTablet;
 
     const root = document.documentElement;
     root.style.setProperty('--app-height', `${vh}px`);
     root.style.setProperty('--app-width', `${vw}px`);
+
+    // Deterministically compute exact board row heights in pixels so iOS WebKit
+    // never stretches or overflows the 11-row multiplication grid!
+    let cellH = 38;
+    let topRowH = 48;
+    let numRowH = 30;
+
+    if (vw <= 740) {
+      // iPhone / Mobile Portrait (3-Zone Layout: Top Bar 36px + Board + Bottom Dock 162px)
+      const reservedVertical = 36 + 162 + 22; // top bar + bottom dock + outer paddings/gaps
+      const maxBoardGridH = Math.max(220, Math.min(vh - reservedVertical, Math.floor(vw * 0.94)));
+      cellH = Math.max(20, Math.floor(maxBoardGridH / 11.0));
+      topRowH = Math.max(26, Math.floor(cellH * 1.22));
+      numRowH = Math.max(18, Math.floor(cellH * 0.78));
+    } else if (orientation === 'portrait') {
+      // iPad / Tablet Portrait (Top Bar 46px + Board + 2-Col Bottom Dock 215px)
+      const reservedVertical = 48 + 215 + 32;
+      const maxBoardGridH = Math.max(300, Math.min(vh - reservedVertical, Math.floor(vw * 0.88)));
+      cellH = Math.max(28, Math.floor(maxBoardGridH / 11.1));
+      topRowH = Math.floor(cellH * 1.26);
+      numRowH = Math.floor(cellH * 0.82);
+    } else {
+      // iPad Horizontal / Landscape & Desktop (Side-by-Side: Left Board + Right Sidebar)
+      const selectorAllowance = vw > 1220 && vh > 820 ? 44 : 0;
+      const sidebarWidth = vw <= 1180 ? 280 : 320;
+      const reservedVertical = 52 + selectorAllowance + 34;
+      const availW = Math.max(380, vw - sidebarWidth - 44);
+      const maxBoardGridH = Math.max(290, Math.min(vh - reservedVertical, Math.floor(availW * 0.82)));
+      cellH = Math.max(26, Math.floor(maxBoardGridH / 11.15));
+      topRowH = Math.floor(cellH * 1.28);
+      numRowH = Math.floor(cellH * 0.82);
+    }
+
+    root.style.setProperty('--cell-h', `${cellH}px`);
+    root.style.setProperty('--top-row-h', `${topRowH}px`);
+    root.style.setProperty('--num-row-h', `${numRowH}px`);
 
     root.classList.toggle('device-ipad', isIPad);
     root.classList.toggle('device-iphone', isIPhone);

@@ -353,6 +353,7 @@ html, body {
 .board-section {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-width: 0;
   min-height: 0;
   height: 100%;
@@ -360,9 +361,10 @@ html, body {
 
 .board-frame {
   position: relative;
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 0;
-  height: 100%;
+  height: auto;
+  max-height: 100%;
   background: var(--bg-poster-board);
   border: 4px solid #b59d45;
   border-radius: 24px;
@@ -388,15 +390,15 @@ html, body {
 .deco-tr { top: 10px; right: 18px; animation-delay: 1s; }
 .deco-bl { bottom: 14px; left: 16px; animation-delay: 2s; }
 
-/* 11 Columns x 11 Rows CSS Grid (Proportional Fractional Rows that Auto-Fit Any Viewport Height!) */
+/* 11 Columns x 11 Rows CSS Grid (Deterministic Viewport-Calculated Pixel Rows!) */
 .triangle-grid {
   position: relative;
   display: grid;
   grid-template-columns: 44px repeat(9, minmax(0, 1fr)) 64px;
-  grid-template-rows: 1.35fr 0.85fr repeat(9, minmax(0, 1fr));
+  grid-template-rows: var(--top-row-h, 48px) var(--num-row-h, 30px) repeat(9, var(--cell-h, 38px));
   gap: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
   min-height: 0;
   z-index: 2;
 }
@@ -1657,11 +1659,12 @@ html, body {
    ========================================================================== */
 
 /* --- 1. iPad Horizontal / Landscape & Compact-Height Landscape Screens (100% Zero-Cutoff Fit!) --- */
-@media (min-width: 681px) and (max-height: 880px) and (orientation: landscape),
-       (min-width: 681px) and (max-width: 1380px) and (orientation: landscape) {
+@media (min-width: 741px) and (max-height: 880px) and (orientation: landscape),
+       (min-width: 741px) and (max-width: 1380px) and (orientation: landscape) {
   .app-shell {
     padding: 5px 10px 8px;
-    gap: 5px;
+    gap: 6px;
+    grid-template-rows: auto minmax(0, 1fr);
     height: var(--app-height, 100dvh);
     max-height: var(--app-height, 100dvh);
     overflow: hidden;
@@ -1671,14 +1674,15 @@ html, body {
     padding: 5px 12px;
     border-radius: 14px;
     gap: 8px;
+    flex-wrap: nowrap;
   }
 
   .rainbow-badge {
-    font-size: 1.5rem;
+    font-size: 1.45rem;
   }
 
   .rainbow-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
   }
 
   .subtitle-text {
@@ -1687,81 +1691,81 @@ html, body {
 
   .mode-btn {
     padding: 5px 12px;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
   }
 
   .stat-pill {
     padding: 4px 10px;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   .tool-btn {
     padding: 5px 10px;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
   }
 
+  /* Hide redundant Animal Selector Bar on iPad Landscape since all 9 animals sit right on top of the board! */
   .animal-selector-bar {
-    padding: 4px 10px;
-    border-radius: 12px;
-  }
-
-  .animal-pill-btn {
-    padding: 4px 11px;
-    font-size: 0.92rem;
+    display: none !important;
   }
 
   .main-workspace {
-    grid-template-columns: minmax(0, 1fr) 295px;
+    grid-template-columns: minmax(0, 1fr) 280px;
     gap: 10px;
     min-height: 0;
     height: 100%;
+    align-items: center;
+  }
+
+  .board-section {
+    height: 100%;
+    justify-content: center;
   }
 
   .board-frame {
     padding: 6px 10px 8px;
     border-radius: 18px;
-    min-height: 0;
-    height: 100%;
+    height: auto;
+    max-height: 100%;
   }
 
   .triangle-grid {
-    grid-template-columns: 36px repeat(9, minmax(0, 1fr)) 52px;
-    grid-template-rows: 1.3fr 0.82fr repeat(9, minmax(0, 1fr));
-    height: 100%;
-    min-height: 0;
+    grid-template-columns: 34px repeat(9, minmax(0, 1fr)) 48px;
+    grid-template-rows: var(--top-row-h, 42px) var(--num-row-h, 26px) repeat(9, var(--cell-h, 34px));
+    height: auto;
   }
 
   .tri-cell {
     min-height: 0;
-    font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+    font-size: clamp(1.1rem, 1.75vw, 1.45rem);
   }
 
   .tri-cell.solved-cell .cell-input-box {
-    font-size: clamp(1.2rem, 1.9vw, 1.55rem);
+    font-size: clamp(1.15rem, 1.85vw, 1.5rem);
   }
 
   .cell-mini-label {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
   }
 
   .top-animal-avatar {
-    width: 42px;
-    height: 42px;
-    font-size: 1.65rem;
+    width: calc(var(--top-row-h, 42px) - 4px);
+    height: calc(var(--top-row-h, 42px) - 4px);
+    font-size: calc(var(--top-row-h, 42px) * 0.48);
   }
 
   .num-circle {
-    width: 28px;
-    height: 28px;
-    font-size: 1.02rem;
+    width: calc(var(--num-row-h, 26px) - 2px);
+    height: calc(var(--num-row-h, 26px) - 2px);
+    font-size: 0.96rem;
   }
 
   /* Keep Teacher Cat strictly in the empty bottom-left triangle on iPad Landscape */
   .lower-left-stage {
-    left: 40px;
-    bottom: 8px;
-    width: 46%;
-    max-width: 390px;
+    left: 36px;
+    bottom: 6px;
+    width: 45%;
+    max-width: 360px;
     gap: 4px;
   }
 
@@ -1773,14 +1777,14 @@ html, body {
   }
 
   .teacher-cat-svg-wrap {
-    width: 56px;
-    height: 60px;
+    width: 52px;
+    height: 56px;
   }
 
   .cat-speech-bubble {
-    padding: 8px 12px;
-    font-size: 0.98rem;
-    line-height: 1.36;
+    padding: 7px 11px;
+    font-size: 0.94rem;
+    line-height: 1.34;
   }
 
   .control-sidebar {
@@ -1798,54 +1802,63 @@ html, body {
   }
 
   .active-animal-pill {
-    font-size: 0.96rem;
-    padding: 4px 12px;
-  }
-
-  .hint-pill-btn {
-    font-size: 0.92rem;
+    font-size: 0.94rem;
     padding: 4px 11px;
   }
 
+  .hint-pill-btn {
+    font-size: 0.9rem;
+    padding: 4px 10px;
+  }
+
   .equation-display {
-    padding: 8px;
+    padding: 7px 8px;
   }
 
   .eq-num {
-    width: 38px;
-    height: 38px;
-    font-size: 1.35rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.3rem;
   }
 
   .eq-answer-box {
-    height: 42px;
-    min-width: 58px;
-    font-size: 1.5rem;
+    height: 40px;
+    min-width: 56px;
+    font-size: 1.45rem;
   }
 
   .hint-formula-text {
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     margin-bottom: 4px;
   }
 
   .visual-dots-grid {
-    max-height: 64px;
+    max-height: 58px;
   }
 
   .dot-group-pill {
-    font-size: 0.86rem;
-    padding: 2px 8px;
+    font-size: 0.84rem;
+    padding: 2px 7px;
   }
 
   .key-btn {
-    height: 44px;
-    font-size: 1.3rem;
+    height: 42px;
+    font-size: 1.28rem;
     border-radius: 12px;
   }
 }
 
 /* --- 2. iPad & Tablet Portrait (Stacked Board + 2-Column Bottom Controls) --- */
-@media (min-width: 681px) and (max-width: 1024px) and (orientation: portrait) {
+@media (min-width: 741px) and (max-width: 1180px) and (orientation: portrait) {
+  .app-shell {
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .animal-selector-bar {
+    display: none !important;
+  }
+
   .main-workspace {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(0, 1fr) auto;
@@ -1854,23 +1867,26 @@ html, body {
     height: 100%;
   }
 
+  .board-section {
+    justify-content: center;
+  }
+
   .triangle-grid {
-    grid-template-columns: 38px repeat(9, minmax(0, 1fr)) 54px;
-    grid-template-rows: 1.3fr 0.85fr repeat(9, minmax(0, 1fr));
-    height: 100%;
-    min-height: 0;
+    grid-template-columns: 36px repeat(9, minmax(0, 1fr)) 52px;
+    grid-template-rows: var(--top-row-h, 46px) var(--num-row-h, 28px) repeat(9, var(--cell-h, 36px));
+    height: auto;
   }
 
   .top-animal-avatar {
-    width: 44px;
-    height: 44px;
-    font-size: 1.75rem;
+    width: calc(var(--top-row-h, 46px) - 4px);
+    height: calc(var(--top-row-h, 46px) - 4px);
+    font-size: calc(var(--top-row-h, 46px) * 0.48);
   }
 
   .lower-left-stage {
-    left: 42px;
+    left: 40px;
     bottom: 8px;
-    width: 48%;
+    width: 46%;
   }
 
   .journey-guide-card,
@@ -1887,8 +1903,8 @@ html, body {
   }
 }
 
-/* --- 3. iPhone Vertical / Portrait (100% Zero-Scroll Viewport Fit + Big Readable Text!) --- */
-@media (max-width: 680px) {
+/* --- 3. iPhone & Mobile Redesigned Compact 3-Zone UI (Zero Overflow, Fits Any iPhone Screen!) --- */
+@media (max-width: 740px) {
   html, body {
     height: 100vh;
     height: var(--app-height, 100dvh);
@@ -1896,100 +1912,97 @@ html, body {
     overflow: hidden;
   }
 
+  /* 3-Zone Vertical Stack:
+     Row 1 (auto): Ultra-Clean Single-Row Top Bar (34px)
+     Row 2 (1fr):  Self-Contained 9x9 Triangle Board + Teacher Cat + Compact Bottom Dock */
   .app-shell {
-    padding: 4px 5px calc(6px + env(safe-area-inset-bottom, 0px));
-    gap: 4px;
+    padding: 3px 4px calc(4px + env(safe-area-inset-bottom, 0px));
+    gap: 3px;
     max-width: 100vw;
+    width: 100vw;
     height: 100vh;
     height: var(--app-height, 100dvh);
     max-height: var(--app-height, 100dvh);
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
   }
 
-  /* Compact Single-Row Top Bar on iPhone (Hides long title so controls fit on 1 row!) */
+  /* Hide redundant Animal Selector Bar on iPhone (Kids tap the 9 animals directly at the top of the table!) */
+  .animal-selector-bar {
+    display: none !important;
+  }
+
+  /* Zone 1: Ultra-Clean Single-Row Top Bar (< 330px total width so it NEVER overflows a 375px iPhone!) */
   .top-header {
-    padding: 4px 6px;
+    padding: 3px 6px;
     gap: 4px;
-    border-radius: 12px;
-    border-width: 2px;
-    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.2);
+    border-radius: 10px;
+    border-width: 1.5px;
+    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.18);
     flex-wrap: nowrap;
+    height: 34px;
   }
 
   .brand-group {
-    display: none;
+    display: none !important;
   }
 
   .mode-switcher {
     padding: 2px;
-    border-radius: 9px;
+    border-radius: 8px;
     gap: 2px;
     flex-shrink: 0;
+    border-width: 1.5px;
   }
 
   .mode-btn {
-    padding: 4px 8px;
-    font-size: 0.84rem;
-    gap: 3px;
-    border-radius: 7px;
+    padding: 3px 7px;
+    font-size: 0.78rem;
+    gap: 2px;
+    border-radius: 6px;
+    white-space: nowrap;
   }
 
   .utility-bar {
     flex: 1;
     justify-content: flex-end;
     flex-wrap: nowrap;
-    gap: 4px;
+    gap: 3px;
+    min-width: 0;
   }
 
   .stat-pill {
-    padding: 3px 7px;
-    font-size: 0.84rem;
-    gap: 3px;
+    padding: 2px 6px;
+    font-size: 0.76rem;
+    gap: 2px;
     border-width: 1.5px;
+    white-space: nowrap;
+  }
+
+  /* Square 26x26 icon buttons on iPhone (hides #langLabel text just like the addition game!) */
+  #langLabel {
+    display: none !important;
   }
 
   .tool-btn {
-    padding: 4px 7px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    justify-content: center;
     font-size: 0.82rem;
-    border-radius: 8px;
+    border-radius: 7px;
     border-width: 1.5px;
-    box-shadow: 0 2px 0 #bfa748;
+    box-shadow: 0 1.5px 0 #bfa748;
+    flex-shrink: 0;
   }
 
-  /* Smooth Horizontal Swipe Strip for Animal Paths (Big Readable Pills!) */
-  .animal-selector-bar {
-    padding: 4px 6px;
-    gap: 5px;
-    border-radius: 10px;
-    border-width: 1.5px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .animal-selector-bar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .selector-label {
-    display: none;
-  }
-
-  .animal-pill-btn {
-    padding: 4px 10px;
-    font-size: 0.9rem;
-    gap: 4px;
-    border-width: 1.5px;
-  }
-
-  /* Grid Split: Top = Flexible 9x9 Board (minmax(0, 1fr)), Bottom = Compact Question + 6x2 Keypad (auto) */
+  /* Zone 2 & 3 Split: Top = Centered 9x9 Board, Bottom = Compact Question + 6x2 Keypad Dock */
   .main-workspace {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: minmax(0, 1fr) auto;
-    gap: 5px;
+    gap: 4px;
     min-height: 0;
     height: 100%;
     overflow: hidden;
@@ -1998,73 +2011,95 @@ html, body {
   .board-section {
     min-height: 0;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .board-frame {
-    padding: 4px 4px 6px;
-    border-radius: 14px;
-    border-width: 2.5px;
-    box-shadow: 0 4px 0 #9f8732, 0 6px 12px rgba(0, 0, 0, 0.1);
-    min-height: 0;
-    height: 100%;
+    padding: 3px 3px 4px;
+    border-radius: 12px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 #9f8732, 0 4px 10px rgba(0, 0, 0, 0.08);
+    height: auto;
+    max-height: 100%;
+    flex: 0 1 auto;
   }
 
   .deco-item {
     display: none;
   }
 
-  /* 11-Column x 11-Row Proportional Grid that Auto-Scales to Any iPhone Screen Height! */
+  /* 11-Column x 11-Row Deterministic Pixel Grid on iPhone */
   .triangle-grid {
-    grid-template-columns: 22px repeat(9, minmax(0, 1fr)) 24px;
-    grid-template-rows: 1.25fr 0.82fr repeat(9, minmax(0, 1fr));
+    grid-template-columns: 20px repeat(9, minmax(0, 1fr)) 22px;
+    grid-template-rows: var(--top-row-h, 34px) var(--num-row-h, 21px) repeat(9, var(--cell-h, 28px));
     width: 100%;
-    height: 100%;
-    min-height: 0;
+    height: auto;
   }
 
   .top-animal-avatar {
-    width: 27px;
-    height: 27px;
-    font-size: 1.12rem;
-    border-width: 2px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+    width: calc(var(--top-row-h, 34px) - 5px);
+    height: calc(var(--top-row-h, 34px) - 5px);
+    max-width: 32px;
+    max-height: 32px;
+    font-size: calc(var(--top-row-h, 34px) * 0.48);
+    border-width: 1.8px;
+    box-shadow: 0 1.5px 0 rgba(0,0,0,0.18);
   }
 
   .top-animal-dock.active-path .top-animal-avatar {
-    transform: scale(1.12);
-    box-shadow: 0 0 0 2px #ff922b, 0 3px 6px rgba(0,0,0,0.22);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px #ff922b, 0 2px 5px rgba(0,0,0,0.22);
   }
 
   .top-start-arrow {
-    font-size: 0.45rem;
+    font-size: 0.42rem;
     margin-top: 0;
   }
 
   .header-circle-wrap {
-    padding: 1px;
+    padding: 0;
   }
 
   .num-circle {
-    width: 20px;
-    height: 20px;
-    font-size: 0.84rem;
-    border-width: 1.5px;
-    box-shadow: 0 1.5px 0 rgba(0,0,0,0.2);
+    width: calc(var(--num-row-h, 21px) - 2px);
+    height: calc(var(--num-row-h, 21px) - 2px);
+    max-width: 20px;
+    max-height: 20px;
+    font-size: 0.78rem;
+    border-width: 1.2px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
   }
 
   .tri-cell {
     min-height: 0;
-    font-size: 1.02rem;
+    font-size: 0.96rem;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+  }
+
+  .tri-cell.row-first {
+    border-top-width: 2px;
+  }
+
+  .tri-cell.col-last {
+    border-right-width: 2px;
+  }
+
+  .tri-cell.is-diagonal {
+    border-left-width: 2px;
+    border-bottom-width: 2px;
   }
 
   .tri-cell.solved-cell .cell-input-box {
-    font-size: 1.06rem;
+    font-size: 1.0rem;
   }
 
   .diagonal-dashed-box {
     width: calc(100% - 2px);
     height: calc(100% - 2px);
-    border-width: 1.5px;
+    border-width: 1.2px;
     border-radius: 4px;
   }
 
@@ -2076,16 +2111,16 @@ html, body {
     width: calc(100% - 2px);
     height: calc(100% - 2px);
     border-radius: 4px;
-    border-width: 1.5px;
+    border-width: 1.2px;
   }
 
   .tri-cell.selected-cell .cell-input-box {
     border-width: 2px;
-    box-shadow: 0 0 0 2.5px rgba(255, 195, 0, 0.75);
+    box-shadow: 0 0 0 2px rgba(255, 195, 0, 0.8);
   }
 
   .cell-mini-label {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     font-weight: 900;
     letter-spacing: -0.4px;
   }
@@ -2094,41 +2129,41 @@ html, body {
     display: none;
   }
 
-  /* Compact Right-Side Home Column (Never Overflows Horizontally!) */
+  /* Compact Right-Side Home Column */
   .right-animal-home {
-    padding-left: 2px;
+    padding-left: 1px;
   }
 
   .home-badge-card {
-    padding: 1px 2px;
-    border-radius: 6px;
+    padding: 0;
+    border-radius: 5px;
     gap: 0;
-    border-width: 1.5px;
-    width: 22px;
-    height: 22px;
+    border-width: 1.2px;
+    width: 20px;
+    height: 20px;
     justify-content: center;
   }
 
   .home-animal-icon {
-    font-size: 0.88rem;
+    font-size: 0.8rem;
   }
 
   .home-house-icon {
     display: none;
   }
 
-  /* Teacher Cat Inside the Empty Bottom-Left Triangle (Capped at 48% width so it never touches diagonal!) */
+  /* Teacher Cat Inside the Empty Bottom-Left Triangle (Capped at 44% width so it never touches diagonal!) */
   .lower-left-stage {
     position: absolute;
-    left: 24px;
-    bottom: 4px;
-    width: 48%;
-    max-width: 195px;
+    left: 21px;
+    bottom: 3px;
+    width: 44%;
+    max-width: 168px;
     gap: 2px;
     z-index: 6;
+    pointer-events: auto;
   }
 
-  /* Hide redundant cards on iPhone so the board + keypad fit 100% on 1 screen */
   .journey-guide-card,
   .square-legend-badge,
   .homes-rack-card,
@@ -2141,124 +2176,151 @@ html, body {
   }
 
   .cat-speech-bubble {
-    font-size: 0.84rem;
-    line-height: 1.26;
-    padding: 5px 8px;
-    border-radius: 10px 10px 10px 3px;
-    border-width: 2px;
-    box-shadow: 0 2px 0 rgba(121, 85, 72, 0.18);
+    font-size: 0.78rem;
+    line-height: 1.22;
+    padding: 4px 7px;
+    border-radius: 9px 9px 9px 3px;
+    border-width: 1.8px;
+    box-shadow: 0 2px 0 rgba(121, 85, 72, 0.16);
   }
 
   .teacher-cat-svg-wrap {
-    width: 36px;
-    height: 38px;
+    width: 30px;
+    height: 32px;
   }
 
-  /* Bottom Control Dock: Big Readable Question + 6x2 Two-Row Keypad */
+  /* Zone 3: Unified Compact Question + Clue Bar + 6x2 Keypad Dock (158px total height!) */
   .control-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     height: auto;
     flex-shrink: 0;
   }
 
+  /* Put Animal Pill (Left) + Equation Display (Center) + Hint Button (Right) on 1 Single Row! */
   .question-card {
-    padding: 6px 10px;
-    border-radius: 14px;
-    border-width: 2px;
-    gap: 4px;
-    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.2);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "animal eq hint"
+      "formula formula formula";
+    align-items: center;
+    gap: 3px 5px;
+    padding: 4px 7px;
+    border-radius: 11px;
+    border-width: 1.8px;
+    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.18);
+  }
+
+  .question-card-header {
+    display: contents;
   }
 
   .active-animal-pill {
-    padding: 3px 10px;
-    font-size: 0.92rem;
-  }
-
-  .hint-pill-btn {
-    padding: 3px 10px;
-    font-size: 0.9rem;
+    grid-area: animal;
+    padding: 3px 7px;
+    font-size: 0.82rem;
+    border-width: 1.5px;
+    white-space: nowrap;
   }
 
   .equation-display {
-    padding: 4px 8px;
-    border-radius: 10px;
-    gap: 8px;
+    grid-area: eq;
+    padding: 2px 6px;
+    border-radius: 8px;
+    border-width: 1.5px;
+    gap: 5px;
+    justify-self: center;
+    width: 100%;
+    max-width: 185px;
+  }
+
+  .hint-pill-btn {
+    grid-area: hint;
+    padding: 3px 7px;
+    font-size: 0.8rem;
+    border-width: 1.5px;
+    white-space: nowrap;
   }
 
   .eq-num {
-    width: 32px;
-    height: 32px;
-    font-size: 1.25rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1.05rem;
   }
 
   .eq-op, .eq-eq {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
   }
 
   .eq-answer-box {
-    min-width: 54px;
-    height: 34px;
-    font-size: 1.38rem;
-    border-radius: 9px;
+    min-width: 44px;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 1.18rem;
+    border-radius: 7px;
     border-width: 2px;
   }
 
   .visual-hint-box {
-    padding: 4px 8px;
-    border-radius: 8px;
+    grid-area: formula;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border-width: 1.5px;
   }
 
   .hint-formula-text {
-    font-size: 0.96rem;
+    font-size: 0.84rem;
     margin-bottom: 0;
+    line-height: 1.2;
   }
 
   .keypad-card {
-    padding: 6px 8px;
-    border-radius: 14px;
-    border-width: 2px;
-    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.2);
+    padding: 4px 6px;
+    border-radius: 11px;
+    border-width: 1.8px;
+    box-shadow: 0 2px 0 rgba(168, 146, 62, 0.18);
   }
 
   /* 6 Columns x 2 Rows Keypad on iPhone */
   .keypad-grid {
     grid-template-columns: repeat(6, 1fr);
-    gap: 5px;
+    gap: 4px;
   }
 
   .key-btn {
-    height: 40px;
-    font-size: 1.32rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 0 #bfa748;
+    height: 36px;
+    font-size: 1.22rem;
+    border-radius: 9px;
+    border-width: 1.5px;
+    box-shadow: 0 2.5px 0 #bfa748;
   }
 
   .key-enter {
-    font-size: 1.02rem;
+    font-size: 0.96rem;
   }
 
   /* Walking Animal Sprite Perched on Cell Top-Right Rim on iPhone (Never Blocks Number!) */
   .walking-animal-sprite {
-    width: 20px;
-    height: 20px;
-    margin-left: -10px;
-    margin-top: -10px;
-    font-size: 0.76rem;
+    width: 19px;
+    height: 19px;
+    margin-left: -9.5px;
+    margin-top: -9.5px;
+    font-size: 0.72rem;
     border-width: 1.5px;
   }
 
   .walker-prop-badge {
-    font-size: 0.58rem;
-    bottom: -3px;
-    right: -5px;
+    font-size: 0.54rem;
+    bottom: -2px;
+    right: -4px;
   }
 
   .walker-cheer-bubble {
-    font-size: 0.95rem;
-    padding: 4px 10px;
-    border-width: 2.5px;
+    font-size: 0.88rem;
+    padding: 3px 8px;
+    border-width: 2px;
   }
 
   .tri-cell.has-walker .diagonal-dashed-box > span:first-child,
@@ -2268,41 +2330,41 @@ html, body {
 
   /* Celebration Modal on iPhone */
   .celebration-modal {
-    padding: 18px 16px;
-    border-radius: 22px;
+    padding: 16px 14px;
+    border-radius: 20px;
   }
 
   .celeb-special-badge {
-    font-size: 0.98rem;
-    padding: 5px 14px;
+    font-size: 0.92rem;
+    padding: 4px 12px;
   }
 
   .celeb-animal-emoji {
-    font-size: 3.4rem;
+    font-size: 3.1rem;
   }
 
   .celeb-prop {
-    font-size: 1.85rem;
+    font-size: 1.7rem;
   }
 
   .celeb-house-emoji {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
   }
 
   .celeb-title {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
   }
 
   .celeb-move-desc {
-    font-size: 1.02rem;
-    padding: 6px 10px;
+    font-size: 0.95rem;
+    padding: 5px 10px;
   }
 
   .celeb-subtitle {
-    font-size: 0.96rem;
+    font-size: 0.9rem;
   }
 
   .celeb-fact-pill {
-    font-size: 0.94rem;
+    font-size: 0.88rem;
   }
 }
