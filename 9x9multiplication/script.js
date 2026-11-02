@@ -579,13 +579,8 @@
       dom.triangleGrid.appendChild(homeCell);
     }
 
-    // Create the floating walking animal sprite inside walkerLayer
-    dom.walkerLayer.innerHTML = `
-      <div id="activeWalkerSprite" class="walking-animal-sprite">
-        <span id="walkerEmoji">🐼</span>
-        <div id="walkerCheerBubble" class="walker-cheer-bubble hidden">Yay!</div>
-      </div>
-    `;
+    // Clear walkerLayer so no floating icon ever sits on top of the numbers!
+    dom.walkerLayer.innerHTML = '';
   }
 
   /* --------------------------------------------------------------------------
@@ -719,17 +714,9 @@
           const box = document.getElementById(`cellBox-${r}-${c}`);
           if (box) {
             if (solved) {
-              box.innerHTML = `
-                <span>${r * c}</span>
-                ${onPath ? '<span class="step-paw-badge">🐾</span>' : ''}
-              `;
+              box.innerHTML = `<span>${r * c}</span>`;
             } else if (isSelected) {
-              const riderAnimal =
-                activeN >= 1 && activeN <= 9 ? ANIMALS[activeN] : ANIMALS[c];
-              box.innerHTML = `
-                <span>${state.typedValue !== '' ? state.typedValue : '?'}</span>
-                <span class="cell-animal-rider" style="border-color:${riderAnimal.color}">${riderAnimal.emoji}</span>
-              `;
+              box.innerHTML = `<span>${state.typedValue !== '' ? state.typedValue : '?'}</span>`;
             } else {
               box.innerHTML = `<span class="cell-mini-label">${r}×${c}</span>`;
             }
@@ -755,14 +742,13 @@
   }
 
   /* --------------------------------------------------------------------------
-   * 9. UPDATE FLOATING WALKER SPRITE & JOURNEY PROGRESS TRACKER
+   * 9. UPDATE JOURNEY PROGRESS TRACKER & ANIMAL CHEER ANIMATIONS
+   *    (Zero floating icons over board numbers — all numbers stay 100% clear!)
    * -------------------------------------------------------------------------- */
   function updateJourneyCardAndWalker() {
     const t = I18N[state.lang];
-    const walker = document.getElementById('activeWalkerSprite');
-    const walkerEmoji = document.getElementById('walkerEmoji');
 
-    // Determine which animal to display in the Journey Tracker & Walker
+    // Determine which animal to display in the Journey Tracker
     let focusAnimal = state.activeAnimal;
     if (focusAnimal === 0 && state.selectedCell) {
       focusAnimal = state.selectedCell.r;
@@ -800,48 +786,24 @@
       });
       dom.journeyStepsTrack.appendChild(span);
     });
-
-    // Position the floating animal walker sprite on the board!
-    if (!walker || !walkerEmoji) return;
-    walkerEmoji.textContent = animal.emoji;
-    walker.style.borderColor = animal.color;
-
-    const stopInfo = getAnimalCurrentStop(focusAnimal);
-    let targetEl = null;
-    if (stopInfo.type === 'HOME') {
-      targetEl = document.getElementById(`rightHome-${focusAnimal}`);
-    } else if (stopInfo.type === 'TOP') {
-      targetEl = document.getElementById(`topDock-${focusAnimal}`);
-    } else {
-      targetEl = document.getElementById(`cell-${stopInfo.r}-${stopInfo.c}`);
-    }
-
-    if (targetEl && dom.boardFrame) {
-      const boardRect = dom.boardFrame.getBoundingClientRect();
-      const targetRect = targetEl.getBoundingClientRect();
-      if (boardRect.width > 0 && targetRect.width > 0) {
-        const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
-        const topY = targetRect.top - boardRect.top;
-        walker.style.left = `${centerX}px`;
-        walker.style.top = `${topY}px`;
-      }
-    }
   }
 
-  function triggerWalkerCelebration(cheerText) {
-    const walker = document.getElementById('activeWalkerSprite');
-    const bubble = document.getElementById('walkerCheerBubble');
-    if (!walker) return;
-    walker.classList.remove('celebrating');
-    void walker.offsetWidth; // reflow
-    walker.classList.add('celebrating');
-    setTimeout(() => walker.classList.remove('celebrating'), 900);
-
-    if (bubble && cheerText) {
-      bubble.textContent = cheerText;
-      bubble.classList.remove('hidden');
-      setTimeout(() => bubble.classList.add('hidden'), 1100);
-    }
+  function triggerWalkerCelebration(r, c) {
+    // Animate the corresponding animals in the Top Dock, Right Home, and Journey Card
+    // without ever covering any numbers on the multiplication grid!
+    const targets = [
+      document.getElementById(`topDock-${c}`),
+      document.getElementById(`topDock-${r}`),
+      document.getElementById(`rightHome-${r}`),
+      dom.journeyAnimalAvatar
+    ];
+    targets.forEach((el) => {
+      if (!el) return;
+      el.classList.remove('cheer-jump');
+      void el.offsetWidth;
+      el.classList.add('cheer-jump');
+      setTimeout(() => el.classList.remove('cheer-jump'), 750);
+    });
   }
 
   /* --------------------------------------------------------------------------
@@ -1012,7 +974,7 @@
       }
 
       refreshBoardVisuals();
-      triggerWalkerCelebration( state.lang === 'zh' ? '好棒！🎉' : 'Yay! 🎉' );
+      triggerWalkerCelebration(r, c);
 
       // Check if any animal just completed its entire L-path home!
       checkNewlyCompletedAnimalHomes();
@@ -1396,8 +1358,55 @@
   }
 
   /* --------------------------------------------------------------------------
-   * 16. BOOTSTRAP GAME
+   * 16. DYNAMIC DEVICE & PLATFORM ADAPTER (PC, iPad, iPhone, Android)
    * -------------------------------------------------------------------------- */
+  function detectAndApplyDeviceProfile() {
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const maxTouch = navigator.maxTouchPoints || 0;
+
+    const isIPad =
+      /iPad/.test(ua) ||
+      (platform === 'MacIntel' && maxTouch > 1 && !/iPhone/.test(ua));
+    const isIPhone = /iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+
+    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const orientation = vw >= vh ? 'landscape' : 'portrait';
+
+    const isMobile = isIPhone || (isAndroid && /Mobile/.test(ua)) || vw <= 640;
+    const isTablet =
+      isIPad ||
+      (!isMobile &&
+        (isAndroid || (vw > 640 && vw <= 1180 && maxTouch > 0)));
+    const isDesktop = !isMobile && !isTablet;
+
+    const root = document.documentElement;
+    root.style.setProperty('--app-height', `${vh}px`);
+    root.style.setProperty('--app-width', `${vw}px`);
+
+    root.classList.toggle('device-ipad', isIPad);
+    root.classList.toggle('device-iphone', isIPhone);
+    root.classList.toggle('device-mobile', isMobile);
+    root.classList.toggle('device-tablet', isTablet);
+    root.classList.toggle('device-desktop', isDesktop);
+    root.classList.toggle('orientation-landscape', orientation === 'landscape');
+    root.classList.toggle('orientation-portrait', orientation === 'portrait');
+  }
+
+  window.addEventListener('resize', detectAndApplyDeviceProfile);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(detectAndApplyDeviceProfile, 120);
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', detectAndApplyDeviceProfile);
+  }
+
+  /* --------------------------------------------------------------------------
+   * 17. BOOTSTRAP GAME
+   * -------------------------------------------------------------------------- */
+  detectAndApplyDeviceProfile();
   buildBoardDOM();
   bindEvents();
   setGameMode('story');
