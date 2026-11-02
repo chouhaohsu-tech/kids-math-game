@@ -290,6 +290,8 @@
   const state = {
     lang: 'en',              // 'en' | 'zh'
     mode: 'story',           // 'story' | 'test'
+    viewMode: window.innerWidth <= 740 ? 'path' : 'table', // 'path' (Big Stepping Stones) | 'table' (Full 9x9 Triangle)
+    userToggledView: false,
     soundEnabled: true,
     activeAnimal: 1,         // 1..9 or 0 for 'all'
     selectedCell: null,      // { r, c }
@@ -508,6 +510,9 @@
     scoreText: document.getElementById('scoreText'),
     timerPill: document.getElementById('timerPill'),
     timerText: document.getElementById('timerText'),
+    btnToggleView: document.getElementById('btnToggleView'),
+    viewToggleIcon: document.getElementById('viewToggleIcon'),
+    viewToggleLabel: document.getElementById('viewToggleLabel'),
     btnLang: document.getElementById('btnLang'),
     langLabel: document.getElementById('langLabel'),
     btnVoice: document.getElementById('btnVoice'),
@@ -517,7 +522,20 @@
     animalSelectorBar: document.getElementById('animalSelectorBar'),
     selectorPrompt: document.getElementById('selectorPrompt'),
     animalPillsContainer: document.getElementById('animalPillsContainer'),
+    focusedPathStage: document.getElementById('focusedPathStage'),
+    fpAnimalBar: document.getElementById('fpAnimalBar'),
+    fpHeroBadge: document.getElementById('fpHeroBadge'),
+    fpAnimalEmoji: document.getElementById('fpAnimalEmoji'),
+    fpAnimalProp: document.getElementById('fpAnimalProp'),
+    fpPathTitle: document.getElementById('fpPathTitle'),
+    btnSwitchToFullMap: document.getElementById('btnSwitchToFullMap'),
+    fpSpeechText: document.getElementById('fpSpeechText'),
+    fpTrailWrap: document.getElementById('fpTrailWrap'),
+    fpTrailGrid: document.getElementById('fpTrailGrid'),
+    fpWalkerLayer: document.getElementById('fpWalkerLayer'),
     boardFrame: document.getElementById('boardFrame'),
+    btnBackToPathView: document.getElementById('btnBackToPathView'),
+    labelBackToPath: document.getElementById('labelBackToPath'),
     triangleGrid: document.getElementById('triangleGrid'),
     walkerLayer: document.getElementById('walkerLayer'),
     journeyGuideCard: document.getElementById('journeyGuideCard'),
@@ -674,6 +692,17 @@
         <div id="walkerCheerBubble" class="walker-cheer-bubble hidden">Yay!</div>
       </div>
     `;
+
+    // Create the floating walking animal sprite inside Focused Path Stage's fpWalkerLayer!
+    if (dom.fpWalkerLayer) {
+      dom.fpWalkerLayer.innerHTML = `
+        <div id="fpWalkerSprite" class="walking-animal-sprite fp-walker-sprite">
+          <span id="fpWalkerEmoji">🐼</span>
+          <span id="fpWalkerProp" class="walker-prop-badge">🎋</span>
+          <div id="fpWalkerBubble" class="walker-cheer-bubble hidden">Yay!</div>
+        </div>
+      `;
+    }
   }
 
   /* --------------------------------------------------------------------------
@@ -831,7 +860,212 @@
     }
 
     updateJourneyCardAndWalker();
+    updateFocusedPathStage();
     updateSidebarQuestionCard();
+  }
+
+  /* --------------------------------------------------------------------------
+   * 8B. FOCUSED ANIMAL L-PATH STAGE (BIG STEPPING STONES FOR IPHONE & IPAD!)
+   * -------------------------------------------------------------------------- */
+  function setViewMode(mode, isUserAction = true) {
+    if (isUserAction) {
+      state.userToggledView = true;
+    }
+    state.viewMode = mode === 'path' ? 'path' : 'table';
+    refreshBoardVisuals();
+  }
+
+  function updateFocusedPathStage() {
+    if (!dom.focusedPathStage || !dom.boardFrame) return;
+
+    const isPathView = state.viewMode === 'path';
+    dom.focusedPathStage.classList.toggle('hidden', !isPathView);
+    dom.boardFrame.classList.toggle('hidden', isPathView);
+
+    // Update top header view toggle button
+    if (dom.viewToggleIcon && dom.viewToggleLabel) {
+      dom.viewToggleIcon.textContent = isPathView ? '🗺️' : '🐾';
+      dom.viewToggleLabel.textContent =
+        state.lang === 'zh'
+          ? isPathView ? '完整九九表' : '大步石路線'
+          : isPathView ? '9×9 Table' : 'Animal Path';
+    }
+    if (dom.btnSwitchToFullMap) {
+      dom.btnSwitchToFullMap.textContent =
+        state.lang === 'zh' ? '🗺️ 看完整 9×9 乘法表' : '🗺️ Full 9×9 Table';
+    }
+    if (dom.labelBackToPath) {
+      dom.labelBackToPath.textContent =
+        state.lang === 'zh' ? '切換：大步石動物路線' : 'Big Animal Path View';
+    }
+
+    // Determine which animal's L-path is currently focused
+    let focusAnimal = state.activeAnimal;
+    if (!focusAnimal || focusAnimal < 1 || focusAnimal > 9) {
+      focusAnimal = state.selectedCell ? state.selectedCell.c : 1;
+    }
+    const animal = ANIMALS[focusAnimal] || ANIMALS[1];
+
+    // 1. Render 9-Animal Quick Switcher Bar
+    if (dom.fpAnimalBar) {
+      dom.fpAnimalBar.innerHTML = '';
+      for (let n = 1; n <= 9; n++) {
+        const a = ANIMALS[n];
+        const done = isAnimalPathComplete(n);
+        const isActive = focusAnimal === n;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = [
+          'fp-animal-btn',
+          isActive ? 'active' : '',
+          done ? 'done' : ''
+        ]
+          .filter(Boolean)
+          .join(' ');
+        if (isActive) {
+          btn.style.borderColor = a.color;
+          btn.style.boxShadow = `0 0 0 3px ${a.color}55, 0 4px 8px rgba(0,0,0,0.18)`;
+        }
+        btn.innerHTML = `
+          <span class="fp-btn-emoji">${a.emoji}</span>
+          <span class="fp-btn-num band-${n}">${done ? '✓' : n}</span>
+        `;
+        btn.addEventListener('click', () => selectAnimalPath(n));
+        dom.fpAnimalBar.appendChild(btn);
+      }
+    }
+
+    // 2. Update Active Animal Header & Teacher Cat Speech Copy
+    if (dom.fpAnimalEmoji) dom.fpAnimalEmoji.textContent = animal.emoji;
+    if (dom.fpAnimalProp) dom.fpAnimalProp.textContent = animal.propEmoji || '⭐';
+    if (dom.fpHeroBadge) dom.fpHeroBadge.style.borderColor = animal.color;
+    if (dom.fpPathTitle) {
+      dom.fpPathTitle.textContent =
+        state.lang === 'zh'
+          ? `${animal.name.zh}的數字 ${focusAnimal} 回家之路`
+          : `${animal.name.en}'s #${focusAnimal} Path Home`;
+    }
+    if (dom.fpSpeechText && dom.catSpeechText) {
+      dom.fpSpeechText.textContent = dom.catSpeechText.textContent;
+    }
+
+    // 3. Build the 10 Big Stepping Stones (Steps 1..9 + Animal Home!) in a 5x2 Grid
+    if (!dom.fpTrailGrid) return;
+    dom.fpTrailGrid.innerHTML = '';
+    const path = getAnimalLPath(focusAnimal);
+
+    path.forEach((step, idx) => {
+      const { r, c, isCorner, dir } = step;
+      const solved = isCellSolved(r, c);
+      const isSelected =
+        state.selectedCell && state.selectedCell.r === r && state.selectedCell.c === c;
+      const bandIdx = getCellBandIndex(r, c);
+
+      const stone = document.createElement('div');
+      stone.id = `fpStone-${r}-${c}`;
+      stone.className = [
+        'fp-stone',
+        `band-${bandIdx}`,
+        isCorner ? 'is-corner' : '',
+        solved ? 'solved-stone' : 'empty-stone',
+        isSelected ? 'selected-stone' : ''
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      let dirBadge = '';
+      if (isCorner) {
+        dirBadge = state.lang === 'zh' ? `⭐ ${focusAnimal}² 轉角` : `⭐ ${focusAnimal}² Turn`;
+      } else if (dir === 'down') {
+        dirBadge = state.lang === 'zh' ? `⬇ 直行 ${c}` : `⬇ Col ${c}`;
+      } else {
+        dirBadge = state.lang === 'zh' ? `➔ 橫列 ${r}` : `➔ Row ${r}`;
+      }
+
+      const centerDisplay = solved
+        ? `${r * c}`
+        : isSelected
+          ? state.typedValue !== '' ? state.typedValue : '?'
+          : '?';
+
+      const stepArrow = idx === 4 ? '⤵' : '➔';
+
+      stone.innerHTML = `
+        <div class="fp-stone-top">
+          <span class="fp-stone-eq">${r} × ${c}</span>
+          <span class="fp-stone-arrow">${stepArrow}</span>
+        </div>
+        <div class="fp-stone-val">${centerDisplay}</div>
+        <div class="fp-stone-dir">${dirBadge}</div>
+      `;
+
+      stone.addEventListener('click', () => selectCell(r, c));
+      dom.fpTrailGrid.appendChild(stone);
+    });
+
+    // 10th Stone: Animal's Destination Home!
+    const isHome = isAnimalPathComplete(focusAnimal);
+    const homeStone = document.createElement('div');
+    homeStone.id = `fpStone-home-${focusAnimal}`;
+    homeStone.className = `fp-stone fp-home-stone ${isHome ? 'reached-home' : ''}`;
+    homeStone.innerHTML = `
+      <div class="fp-stone-top">
+        <span class="fp-stone-eq">${state.lang === 'zh' ? '🏡 終點' : '🏡 HOME'}</span>
+      </div>
+      <div class="fp-stone-val fp-home-icons">${animal.emoji}${animal.homeEmoji}</div>
+      <div class="fp-stone-dir">${
+        isHome
+          ? state.lang === 'zh' ? '平安到家！🎉' : 'Safe Home! 🎉'
+          : animal.homeName[state.lang]
+      }</div>
+    `;
+    dom.fpTrailGrid.appendChild(homeStone);
+
+    // 4. Position the Floating Walking Animal Sprite on the Focused Trail (Top-Right Rim so numbers are NEVER blocked!)
+    requestAnimationFrame(() => positionFocusedWalker(focusAnimal));
+  }
+
+  function positionFocusedWalker(focusAnimal) {
+    if (state.viewMode !== 'path' || !dom.fpTrailWrap) return;
+    const fpWalker = document.getElementById('fpWalkerSprite');
+    const fpEmoji = document.getElementById('fpWalkerEmoji');
+    const fpProp = document.getElementById('fpWalkerProp');
+    if (!fpWalker || !fpEmoji) return;
+
+    const animal = ANIMALS[focusAnimal] || ANIMALS[1];
+    fpEmoji.textContent = animal.emoji;
+    if (fpProp) fpProp.textContent = animal.propEmoji || '⭐';
+    fpWalker.style.borderColor = animal.color;
+
+    const stopInfo = getAnimalCurrentStop(focusAnimal);
+    let targetStone = null;
+    if (stopInfo.type === 'HOME') {
+      targetStone = document.getElementById(`fpStone-home-${focusAnimal}`);
+    } else if (stopInfo.type === 'CELL') {
+      targetStone = document.getElementById(`fpStone-${stopInfo.r}-${stopInfo.c}`);
+    } else {
+      targetStone = document.getElementById(`fpStone-1-${focusAnimal}`);
+    }
+
+    if (targetStone && dom.fpTrailWrap) {
+      const wrapRect = dom.fpTrailWrap.getBoundingClientRect();
+      const stoneRect = targetStone.getBoundingClientRect();
+      if (wrapRect.width > 0 && stoneRect.width > 0) {
+        if (stopInfo.type === 'TOP') {
+          // Starting edge on top-left of the first stone
+          fpWalker.style.left = `${stoneRect.left - wrapRect.left + 10}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 8}px`;
+        } else if (stopInfo.type === 'HOME') {
+          // Centered on the Home stone
+          fpWalker.style.left = `${stoneRect.left - wrapRect.left + stoneRect.width * 0.78}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 10}px`;
+        } else {
+          // Perched on the top-right corner rim of the solved stone so the big number in the center is 100% visible!
+          fpWalker.style.left = `${stoneRect.right - wrapRect.left - 8}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 8}px`;
+        }
+      }
+    }
   }
 
   /* --------------------------------------------------------------------------
@@ -944,27 +1178,37 @@
   function triggerWalkerCelebration(r, c, animalIdx = 1) {
     const walker = document.getElementById('activeWalkerSprite');
     const bubble = document.getElementById('walkerCheerBubble');
+    const fpWalker = document.getElementById('fpWalkerSprite');
+    const fpBubble = document.getElementById('fpWalkerBubble');
     const animal = ANIMALS[animalIdx] || ANIMALS[1];
 
-    if (walker) {
+    [walker, fpWalker].forEach((w) => {
+      if (!w) return;
       for (let i = 1; i <= 9; i++) {
-        walker.classList.remove(`move-animal-${i}`);
+        w.classList.remove(`move-animal-${i}`);
       }
-      void walker.offsetWidth;
-      walker.classList.add(`move-animal-${animal.id}`);
-    }
-    if (bubble) {
-      bubble.textContent = animal.stepBubble ? animal.stepBubble[state.lang] : 'Yay! 🎉';
-      bubble.classList.remove('hidden');
-      if (state.bubbleHideTimer) clearTimeout(state.bubbleHideTimer);
-      state.bubbleHideTimer = setTimeout(() => bubble.classList.add('hidden'), 3800);
-    }
+      void w.offsetWidth;
+      w.classList.add(`move-animal-${animal.id}`);
+    });
+
+    [bubble, fpBubble].forEach((b) => {
+      if (!b) return;
+      b.textContent = animal.stepBubble ? animal.stepBubble[state.lang] : 'Yay! 🎉';
+      b.classList.remove('hidden');
+    });
+
+    if (state.bubbleHideTimer) clearTimeout(state.bubbleHideTimer);
+    state.bubbleHideTimer = setTimeout(() => {
+      if (bubble) bubble.classList.add('hidden');
+      if (fpBubble) fpBubble.classList.add('hidden');
+    }, 3800);
 
     const targets = [
       document.getElementById(`topDock-${c}`),
       document.getElementById(`topDock-${r}`),
       document.getElementById(`rightHome-${r}`),
-      dom.journeyAnimalAvatar
+      dom.journeyAnimalAvatar,
+      dom.fpHeroBadge
     ];
     targets.forEach((el) => {
       if (!el) return;
@@ -1128,7 +1372,10 @@
       const cheerMsg = cheeringAnimal.cheer[state.lang];
       dom.catSpeechText.textContent = t.catCorrect(cheerMsg, r, c, expected);
 
-      const cellEl = document.getElementById(`cell-${r}-${c}`);
+      const cellEl =
+        state.viewMode === 'path'
+          ? document.getElementById(`fpStone-${r}-${c}`)
+          : document.getElementById(`cell-${r}-${c}`);
       if (cellEl) {
         cellEl.classList.remove('just-solved');
         void cellEl.offsetWidth;
@@ -1161,7 +1408,10 @@
       state.showHintDots = true;
       playWrongBoing();
 
-      const cellEl = document.getElementById(`cell-${r}-${c}`);
+      const cellEl =
+        state.viewMode === 'path'
+          ? document.getElementById(`fpStone-${r}-${c}`)
+          : document.getElementById(`cell-${r}-${c}`);
       if (cellEl) {
         cellEl.classList.remove('wrong-shake');
         void cellEl.offsetWidth;
@@ -1636,6 +1886,19 @@
     dom.btnModeStory.addEventListener('click', () => setGameMode('story'));
     dom.btnModeTest.addEventListener('click', () => setGameMode('test'));
 
+    // View Switcher: Focused Animal Path View vs Full 9x9 Table View
+    if (dom.btnToggleView) {
+      dom.btnToggleView.addEventListener('click', () => {
+        setViewMode(state.viewMode === 'path' ? 'table' : 'path', true);
+      });
+    }
+    if (dom.btnSwitchToFullMap) {
+      dom.btnSwitchToFullMap.addEventListener('click', () => setViewMode('table', true));
+    }
+    if (dom.btnBackToPathView) {
+      dom.btnBackToPathView.addEventListener('click', () => setViewMode('path', true));
+    }
+
     // Language Switcher (EN / 繁體中文)
     dom.btnLang.addEventListener('click', () => {
       state.lang = state.lang === 'en' ? 'zh' : 'en';
@@ -1687,6 +1950,7 @@
     window.addEventListener('resize', () => {
       resizeCanvas();
       updateJourneyCardAndWalker();
+      updateFocusedPathStage();
     });
   }
 
@@ -1714,6 +1978,11 @@
       (!isMobile &&
         (isAndroid || (vw > 740 && vw <= 1220 && maxTouch > 0)));
     const isDesktop = !isMobile && !isTablet;
+
+    // Default to Focused Animal Path View on iPhone/Mobile unless the user explicitly toggled!
+    if (!state.userToggledView) {
+      state.viewMode = isMobile ? 'path' : 'table';
+    }
 
     const root = document.documentElement;
     root.style.setProperty('--app-height', `${vh}px`);
@@ -1764,7 +2033,10 @@
     root.classList.toggle('orientation-portrait', orientation === 'portrait');
 
     if (dom.triangleGrid && dom.triangleGrid.children.length > 0) {
-      requestAnimationFrame(() => updateJourneyCardAndWalker());
+      requestAnimationFrame(() => {
+        updateJourneyCardAndWalker();
+        updateFocusedPathStage();
+      });
     }
   }
 
