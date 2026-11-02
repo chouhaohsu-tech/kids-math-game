@@ -2028,8 +2028,14 @@
     let topRowH = 48;
     let numRowH = 30;
 
-    if (vw <= 760 || vh <= 520) {
-      // iPhone Vertical or iPhone Horizontal (Compact full-table cell height + native scroll enabled)
+    if (isMobile && orientation === 'landscape') {
+      // iPhone Horizontal: Dynamically fit 11-row multiplication grid into available landscape height!
+      const availH = Math.max(180, vh - 40);
+      cellH = Math.max(16, Math.min(24, Math.floor(availH / 11.2)));
+      topRowH = Math.floor(cellH * 1.25);
+      numRowH = Math.floor(cellH * 0.8);
+    } else if (isMobile) {
+      // iPhone Vertical
       cellH = 26;
       topRowH = 32;
       numRowH = 20;
