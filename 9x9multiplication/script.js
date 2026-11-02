@@ -1044,11 +1044,16 @@
     fpWalker.style.borderColor = animal.color;
 
     const stopInfo = getAnimalCurrentStop(focusAnimal);
+    document.querySelectorAll('.fp-stone.has-walker').forEach((el) => {
+      el.classList.remove('has-walker');
+    });
+
     let targetStone = null;
     if (stopInfo.type === 'HOME') {
       targetStone = document.getElementById(`fpStone-home-${focusAnimal}`);
     } else if (stopInfo.type === 'CELL') {
       targetStone = document.getElementById(`fpStone-${stopInfo.r}-${stopInfo.c}`);
+      if (targetStone) targetStone.classList.add('has-walker');
     } else {
       targetStone = document.getElementById(`fpStone-1-${focusAnimal}`);
     }
@@ -1058,17 +1063,18 @@
       const stoneRect = targetStone.getBoundingClientRect();
       if (wrapRect.width > 0 && stoneRect.width > 0) {
         if (stopInfo.type === 'TOP') {
-          // Starting edge on top-left of the first stone
-          fpWalker.style.left = `${stoneRect.left - wrapRect.left + 10}px`;
-          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 8}px`;
+          // Starting edge perched on the top-left roof of the first stone (above the number box!)
+          fpWalker.style.left = `${stoneRect.left - wrapRect.left + 14}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top - 4}px`;
         } else if (stopInfo.type === 'HOME') {
-          // Centered on the Home stone
-          fpWalker.style.left = `${stoneRect.left - wrapRect.left + stoneRect.width * 0.78}px`;
-          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 10}px`;
+          // Perched on the top-right roof of the Home stone
+          fpWalker.style.left = `${stoneRect.right - wrapRect.left - 14}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top - 2}px`;
         } else {
-          // Perched on the top-right corner rim of the solved stone so the big number in the center is 100% visible!
-          fpWalker.style.left = `${stoneRect.right - wrapRect.left - 8}px`;
-          fpWalker.style.top = `${stoneRect.top - wrapRect.top + 8}px`;
+          // Perched on the TOP-RIGHT ROOF of the solved stone (inside the overhead walking lane),
+          // completely above the white `.fp-stone-val` number box so the number is 100% untouched!
+          fpWalker.style.left = `${stoneRect.right - wrapRect.left - 12}px`;
+          fpWalker.style.top = `${stoneRect.top - wrapRect.top - 4}px`;
         }
       }
     }
@@ -1138,15 +1144,16 @@
 
     const stopInfo = getAnimalCurrentStop(focusAnimal);
     let targetEl = null;
-    const isMobileScreen = window.innerWidth <= 740;
+    const isMobileScreen = window.innerWidth <= 760 || window.innerHeight <= 520;
     if (stopInfo.type === 'HOME') {
       targetEl = document.getElementById(`rightHome-${focusAnimal}`);
     } else if (stopInfo.type === 'TOP') {
       targetEl = document.getElementById(`topDock-${focusAnimal}`);
     } else {
       targetEl = document.getElementById(`cell-${stopInfo.r}-${stopInfo.c}`);
-      if (targetEl && !isMobileScreen) {
-        // On desktop/tablet, mark this cell with `has-walker` so its number shifts left and stands beside the animal!
+      if (targetEl) {
+        // Always mark this cell with `has-walker` on ALL devices (PC, iPad, iPhone)
+        // so the solved number shifts to the bottom-left while the animal perches on the top-right!
         targetEl.classList.add('has-walker');
       }
     }
@@ -1156,21 +1163,14 @@
       const targetRect = targetEl.getBoundingClientRect();
       if (boardRect.width > 0 && targetRect.width > 0) {
         if (stopInfo.type === 'CELL') {
-          if (isMobileScreen) {
-            // On compact iPhone screens, perch the animal on the top-right corner rim of the cell
-            // so the solved number inside the box remains 100% centered and unobstructed!
-            const cornerX = targetRect.right - boardRect.left - 3;
-            const cornerY = targetRect.top - boardRect.top + 3;
-            walker.style.left = `${cornerX}px`;
-            walker.style.top = `${cornerY}px`;
-          } else {
-            // On desktop/iPad, place the animal on the right side of the cell (76% across, 52% down)
-            // while `.has-walker` shifts the number to the left side of the cell!
-            const sideX = targetRect.left - boardRect.left + targetRect.width * 0.76;
-            const sideY = targetRect.top - boardRect.top + targetRect.height * 0.52;
-            walker.style.left = `${sideX}px`;
-            walker.style.top = `${sideY}px`;
-          }
+          // Perch the animal on the TOP-RIGHT corner rim of the cell while `.has-walker`
+          // places the solved number in the BOTTOM-LEFT of the cell — 100% zero overlap!
+          const offsetX = isMobileScreen ? 3 : 6;
+          const offsetY = isMobileScreen ? 2 : 5;
+          const cornerX = targetRect.right - boardRect.left - offsetX;
+          const cornerY = targetRect.top - boardRect.top + offsetY;
+          walker.style.left = `${cornerX}px`;
+          walker.style.top = `${cornerY}px`;
         } else {
           const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
           const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
