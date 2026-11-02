@@ -1820,13 +1820,17 @@ body {
 .celebration-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(35, 28, 12, 0.65);
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background: rgba(30, 22, 10, 0.72);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
-  padding: 16px;
+  z-index: 9999;
+  padding: max(8px, env(safe-area-inset-top, 8px)) max(12px, env(safe-area-inset-right, 12px)) max(12px, env(safe-area-inset-bottom, 12px)) max(12px, env(safe-area-inset-left, 12px));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -1835,16 +1839,14 @@ body {
   position: relative;
   background: linear-gradient(180deg, #fffdf0 0%, #fff3bf 100%);
   border: 4px solid #f59f00;
-  border-radius: 28px;
-  padding: 24px 28px 20px;
+  border-radius: 26px;
+  padding: 22px 26px 18px;
   max-width: 480px;
-  width: 100%;
-  max-height: calc(100dvh - 24px);
-  overflow-y: auto;
+  width: 95%;
   margin: auto;
   text-align: center;
-  box-shadow: 0 12px 0 #d9480f, 0 20px 40px rgba(0,0,0,0.35);
-  animation: modalPopIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 0 #d9480f, 0 20px 40px rgba(0,0,0,0.35);
+  animation: modalPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .celeb-close-btn {
@@ -2975,19 +2977,19 @@ body {
 }
 
 /* --- 5. Compact 2-Column Celebration Modal for iPhone & Small Screens in Landscape --- */
-@media (max-height: 540px), (orientation: landscape) and (max-height: 600px) {
+@media (orientation: landscape) and (max-height: 580px), (max-height: 520px) {
   .celebration-overlay {
-    padding: 6px 10px;
+    padding: max(4px, env(safe-area-inset-top, 4px)) max(12px, env(safe-area-inset-right, 12px)) max(8px, env(safe-area-inset-bottom, 8px)) max(12px, env(safe-area-inset-left, 12px));
     align-items: center;
   }
 
   .celebration-modal {
-    max-width: 620px;
+    max-width: 580px;
     width: 96%;
     padding: 8px 14px 10px;
-    max-height: calc(100dvh - 10px);
+    max-height: none;
     border-radius: 18px;
-    box-shadow: 0 8px 0 #d9480f, 0 14px 28px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 0 #d9480f, 0 12px 24px rgba(0,0,0,0.35);
   }
 
   .celeb-close-btn {
@@ -3022,76 +3024,203 @@ body {
   }
 
   .celeb-special-badge {
-    font-size: 0.78rem;
-    padding: 3px 10px;
-    margin-bottom: 3px;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    margin-bottom: 2px;
+    line-height: 1.2;
   }
 
   .celeb-animal-stage {
     min-height: auto;
-    margin: 2px 0 4px;
+    margin: 2px 0 3px;
     gap: 6px;
   }
 
   .celeb-animal-emoji {
-    font-size: 2.3rem;
+    font-size: 2.1rem;
   }
 
   .celeb-prop {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
   }
 
   .celeb-arrow {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .celeb-house-emoji {
-    font-size: 1.9rem;
+    font-size: 1.75rem;
   }
 
   .celeb-move-desc {
-    font-size: 0.8rem;
-    padding: 3px 8px;
+    font-size: 0.78rem;
+    padding: 2px 8px;
     margin: 0;
-    line-height: 1.22;
+    line-height: 1.2;
   }
 
   .celeb-sparkles {
-    font-size: 1.0rem;
+    font-size: 0.95rem;
     margin-bottom: 1px;
     text-align: left;
   }
 
   .celeb-title {
-    font-size: 1.12rem;
+    font-size: 1.05rem;
     margin-bottom: 2px;
     line-height: 1.2;
   }
 
   .celeb-subtitle {
-    font-size: 0.82rem;
-    margin-bottom: 6px;
+    font-size: 0.78rem;
+    margin-bottom: 4px;
     line-height: 1.2;
   }
 
+  /* Hide 9 bulky math badges in landscape so button is 100% visible with zero scroll */
   .celeb-path-badges {
-    justify-content: flex-start;
-    gap: 4px;
-    margin-bottom: 8px;
-    max-height: 52px;
-    overflow-y: auto;
-  }
-
-  .celeb-fact-pill {
-    font-size: 0.76rem;
-    padding: 2px 6px;
+    display: none !important;
   }
 
   .celeb-continue-btn {
     width: 100%;
     padding: 8px 14px;
     font-size: 1.05rem;
+    font-weight: 800;
+    border-radius: 12px;
     box-shadow: 0 4px 0 #237032;
     margin-top: 2px;
   }
+}
+
+/* Redundant Fallback: Applied automatically via JS root.classList orientation-landscape */
+.orientation-landscape.device-mobile .celebration-overlay,
+.orientation-landscape.device-iphone .celebration-overlay {
+  padding: max(4px, env(safe-area-inset-top, 4px)) max(12px, env(safe-area-inset-right, 12px)) max(8px, env(safe-area-inset-bottom, 8px)) max(12px, env(safe-area-inset-left, 12px));
+  align-items: center;
+}
+
+.orientation-landscape.device-mobile .celebration-modal,
+.orientation-landscape.device-iphone .celebration-modal {
+  max-width: 580px;
+  width: 96%;
+  padding: 8px 14px 10px;
+  max-height: none;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 #d9480f, 0 12px 24px rgba(0,0,0,0.35);
+}
+
+.orientation-landscape.device-mobile .celeb-close-btn,
+.orientation-landscape.device-iphone .celeb-close-btn {
+  top: 6px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 0 #c92a2a;
+}
+
+.orientation-landscape.device-mobile .celeb-body-wrap,
+.orientation-landscape.device-iphone .celeb-body-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.orientation-landscape.device-mobile .celeb-left-pane,
+.orientation-landscape.device-iphone .celeb-left-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.orientation-landscape.device-mobile .celeb-right-pane,
+.orientation-landscape.device-iphone .celeb-right-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+}
+
+.orientation-landscape.device-mobile .celeb-special-badge,
+.orientation-landscape.device-iphone .celeb-special-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.orientation-landscape.device-mobile .celeb-animal-stage,
+.orientation-landscape.device-iphone .celeb-animal-stage {
+  min-height: auto;
+  margin: 2px 0 3px;
+  gap: 6px;
+}
+
+.orientation-landscape.device-mobile .celeb-animal-emoji,
+.orientation-landscape.device-iphone .celeb-animal-emoji {
+  font-size: 2.1rem;
+}
+
+.orientation-landscape.device-mobile .celeb-prop,
+.orientation-landscape.device-iphone .celeb-prop {
+  font-size: 1.2rem;
+}
+
+.orientation-landscape.device-mobile .celeb-arrow,
+.orientation-landscape.device-iphone .celeb-arrow {
+  font-size: 1.05rem;
+}
+
+.orientation-landscape.device-mobile .celeb-house-emoji,
+.orientation-landscape.device-iphone .celeb-house-emoji {
+  font-size: 1.75rem;
+}
+
+.orientation-landscape.device-mobile .celeb-move-desc,
+.orientation-landscape.device-iphone .celeb-move-desc {
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.orientation-landscape.device-mobile .celeb-sparkles,
+.orientation-landscape.device-iphone .celeb-sparkles {
+  font-size: 0.95rem;
+  margin-bottom: 1px;
+  text-align: left;
+}
+
+.orientation-landscape.device-mobile .celeb-title,
+.orientation-landscape.device-iphone .celeb-title {
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.orientation-landscape.device-mobile .celeb-subtitle,
+.orientation-landscape.device-iphone .celeb-subtitle {
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.orientation-landscape.device-mobile .celeb-path-badges,
+.orientation-landscape.device-iphone .celeb-path-badges {
+  display: none !important;
+}
+
+.orientation-landscape.device-mobile .celeb-continue-btn,
+.orientation-landscape.device-iphone .celeb-continue-btn {
+  width: 100%;
+  padding: 8px 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 12px;
+  box-shadow: 0 4px 0 #237032;
+  margin-top: 2px;
 }

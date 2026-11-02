@@ -1458,6 +1458,7 @@
   }
 
   function showAnimalHomeCelebration(animalIdx, isGrandFinale) {
+    detectAndApplyDeviceProfile();
     const t = I18N[state.lang];
     const animal = ANIMALS[animalIdx] || ANIMALS[1];
 
@@ -1548,6 +1549,8 @@
       }
     };
 
+    dom.celebrationOverlay.scrollTop = 0;
+    if (dom.celebrationModal) dom.celebrationModal.scrollTop = 0;
     dom.celebrationOverlay.classList.remove('hidden');
   }
 
@@ -1964,12 +1967,21 @@
     // Reset Game
     dom.btnReset.addEventListener('click', resetGame);
 
-    // Reposition walker sprite on window resize
-    window.addEventListener('resize', () => {
+    // Reposition walker sprite on window resize and orientation changes
+    const handleLayoutChange = () => {
+      detectAndApplyDeviceProfile();
       resizeCanvas();
       updateJourneyCardAndWalker();
       updateFocusedPathStage();
+    };
+    window.addEventListener('resize', handleLayoutChange);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleLayoutChange, 100);
+      setTimeout(handleLayoutChange, 350);
     });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleLayoutChange);
+    }
   }
 
   /* --------------------------------------------------------------------------
