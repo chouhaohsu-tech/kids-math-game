@@ -609,8 +609,13 @@ html, body {
 }
 
 .tri-cell.dimmed-cell {
-  opacity: 0.48;
-  filter: saturate(0.65);
+  opacity: 0.88;
+  filter: saturate(0.92);
+}
+
+/* Previous step reference highlight (so Ning can easily see the previous number and add!) */
+.tri-cell.prev-step-ref {
+  box-shadow: inset 0 0 0 3px #ffffff, 0 0 8px rgba(255, 255, 255, 0.7);
 }
 
 /* Paw print indicator on solved steps along the active animal path */
@@ -705,18 +710,18 @@ html, body {
 
 .walking-animal-sprite {
   position: absolute;
-  width: 44px;
-  height: 44px;
-  margin-left: -22px;
-  margin-top: -22px;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  margin-top: -15px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #ffffff 0%, #fff3bf 100%);
-  border: 3px solid #f08c00;
-  box-shadow: 0 5px 14px rgba(0,0,0,0.28), 0 0 0 3px rgba(255,255,255,0.8);
+  border: 2.5px solid #f08c00;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.22), 0 0 0 2px rgba(255,255,255,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.65rem;
+  font-size: 1.15rem;
   transition: left 0.48s cubic-bezier(0.34, 1.56, 0.64, 1),
               top 0.48s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.3s ease;

@@ -139,6 +139,8 @@
       activeStepLabel: (animalEmoji, animalName) => `${animalEmoji} ${animalName}'s Step`,
       testChallengeLabel: '⚡ Speed Challenge',
       hintFormula: (r, c, sumStr) => `${r} groups of ${c} = ${sumStr}`,
+      hintFromPrev: (prevVal, addVal, r, c) =>
+        `Previous box is ${prevVal} → ${prevVal} + ${addVal} = ?  (${r} groups of ${c})`,
       celebSingleTitle: (animalName) => `Yay Ning! ${animalName} is Home!`,
       celebSingleSub: (n) => `You completed the entire #${n} multiplication path!`,
       celebAllTitle: '🏆 AMAZING NING! ALL 9 ANIMALS ARE HOME! 🏆',
@@ -175,6 +177,8 @@
       activeStepLabel: (animalEmoji, animalName) => `${animalEmoji} ${animalName}的步伐`,
       testChallengeLabel: '⚡ 隨機跳題挑戰',
       hintFormula: (r, c, sumStr) => `${r} 個 ${c} 相加 = ${sumStr}`,
+      hintFromPrev: (prevVal, addVal, r, c) =>
+        `上一格是 ${prevVal} → ${prevVal} + ${addVal} = ? （${r} 個 ${c} 相加）`,
       celebSingleTitle: (animalName) => `太棒了 Ning！${animalName}平安到家囉！`,
       celebSingleSub: (n) => `妳完成了數字 ${n} 的整條 L 型乘法路線！`,
       celebAllTitle: '🏆 太神啦 Ning！9 隻小動物全部平安回家！ 🏆',
@@ -811,10 +815,18 @@
       const boardRect = dom.boardFrame.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
       if (boardRect.width > 0 && targetRect.width > 0) {
-        const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
-        const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
-        walker.style.left = `${centerX}px`;
-        walker.style.top = `${centerY}px`;
+        if (stopInfo.type === 'CELL') {
+          // Place the animal avatar in the top-left corner of the cell so it NEVER blocks the number!
+          const cornerX = targetRect.left - boardRect.left + 8;
+          const cornerY = targetRect.top - boardRect.top + 8;
+          walker.style.left = `${cornerX}px`;
+          walker.style.top = `${cornerY}px`;
+        } else {
+          const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
+          const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
+          walker.style.left = `${centerX}px`;
+          walker.style.top = `${centerY}px`;
+        }
       }
     }
   }
@@ -861,7 +873,13 @@
 
     // Repeated addition / grouping formula hint
     const repeatedTerms = Array(r).fill(c).join(' + ');
-    dom.hintFormulaText.textContent = t.hintFormula(r, c, repeatedTerms);
+    if (c - 1 >= r && isCellSolved(r, c - 1)) {
+      dom.hintFormulaText.textContent = t.hintFromPrev(r * (c - 1), r, r, c);
+    } else if (r > 1 && isCellSolved(r - 1, c)) {
+      dom.hintFormulaText.textContent = t.hintFromPrev((r - 1) * c, c, r, c);
+    } else {
+      dom.hintFormulaText.textContent = t.hintFormula(r, c, repeatedTerms);
+    }
 
     // Build visual group pills when in Story Mode or when Hint is toggled
     dom.visualDotsGrid.innerHTML = '';
