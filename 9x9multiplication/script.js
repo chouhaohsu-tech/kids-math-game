@@ -2029,11 +2029,11 @@
     let numRowH = 30;
 
     if (isMobile && orientation === 'landscape') {
-      // iPhone Horizontal: Dynamically fit 11-row multiplication grid into available landscape height!
-      const availH = Math.max(180, vh - 40);
-      cellH = Math.max(16, Math.min(24, Math.floor(availH / 11.2)));
-      topRowH = Math.floor(cellH * 1.25);
-      numRowH = Math.floor(cellH * 0.8);
+      // iPhone Horizontal: Dynamically calculate cell height so all 11 rows of the triangle fit within the screen height!
+      const availH = Math.max(150, Math.min(260, vh - 44));
+      cellH = Math.max(14, Math.min(22, Math.floor(availH / 11.35)));
+      topRowH = Math.floor(cellH * 1.2);
+      numRowH = Math.floor(cellH * 0.82);
     } else if (isMobile) {
       // iPhone Vertical
       cellH = 26;
@@ -2047,14 +2047,17 @@
       topRowH = Math.floor(cellH * 1.26);
       numRowH = Math.floor(cellH * 0.82);
     } else {
-      // iPad Horizontal / Landscape & Desktop (Side-by-Side: Left Board + Right Sidebar)
-      const selectorAllowance = vw > 1220 && vh > 820 ? 44 : 0;
-      const sidebarWidth = vw <= 1180 ? 280 : 320;
-      const reservedVertical = 52 + selectorAllowance + 34;
-      const availW = Math.max(380, vw - sidebarWidth - 44);
-      const maxBoardGridH = Math.max(290, Math.min(vh - reservedVertical, Math.floor(availW * 0.82)));
-      cellH = Math.max(26, Math.floor(maxBoardGridH / 11.15));
-      topRowH = Math.floor(cellH * 1.28);
+      // PC Desktop & iPad Landscape: Fitted right in the browser window without scrolling!
+      const hasSelector = vw > 1220 && vh > 780;
+      const headerAllowance = hasSelector ? 102 : 66;
+      const sidebarW = vw <= 1200 ? 290 : 330;
+      const paddingAllowance = 32;
+      const reservedH = headerAllowance + paddingAllowance + 28;
+      const availH = Math.max(320, vh - reservedH);
+      const availW = Math.max(380, vw - sidebarW - 60);
+      const maxBoardGridH = Math.min(availH, Math.floor(availW * 0.84));
+      cellH = Math.max(26, Math.min(46, Math.floor(maxBoardGridH / 11.2)));
+      topRowH = Math.floor(cellH * 1.24);
       numRowH = Math.floor(cellH * 0.82);
     }
 

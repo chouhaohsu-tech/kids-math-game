@@ -1694,12 +1694,12 @@ body {
 }
 
 .key-btn {
-  height: 52px;
+  height: clamp(38px, 4.8vh, 52px);
   border-radius: 14px;
   border: 2px solid #cfb960;
   background: linear-gradient(180deg, #ffffff 0%, #f6ecc0 100%);
   font-family: var(--font-num);
-  font-size: 1.45rem;
+  font-size: clamp(1.2rem, 1.8vh, 1.45rem);
   font-weight: 900;
   color: #3d3122;
   cursor: pointer;
@@ -2956,21 +2956,24 @@ body {
   }
 }
 
-/* --- 4. iPhone Horizontal / Landscape (Single-Screen Perfect Fit: Side-by-Side + 6x2 Keypad + Zero Scroll Needed!) --- */
+/* --- 4. iPhone Horizontal / Landscape (Single-Screen Perfect Fit: All 11 Triangle Rows Visible + Zero Clipping!) --- */
 @media (orientation: landscape) and (max-height: 560px) {
   html, body {
-    height: 100% !important;
-    max-height: 100% !important;
-    overflow: hidden !important;
+    min-height: 100%;
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .app-shell {
     padding: max(2px, env(safe-area-inset-top, 2px)) max(8px, env(safe-area-inset-right, 8px)) max(4px, env(safe-area-inset-bottom, 4px)) max(8px, env(safe-area-inset-left, 8px));
     gap: 3px;
-    height: 100vh;
-    height: 100dvh;
-    max-height: 100dvh;
-    overflow: hidden !important;
+    min-height: 100dvh;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   /* Compact 1-line top header */
@@ -3026,25 +3029,26 @@ body {
   /* Side-by-Side Main Workspace */
   .main-workspace {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 220px !important;
+    grid-template-columns: minmax(0, 1fr) 215px !important;
     gap: 6px !important;
-    align-items: stretch !important;
-    height: calc(100dvh - 34px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
-    max-height: calc(100dvh - 34px) !important;
-    overflow: hidden !important;
+    align-items: start !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   .board-section {
-    height: 100% !important;
+    height: auto !important;
     min-height: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     display: flex !important;
     flex-direction: column !important;
   }
 
   /* Focused Animal Path Stage in Landscape */
   .focused-path-stage {
-    height: 100% !important;
+    height: auto !important;
     min-height: 0 !important;
     padding: 2px 6px !important;
     gap: 2px !important;
@@ -3052,7 +3056,7 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .fp-animal-bar {
@@ -3120,12 +3124,12 @@ body {
     gap: 3px !important;
     row-gap: 6px !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     max-height: 120px !important;
   }
 
   .fp-stone {
-    height: 100% !important;
+    height: auto !important;
     min-height: 34px !important;
     padding: 1px 2px !important;
     border-radius: 7px !important;
@@ -3152,37 +3156,56 @@ body {
     font-size: 0.72rem !important;
   }
 
-  /* Full 9x9 Triangle Board in Landscape */
-  .triangle-board-container {
-    height: 100% !important;
-    min-height: 0 !important;
-    padding: 2px !important;
+  /* Full 9x9 Triangle Board in Landscape: ALL 11 ROWS 100% VISIBLE */
+  .board-frame {
+    padding: 2px 4px !important;
     border-radius: 10px !important;
+    border-width: 1.5px !important;
+    box-shadow: 0 2px 0 #9f8732 !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    margin: 0 auto !important;
     display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
   }
 
   .triangle-grid {
-    grid-auto-rows: var(--cell-h, 20px) !important;
-    grid-auto-columns: var(--cell-h, 20px) !important;
+    grid-template-columns: 16px repeat(9, minmax(0, 1fr)) 18px !important;
+    grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .top-animal-avatar {
-    width: var(--top-row-h, 25px) !important;
-    height: var(--top-row-h, 25px) !important;
-    font-size: 0.82rem !important;
+    width: calc(var(--top-row-h, 20px) - 2px) !important;
+    height: calc(var(--top-row-h, 20px) - 2px) !important;
+    font-size: calc(var(--top-row-h, 20px) * 0.58) !important;
+    border-width: 1.2px !important;
   }
 
   .num-circle {
-    width: var(--num-row-h, 16px) !important;
-    height: var(--num-row-h, 16px) !important;
-    font-size: 0.68rem !important;
+    width: calc(var(--num-row-h, 15px) - 1px) !important;
+    height: calc(var(--num-row-h, 15px) - 1px) !important;
+    font-size: 0.58rem !important;
+    border-width: 1px !important;
   }
 
   .tri-cell {
-    font-size: 0.85rem !important;
+    min-height: 0 !important;
+    font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
+  }
+
+  .right-animal-home .home-badge-card {
+    width: 16px !important;
+    height: 16px !important;
+    border-width: 1px !important;
+  }
+
+  .home-animal-icon {
+    font-size: 0.68rem !important;
   }
 
   .lower-left-stage {
@@ -3201,10 +3224,11 @@ body {
     display: flex !important;
     flex-direction: column !important;
     gap: 3px !important;
-    height: 100% !important;
+    height: auto !important;
     min-height: 0 !important;
-    justify-content: space-between !important;
-    overflow: hidden !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+    width: 215px !important;
   }
 
   .question-card {
@@ -3309,18 +3333,21 @@ body {
 .orientation-landscape.device-mobile body,
 .orientation-landscape.device-iphone html,
 .orientation-landscape.device-iphone body {
-  height: 100% !important;
-  overflow: hidden !important;
+  min-height: 100%;
+  height: auto !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 .orientation-landscape.device-mobile .app-shell,
 .orientation-landscape.device-iphone .app-shell {
   padding: max(2px, env(safe-area-inset-top, 2px)) max(8px, env(safe-area-inset-right, 8px)) max(4px, env(safe-area-inset-bottom, 4px)) max(8px, env(safe-area-inset-left, 8px));
   gap: 3px;
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100dvh;
-  overflow: hidden !important;
+  min-height: 100dvh;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .orientation-landscape.device-mobile .top-header,
@@ -3346,12 +3373,37 @@ body {
 .orientation-landscape.device-mobile .main-workspace,
 .orientation-landscape.device-iphone .main-workspace {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 220px !important;
+  grid-template-columns: minmax(0, 1fr) 215px !important;
   gap: 6px !important;
-  align-items: stretch !important;
-  height: calc(100dvh - 34px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
-  max-height: calc(100dvh - 34px) !important;
-  overflow: hidden !important;
+  align-items: start !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.orientation-landscape.device-mobile .board-frame,
+.orientation-landscape.device-iphone .board-frame {
+  padding: 2px 4px !important;
+  border-radius: 10px !important;
+  border-width: 1.5px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.orientation-landscape.device-mobile .triangle-grid,
+.orientation-landscape.device-iphone .triangle-grid {
+  grid-template-columns: 16px repeat(9, minmax(0, 1fr)) 18px !important;
+  grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.orientation-landscape.device-mobile .tri-cell,
+.orientation-landscape.device-iphone .tri-cell {
+  min-height: 0 !important;
+  font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
 }
 
 .orientation-landscape.device-mobile .keypad-grid,
@@ -3369,6 +3421,133 @@ body {
 .orientation-landscape.device-mobile .lower-left-stage,
 .orientation-landscape.device-iphone .lower-left-stage {
   display: none !important;
+}
+
+/* ==========================================================================
+   DESKTOP PC & LAPTOP BROWSERS: FITTED RIGHT IN BROWSER WINDOW WITHOUT SCROLLING!
+   ========================================================================== */
+@media (min-width: 900px) and (min-height: 561px) {
+  .app-shell {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: clamp(4px, 1vh, 10px) clamp(10px, 1.4vw, 20px);
+    gap: clamp(4px, 1vh, 8px);
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .top-header {
+    padding: clamp(6px, 1vh, 10px) clamp(10px, 1.2vw, 18px);
+    border-radius: 16px;
+  }
+
+  .rainbow-badge {
+    font-size: clamp(1.4rem, 2.2vh, 2rem);
+  }
+
+  .rainbow-title {
+    font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+  }
+
+  .main-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 340px);
+    gap: clamp(10px, 1.5vw, 18px);
+    align-items: center;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+  }
+
+  .board-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+  }
+
+  .board-frame {
+    padding: clamp(6px, 1vh, 12px) clamp(10px, 1.2vw, 16px);
+    border-radius: 20px;
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .triangle-grid {
+    grid-template-columns: clamp(32px, 3.2vw, 44px) repeat(9, var(--cell-h, 38px)) clamp(46px, 4.5vw, 64px);
+    grid-template-rows: var(--top-row-h, 46px) var(--num-row-h, 28px) repeat(9, var(--cell-h, 38px));
+    width: auto;
+    margin: 0 auto;
+  }
+
+  .tri-cell {
+    width: var(--cell-h, 38px);
+    height: var(--cell-h, 38px);
+    min-height: 0;
+    font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+  }
+
+  .control-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(6px, 1vh, 10px);
+    justify-content: center;
+    width: clamp(280px, 22vw, 340px);
+  }
+
+  .question-card {
+    padding: clamp(8px, 1.2vh, 14px) clamp(10px, 1.2vw, 16px);
+    border-radius: 18px;
+    gap: clamp(6px, 1vh, 10px);
+  }
+
+  .equation-display {
+    padding: clamp(6px, 1vh, 12px) 10px;
+  }
+
+  .eq-num {
+    width: clamp(34px, 4.2vh, 44px);
+    height: clamp(34px, 4.2vh, 44px);
+    font-size: clamp(1.2rem, 1.8vh, 1.55rem);
+  }
+
+  .eq-op, .eq-eq {
+    font-size: clamp(1.2rem, 1.8vh, 1.55rem);
+  }
+
+  .eq-answer-box {
+    min-width: clamp(52px, 6vw, 68px);
+    height: clamp(38px, 4.8vh, 50px);
+    font-size: clamp(1.35rem, 2vh, 1.75rem);
+  }
+
+  .keypad-card {
+    padding: clamp(8px, 1.2vh, 12px);
+    border-radius: 18px;
+  }
+
+  .keypad-grid {
+    gap: clamp(5px, 0.8vh, 8px);
+  }
+
+  .key-btn {
+    height: clamp(38px, 4.6vh, 52px);
+    font-size: clamp(1.15rem, 1.8vh, 1.45rem);
+    border-radius: 12px;
+  }
+
+  .homes-rack-card {
+    padding: clamp(6px, 1vh, 10px) clamp(10px, 1.2vw, 14px);
+    border-radius: 16px;
+  }
 }
 
 /* --- 5. Compact 2-Column Celebration Modal for iPhone & Small Screens in Landscape --- */
