@@ -579,8 +579,13 @@
       dom.triangleGrid.appendChild(homeCell);
     }
 
-    // Clear walkerLayer so no floating icon ever sits on top of the numbers!
-    dom.walkerLayer.innerHTML = '';
+    // Create the floating walking animal sprite inside walkerLayer
+    dom.walkerLayer.innerHTML = `
+      <div id="activeWalkerSprite" class="walking-animal-sprite">
+        <span id="walkerEmoji">🐼</span>
+        <div id="walkerCheerBubble" class="walker-cheer-bubble hidden">Yay!</div>
+      </div>
+    `;
   }
 
   /* --------------------------------------------------------------------------
@@ -742,13 +747,16 @@
   }
 
   /* --------------------------------------------------------------------------
-   * 9. UPDATE JOURNEY PROGRESS TRACKER & ANIMAL CHEER ANIMATIONS
-   *    (Zero floating icons over board numbers — all numbers stay 100% clear!)
+   * 9. UPDATE FLOATING WALKER SPRITE & JOURNEY PROGRESS TRACKER
+   *    (Animal hops along the L-path and stands in the right side of the box,
+   *     while the number shifts slightly left so they NEVER overlap!)
    * -------------------------------------------------------------------------- */
   function updateJourneyCardAndWalker() {
     const t = I18N[state.lang];
+    const walker = document.getElementById('activeWalkerSprite');
+    const walkerEmoji = document.getElementById('walkerEmoji');
 
-    // Determine which animal to display in the Journey Tracker
+    // Determine which animal to display in the Journey Tracker & Walker
     let focusAnimal = state.activeAnimal;
     if (focusAnimal === 0 && state.selectedCell) {
       focusAnimal = state.selectedCell.r;
@@ -786,11 +794,65 @@
       });
       dom.journeyStepsTrack.appendChild(span);
     });
+
+    // Clear previous `has-walker` class from all cells
+    document.querySelectorAll('.tri-cell.has-walker').forEach((el) => {
+      el.classList.remove('has-walker');
+    });
+
+    if (!walker || !walkerEmoji) return;
+    walkerEmoji.textContent = animal.emoji;
+    walker.style.borderColor = animal.color;
+
+    const stopInfo = getAnimalCurrentStop(focusAnimal);
+    let targetEl = null;
+    if (stopInfo.type === 'HOME') {
+      targetEl = document.getElementById(`rightHome-${focusAnimal}`);
+    } else if (stopInfo.type === 'TOP') {
+      targetEl = document.getElementById(`topDock-${focusAnimal}`);
+    } else {
+      targetEl = document.getElementById(`cell-${stopInfo.r}-${stopInfo.c}`);
+      if (targetEl) {
+        // Mark this cell with `has-walker` so its number shifts left and never gets covered!
+        targetEl.classList.add('has-walker');
+      }
+    }
+
+    if (targetEl && dom.boardFrame) {
+      const boardRect = dom.boardFrame.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+      if (boardRect.width > 0 && targetRect.width > 0) {
+        if (stopInfo.type === 'CELL') {
+          // Place the animal on the right side of the cell (76% across, 52% down)
+          // while `.has-walker` shifts the number to the left side of the cell!
+          const sideX = targetRect.left - boardRect.left + targetRect.width * 0.76;
+          const sideY = targetRect.top - boardRect.top + targetRect.height * 0.52;
+          walker.style.left = `${sideX}px`;
+          walker.style.top = `${sideY}px`;
+        } else {
+          const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
+          const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
+          walker.style.left = `${centerX}px`;
+          walker.style.top = `${centerY}px`;
+        }
+      }
+    }
   }
 
   function triggerWalkerCelebration(r, c) {
-    // Animate the corresponding animals in the Top Dock, Right Home, and Journey Card
-    // without ever covering any numbers on the multiplication grid!
+    const walker = document.getElementById('activeWalkerSprite');
+    const bubble = document.getElementById('walkerCheerBubble');
+    if (walker) {
+      walker.classList.remove('celebrating');
+      void walker.offsetWidth;
+      walker.classList.add('celebrating');
+    }
+    if (bubble) {
+      bubble.textContent = state.lang === 'zh' ? '好棒！🎉' : 'Yay! 🎉';
+      bubble.classList.remove('hidden');
+      setTimeout(() => bubble.classList.add('hidden'), 1400);
+    }
+
     const targets = [
       document.getElementById(`topDock-${c}`),
       document.getElementById(`topDock-${r}`),
