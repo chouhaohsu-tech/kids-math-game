@@ -777,10 +777,15 @@
 
   function refreshBoardVisuals() {
     const t = I18N[state.lang];
+    const isCompactBar = window.innerWidth <= 760 || window.innerHeight <= 520;
     dom.appTitle.textContent = t.appTitle;
     dom.appSubtitle.textContent = t.appSubtitle;
-    dom.labelModeStory.textContent = t.modeStory;
-    dom.labelModeTest.textContent = t.modeTest;
+    dom.labelModeStory.textContent = isCompactBar
+      ? state.lang === 'zh' ? '故事' : 'Story'
+      : t.modeStory;
+    dom.labelModeTest.textContent = isCompactBar
+      ? state.lang === 'zh' ? '測驗' : 'Test'
+      : t.modeTest;
     dom.langLabel.textContent = t.langBtnLabel;
     dom.selectorPrompt.textContent = t.selectorPrompt;
     dom.legendTitle.textContent = t.legendTitle;
@@ -883,12 +888,13 @@
     dom.boardFrame.classList.toggle('hidden', isPathView);
 
     // Update top header view toggle button
+    const isCompactBar = window.innerWidth <= 760 || window.innerHeight <= 520;
     if (dom.viewToggleIcon && dom.viewToggleLabel) {
       dom.viewToggleIcon.textContent = isPathView ? '🗺️' : '🐾';
       dom.viewToggleLabel.textContent =
         state.lang === 'zh'
-          ? isPathView ? '完整九九表' : '大步石路線'
-          : isPathView ? '9×9 Table' : 'Animal Path';
+          ? isPathView ? (isCompactBar ? '九九表' : '完整九九表') : (isCompactBar ? '路線' : '大步石路線')
+          : isPathView ? (isCompactBar ? '9×9' : '9×9 Table') : (isCompactBar ? 'Path' : 'Animal Path');
     }
     if (dom.btnSwitchToFullMap) {
       dom.btnSwitchToFullMap.textContent =
@@ -1972,11 +1978,15 @@
     const vh = Math.round(window.visualViewport ? window.visualViewport.height : window.innerHeight);
     const orientation = vw >= vh ? 'landscape' : 'portrait';
 
-    const isMobile = isIPhone || (isAndroid && /Mobile/.test(ua)) || vw <= 740;
+    const isMobile =
+      isIPhone ||
+      (isAndroid && /Mobile/.test(ua)) ||
+      vw <= 760 ||
+      vh <= 520;
     const isTablet =
       isIPad ||
       (!isMobile &&
-        (isAndroid || (vw > 740 && vw <= 1220 && maxTouch > 0)));
+        (isAndroid || (vw > 760 && vw <= 1220 && maxTouch > 0)));
     const isDesktop = !isMobile && !isTablet;
 
     // Default to Focused Animal Path View on iPhone/Mobile unless the user explicitly toggled!
@@ -1994,15 +2004,13 @@
     let topRowH = 48;
     let numRowH = 30;
 
-    if (vw <= 740) {
-      // iPhone / Mobile Portrait (3-Zone Layout: Top Bar 36px + Board + Bottom Dock 162px)
-      const reservedVertical = 36 + 162 + 22; // top bar + bottom dock + outer paddings/gaps
-      const maxBoardGridH = Math.max(220, Math.min(vh - reservedVertical, Math.floor(vw * 0.94)));
-      cellH = Math.max(20, Math.floor(maxBoardGridH / 11.0));
-      topRowH = Math.max(26, Math.floor(cellH * 1.22));
-      numRowH = Math.max(18, Math.floor(cellH * 0.78));
+    if (vw <= 760 || vh <= 520) {
+      // iPhone Vertical or iPhone Horizontal (Compact full-table cell height + native scroll enabled)
+      cellH = 26;
+      topRowH = 32;
+      numRowH = 20;
     } else if (orientation === 'portrait') {
-      // iPad / Tablet Portrait (Top Bar 46px + Board + 2-Col Bottom Dock 215px)
+      // iPad / Tablet Portrait
       const reservedVertical = 48 + 215 + 32;
       const maxBoardGridH = Math.max(300, Math.min(vh - reservedVertical, Math.floor(vw * 0.88)));
       cellH = Math.max(28, Math.floor(maxBoardGridH / 11.1));
