@@ -893,6 +893,12 @@
     dom.eqFactorB.className = `eq-num band-${c}`;
     dom.eqAnswerBox.textContent = state.typedValue !== '' ? state.typedValue : '?';
 
+    // Pulse the OK ✓ button when Ning has entered digits so she knows to press OK!
+    const btnSubmit = document.getElementById('btnSubmit');
+    if (btnSubmit) {
+      btnSubmit.classList.toggle('ready-pulse', state.typedValue !== '');
+    }
+
     // Repeated addition / grouping formula hint
     const repeatedTerms = Array(r).fill(c).join(' + ');
     if (c - 1 >= r && isCellSolved(r, c - 1)) {
@@ -973,9 +979,6 @@
 
     playKeyNote(digitStr);
 
-    const expectedAnswer = r * c;
-    const expectedDigits = String(expectedAnswer).length;
-
     if (state.typedValue.length < 2) {
       state.typedValue += digitStr;
     } else {
@@ -983,11 +986,7 @@
     }
 
     refreshBoardVisuals();
-
-    // Auto-check immediately once the child enters the required number of digits (1 or 2 digits)!
-    if (state.typedValue.length >= expectedDigits) {
-      setTimeout(() => checkCurrentAnswer(), 110);
-    }
+    // Wait for Ning to press OK ✓ (or Enter) before checking!
   }
 
   function handleBackspace() {
@@ -1012,21 +1011,24 @@
 
       playCorrectChime();
 
-      const cellEl = document.getElementById(`cell-${r}-${c}`);
-      if (cellEl) {
-        cellEl.classList.remove('just-solved');
-        void cellEl.offsetWidth;
-        cellEl.classList.add('just-solved');
-        const rect = cellEl.getBoundingClientRect();
-        spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 26);
-      }
-
       // Determine active animal to cheer
       const cheeringAnimalIdx =
         state.activeAnimal >= 1 && state.activeAnimal <= 9 ? state.activeAnimal : c;
       const cheeringAnimal = ANIMALS[cheeringAnimalIdx];
       const cheerMsg = cheeringAnimal.cheer[state.lang];
       dom.catSpeechText.textContent = t.catCorrect(cheerMsg, r, c, expected);
+
+      const cellEl = document.getElementById(`cell-${r}-${c}`);
+      if (cellEl) {
+        cellEl.classList.remove('just-solved');
+        void cellEl.offsetWidth;
+        cellEl.classList.add('just-solved');
+        const rect = cellEl.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.emoji);
+        spawnFloatingScore(cx, cy - 10, `+10 ⭐ ${cheeringAnimal.emoji}`);
+      }
 
       // Voice encouragement (Chinese chant or English multiplication)
       if (state.lang === 'zh') {
@@ -1255,9 +1257,11 @@
   }
 
   /* --------------------------------------------------------------------------
-   * 14. CANVAS CONFETTI & STAR PARTICLE ENGINE
+   * 14. RICH CANVAS FIREWORKS, EMOJI BURSTS, SHOCKWAVES & FLOATING SCORE ENGINE
    * -------------------------------------------------------------------------- */
   const particles = [];
+  const emojiSprites = [];
+  const shockwaves = [];
   let animFrameId = null;
 
   function resizeCanvas() {
@@ -1266,40 +1270,127 @@
     dom.fxCanvas.height = window.innerHeight;
   }
 
-  function spawnConfettiBurst(x, y, count = 30) {
+  function spawnFloatingScore(x, y, text = '+10 ⭐') {
+    const pop = document.createElement('div');
+    pop.className = 'floating-score-pop';
+    pop.style.left = `${x}px`;
+    pop.style.top = `${y}px`;
+    pop.textContent = text;
+    document.body.appendChild(pop);
+    setTimeout(() => pop.remove(), 1100);
+  }
+
+  function spawnConfettiBurst(x, y, count = 42, animalEmoji = '⭐') {
     resizeCanvas();
-    const colors = ['#ff5252', '#ffca28', '#66bb6a', '#29b6f6', '#ab47bc', '#ff7043'];
+    const colors = [
+      '#ff1744', '#ff9100', '#ffea00', '#00e676',
+      '#00b0ff', '#d500f9', '#ff4081', '#ffd740'
+    ];
+
+    // 1. Expanding glowing golden shockwave rings
+    shockwaves.push({
+      x,
+      y,
+      radius: 8,
+      maxRadius: 110,
+      alpha: 0.9,
+      color: '#ffd43b'
+    });
+    shockwaves.push({
+      x,
+      y,
+      radius: 4,
+      maxRadius: 75,
+      alpha: 0.85,
+      color: '#ff6b6b'
+    });
+
+    // 2. Confetti & glowing star sparks
     for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
-      const speed = 3 + Math.random() * 7;
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.45;
+      const speed = 4 + Math.random() * 9.5;
       particles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 3,
-        size: 6 + Math.random() * 6,
+        vy: Math.sin(angle) * speed - 3.8,
+        size: 7 + Math.random() * 7,
         color: colors[i % colors.length],
         alpha: 1,
         rot: Math.random() * Math.PI * 2,
-        vRot: (Math.random() - 0.5) * 0.2
+        vRot: (Math.random() - 0.5) * 0.28,
+        isStar: i % 3 === 0
       });
     }
+
+    // 3. Flying Celebration Emojis (Animal + Stars + Hearts + Rainbow)
+    const celebIcons = [animalEmoji, '⭐', '🌟', '🎉', '💖', '🌈', '✨', '🎵'];
+    const emojiCount = 12;
+    for (let j = 0; j < emojiCount; j++) {
+      const angle = (Math.PI * 2 * j) / emojiCount + (Math.random() - 0.5) * 0.3;
+      const speed = 3.5 + Math.random() * 6.5;
+      emojiSprites.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 4.5,
+        size: 20 + Math.random() * 12,
+        icon: celebIcons[j % celebIcons.length],
+        alpha: 1,
+        rot: (Math.random() - 0.5) * 0.5,
+        vRot: (Math.random() - 0.5) * 0.08
+      });
+    }
+
     if (!animFrameId) {
       animFrameId = requestAnimationFrame(stepParticles);
     }
+  }
+
+  function drawStar(ctx, r) {
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a1 = ((i * 72 - 90) * Math.PI) / 180;
+      const a2 = (((i * 72 + 36) - 90) * Math.PI) / 180;
+      ctx.lineTo(Math.cos(a1) * r, Math.sin(a1) * r);
+      ctx.lineTo(Math.cos(a2) * (r * 0.45), Math.sin(a2) * (r * 0.45));
+    }
+    ctx.closePath();
+    ctx.fill();
   }
 
   function stepParticles() {
     const ctx = dom.fxCanvas.getContext('2d');
     ctx.clearRect(0, 0, dom.fxCanvas.width, dom.fxCanvas.height);
 
+    // Render shockwave rings
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+      const sw = shockwaves[i];
+      sw.radius += (sw.maxRadius - sw.radius) * 0.16;
+      sw.alpha -= 0.032;
+      if (sw.alpha <= 0) {
+        shockwaves.splice(i, 1);
+        continue;
+      }
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, sw.alpha);
+      ctx.strokeStyle = sw.color;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Render confetti & stars
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.22; // gravity
+      p.vx *= 0.985;
+      p.vy += 0.24; // gravity
       p.rot += p.vRot;
-      p.alpha -= 0.016;
+      p.alpha -= 0.015;
 
       if (p.alpha <= 0) {
         particles.splice(i, 1);
@@ -1311,11 +1402,40 @@
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
       ctx.fillStyle = p.color;
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+      if (p.isStar) {
+        drawStar(ctx, p.size * 0.75);
+      } else {
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+      }
       ctx.restore();
     }
 
-    if (particles.length > 0) {
+    // Render flying emoji sprites
+    for (let i = emojiSprites.length - 1; i >= 0; i--) {
+      const e = emojiSprites[i];
+      e.x += e.vx;
+      e.y += e.vy;
+      e.vy += 0.2;
+      e.rot += e.vRot;
+      e.alpha -= 0.016;
+
+      if (e.alpha <= 0) {
+        emojiSprites.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, e.alpha);
+      ctx.translate(e.x, e.y);
+      ctx.rotate(e.rot);
+      ctx.font = `${Math.round(e.size)}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(e.icon, 0, 0);
+      ctx.restore();
+    }
+
+    if (particles.length > 0 || emojiSprites.length > 0 || shockwaves.length > 0) {
       animFrameId = requestAnimationFrame(stepParticles);
     } else {
       animFrameId = null;
