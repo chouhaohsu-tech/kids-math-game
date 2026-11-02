@@ -202,8 +202,8 @@
       legendSubtitle: 'The Most Special Corner Stones!',
       hintBtn: 'Hint',
       rackTitle: '🏡 Animal Homes Reached',
-      nextAnimalBtn: 'Next Animal Friend ➡️',
-      playAgainBtn: 'Play Again 🔄',
+      nextAnimalBtn: 'OK ✓ Next Animal Friend ➡️',
+      playAgainBtn: 'OK ✓ Play Again 🔄',
       catWelcomeStory: (animalName, n) =>
         `Hi Ning! Let's take ${animalName} (#${n}) home! Start at the top of Column ${n}, go down to ${n}×${n}=${n * n}, then turn right along Row ${n}!`,
       catWelcomeTest:
@@ -240,8 +240,8 @@
       legendSubtitle: '最特別的轉彎魔法石！',
       hintBtn: '小提示',
       rackTitle: '🏡 已平安回家的小動物',
-      nextAnimalBtn: '幫助下一隻小動物 ➡️',
-      playAgainBtn: '再玩一次 🔄',
+      nextAnimalBtn: 'OK ✓ 幫助下一隻小動物 ➡️',
+      playAgainBtn: 'OK ✓ 再玩一次 🔄',
       catWelcomeStory: (animalName, n) =>
         `嗨 Ning！我們帶${animalName}（數字 ${n}）回家吧！從第 ${n} 直行最上方出發，往下走到轉角 ${n}×${n}=${n * n}，再往右走完第 ${n} 橫列就到家囉！`,
       catWelcomeTest:
@@ -571,6 +571,7 @@
     celebMoveDesc: document.getElementById('celebMoveDesc'),
     celebSubtitle: document.getElementById('celebSubtitle'),
     celebPathBadges: document.getElementById('celebPathBadges'),
+    btnCelebClose: document.getElementById('btnCelebClose'),
     btnCelebContinue: document.getElementById('btnCelebContinue'),
     fxCanvas: document.getElementById('fxCanvas')
   };
@@ -1536,6 +1537,17 @@
       }
     };
 
+    if (dom.btnCelebClose) {
+      dom.btnCelebClose.onclick = () => {
+        dom.btnCelebContinue.click();
+      };
+    }
+    dom.celebrationOverlay.onclick = (e) => {
+      if (e.target === dom.celebrationOverlay) {
+        dom.btnCelebContinue.click();
+      }
+    };
+
     dom.celebrationOverlay.classList.remove('hidden');
   }
 
@@ -1870,7 +1882,7 @@
     // Physical Keyboard Support
     window.addEventListener('keydown', (e) => {
       if (!dom.celebrationOverlay.classList.contains('hidden')) {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
           e.preventDefault();
           dom.btnCelebContinue.click();
         }

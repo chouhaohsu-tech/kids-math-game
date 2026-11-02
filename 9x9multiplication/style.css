@@ -1820,25 +1820,73 @@ body {
 .celebration-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(35, 28, 12, 0.62);
-  backdrop-filter: blur(5px);
+  background: rgba(35, 28, 12, 0.65);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 200;
   padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .celebration-modal {
+  position: relative;
   background: linear-gradient(180deg, #fffdf0 0%, #fff3bf 100%);
   border: 4px solid #f59f00;
   border-radius: 28px;
-  padding: 24px 28px;
-  max-width: 460px;
+  padding: 24px 28px 20px;
+  max-width: 480px;
   width: 100%;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  margin: auto;
   text-align: center;
   box-shadow: 0 12px 0 #d9480f, 0 20px 40px rgba(0,0,0,0.35);
   animation: modalPopIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.celeb-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #e03131;
+  background: #ff6b6b;
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #c92a2a;
+  z-index: 10;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.celeb-close-btn:hover,
+.celeb-close-btn:active {
+  transform: scale(1.08);
+  background: #f03e3e;
+}
+
+.celeb-body-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.celeb-left-pane,
+.celeb-right-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .celeb-sparkles {
@@ -2923,5 +2971,127 @@ body {
   .key-btn {
     height: 34px;
     font-size: 1.15rem;
+  }
+}
+
+/* --- 5. Compact 2-Column Celebration Modal for iPhone & Small Screens in Landscape --- */
+@media (max-height: 540px), (orientation: landscape) and (max-height: 600px) {
+  .celebration-overlay {
+    padding: 6px 10px;
+    align-items: center;
+  }
+
+  .celebration-modal {
+    max-width: 620px;
+    width: 96%;
+    padding: 8px 14px 10px;
+    max-height: calc(100dvh - 10px);
+    border-radius: 18px;
+    box-shadow: 0 8px 0 #d9480f, 0 14px 28px rgba(0,0,0,0.35);
+  }
+
+  .celeb-close-btn {
+    top: 6px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 0 #c92a2a;
+  }
+
+  .celeb-body-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .celeb-left-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .celeb-right-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .celeb-special-badge {
+    font-size: 0.78rem;
+    padding: 3px 10px;
+    margin-bottom: 3px;
+  }
+
+  .celeb-animal-stage {
+    min-height: auto;
+    margin: 2px 0 4px;
+    gap: 6px;
+  }
+
+  .celeb-animal-emoji {
+    font-size: 2.3rem;
+  }
+
+  .celeb-prop {
+    font-size: 1.35rem;
+  }
+
+  .celeb-arrow {
+    font-size: 1.15rem;
+  }
+
+  .celeb-house-emoji {
+    font-size: 1.9rem;
+  }
+
+  .celeb-move-desc {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    margin: 0;
+    line-height: 1.22;
+  }
+
+  .celeb-sparkles {
+    font-size: 1.0rem;
+    margin-bottom: 1px;
+    text-align: left;
+  }
+
+  .celeb-title {
+    font-size: 1.12rem;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .celeb-subtitle {
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .celeb-path-badges {
+    justify-content: flex-start;
+    gap: 4px;
+    margin-bottom: 8px;
+    max-height: 52px;
+    overflow-y: auto;
+  }
+
+  .celeb-fact-pill {
+    font-size: 0.76rem;
+    padding: 2px 6px;
+  }
+
+  .celeb-continue-btn {
+    width: 100%;
+    padding: 8px 14px;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 0 #237032;
+    margin-top: 2px;
   }
 }

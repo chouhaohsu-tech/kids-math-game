@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=9.1.0" />
+  <link rel="stylesheet" href="style.css?v=9.2.0" />
 </head>
 <body>
   <!-- Particle & Fireworks Celebration Canvas -->
@@ -282,25 +282,32 @@
   <!-- ==================== ANIMAL HOME CELEBRATION OVERLAY BANNER ==================== -->
   <div id="celebrationOverlay" class="celebration-overlay hidden" role="dialog" aria-modal="true">
     <div class="celebration-modal" id="celebrationModal">
-      <div class="celeb-sparkles" id="celebSparkles">✨🎉🌟🎉✨</div>
-      <div id="celebSpecialBadge" class="celeb-special-badge">🥋 KUNG FU BAMBOO MASTER! 🎋</div>
-      <div id="celebAnimalStage" class="celeb-animal-stage">
-        <div id="celebHeroWrap" class="celeb-hero-wrap">
-          <span id="celebPropLeft" class="celeb-prop prop-left">🎋</span>
-          <span id="celebAnimalEmoji" class="celeb-animal-emoji">🐼</span>
-          <span id="celebPropRight" class="celeb-prop prop-right">🥋</span>
+      <button id="btnCelebClose" class="celeb-close-btn" type="button" aria-label="Close">✕</button>
+      <div class="celeb-body-wrap">
+        <div class="celeb-left-pane">
+          <div id="celebSpecialBadge" class="celeb-special-badge">🥋 KUNG FU BAMBOO MASTER! 🎋</div>
+          <div id="celebAnimalStage" class="celeb-animal-stage">
+            <div id="celebHeroWrap" class="celeb-hero-wrap">
+              <span id="celebPropLeft" class="celeb-prop prop-left">🎋</span>
+              <span id="celebAnimalEmoji" class="celeb-animal-emoji">🐼</span>
+              <span id="celebPropRight" class="celeb-prop prop-right">🥋</span>
+            </div>
+            <span class="celeb-arrow">➡️</span>
+            <span id="celebHouseEmoji" class="celeb-house-emoji">🎋</span>
+          </div>
+          <p id="celebMoveDesc" class="celeb-move-desc">Panda performs the Dragon Warrior Kung Fu Kick!</p>
         </div>
-        <span class="celeb-arrow">➡️</span>
-        <span id="celebHouseEmoji" class="celeb-house-emoji">🎋</span>
+        <div class="celeb-right-pane">
+          <div class="celeb-sparkles" id="celebSparkles">✨🎉🌟🎉✨</div>
+          <h2 id="celebTitle" class="celeb-title">Yay Ning! Panda is Home!</h2>
+          <p id="celebSubtitle" class="celeb-subtitle">You completed the entire 1× path!</p>
+          <div id="celebPathBadges" class="celeb-path-badges"></div>
+          <button id="btnCelebContinue" class="celeb-continue-btn">OK ✓ Next Animal Friend ➡️</button>
+        </div>
       </div>
-      <h2 id="celebTitle" class="celeb-title">Yay Ning! Panda is Home!</h2>
-      <p id="celebMoveDesc" class="celeb-move-desc">Panda performs the Dragon Warrior Kung Fu Kick!</p>
-      <p id="celebSubtitle" class="celeb-subtitle">You completed the entire 1× path!</p>
-      <div id="celebPathBadges" class="celeb-path-badges"></div>
-      <button id="btnCelebContinue" class="celeb-continue-btn">Next Animal Friend ➡️</button>
     </div>
   </div>
 
-  <script src="script.js?v=9.1.0"></script>
+  <script src="script.js?v=9.2.0"></script>
 </body>
 </html>
