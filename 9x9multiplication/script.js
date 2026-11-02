@@ -724,7 +724,12 @@
                 ${onPath ? '<span class="step-paw-badge">🐾</span>' : ''}
               `;
             } else if (isSelected) {
-              box.innerHTML = `<span>${state.typedValue !== '' ? state.typedValue : '?'}</span>`;
+              const riderAnimal =
+                activeN >= 1 && activeN <= 9 ? ANIMALS[activeN] : ANIMALS[c];
+              box.innerHTML = `
+                <span>${state.typedValue !== '' ? state.typedValue : '?'}</span>
+                <span class="cell-animal-rider" style="border-color:${riderAnimal.color}">${riderAnimal.emoji}</span>
+              `;
             } else {
               box.innerHTML = `<span class="cell-mini-label">${r}×${c}</span>`;
             }
@@ -815,18 +820,10 @@
       const boardRect = dom.boardFrame.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
       if (boardRect.width > 0 && targetRect.width > 0) {
-        if (stopInfo.type === 'CELL') {
-          // Place the animal avatar in the top-left corner of the cell so it NEVER blocks the number!
-          const cornerX = targetRect.left - boardRect.left + 8;
-          const cornerY = targetRect.top - boardRect.top + 8;
-          walker.style.left = `${cornerX}px`;
-          walker.style.top = `${cornerY}px`;
-        } else {
-          const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
-          const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
-          walker.style.left = `${centerX}px`;
-          walker.style.top = `${centerY}px`;
-        }
+        const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
+        const topY = targetRect.top - boardRect.top;
+        walker.style.left = `${centerX}px`;
+        walker.style.top = `${topY}px`;
       }
     }
   }
@@ -838,11 +835,12 @@
     walker.classList.remove('celebrating');
     void walker.offsetWidth; // reflow
     walker.classList.add('celebrating');
+    setTimeout(() => walker.classList.remove('celebrating'), 900);
 
     if (bubble && cheerText) {
       bubble.textContent = cheerText;
       bubble.classList.remove('hidden');
-      setTimeout(() => bubble.classList.add('hidden'), 1600);
+      setTimeout(() => bubble.classList.add('hidden'), 1100);
     }
   }
 
