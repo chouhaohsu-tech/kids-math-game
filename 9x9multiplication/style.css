@@ -737,9 +737,142 @@ html, body {
               transform 0.3s ease;
 }
 
-.walking-animal-sprite.celebrating {
-  animation: animalSuperAcrobatics 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Signature Prop Badge held by the walking animal (e.g. Panda's Bamboo 🎋, Bunny's Carrot 🥕) */
+.walker-prop-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -7px;
+  font-size: 0.78rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+  pointer-events: none;
+  animation: propWiggle 1.2s ease-in-out infinite;
+}
+
+@keyframes propWiggle {
+  0%, 100% { transform: rotate(-10deg) scale(1); }
+  50% { transform: rotate(18deg) scale(1.15); }
+}
+
+/* 9 Distinct Step Move Animations for Animals 1..9! */
+.walking-animal-sprite.move-animal-1 {
+  animation: moveKungFuPanda 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 40;
+}
+.walking-animal-sprite.move-animal-2 {
+  animation: moveTurboBunny 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-3 {
+  animation: moveBackflipPuppy 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-4 {
+  animation: moveSuperFrogLeap 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-5 {
+  animation: moveTarzanMonkey 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-6 {
+  animation: moveBalletKitty 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-7 {
+  animation: moveFigureSkatePenguin 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-8 {
+  animation: moveRocketChick 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+.walking-animal-sprite.move-animal-9 {
+  animation: moveDiscoPiggy 1.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 40;
+}
+
+/* Keyframes for the 9 Animal Signature Step Moves */
+/* 1. Panda: Kung Fu Bamboo Spin Kick + Golden Chi Aura */
+@keyframes moveKungFuPanda {
+  0% { transform: scale(1) translateY(0) rotate(0deg); }
+  25% { transform: scale(1.85) translateY(-24px) rotate(-35deg); filter: drop-shadow(0 0 12px #00e676); }
+  50% { transform: scale(2.05) translateY(-34px) rotate(385deg) scaleX(1.18); filter: drop-shadow(0 0 18px #ffd43b); }
+  75% { transform: scale(1.6) translateY(-12px) rotate(345deg); }
+  100% { transform: scale(1) translateY(0) rotate(360deg); }
+}
+
+/* 2. Bunny: Triple Sky-High Spring Hop */
+@keyframes moveTurboBunny {
+  0% { transform: scale(1, 1) translateY(0); }
+  15% { transform: scale(1.35, 0.72) translateY(4px); }
+  40% { transform: scale(0.85, 1.95) translateY(-44px); filter: drop-shadow(0 10px 10px rgba(255,107,107,0.5)); }
+  65% { transform: scale(1.45, 0.8) translateY(-6px); }
+  82% { transform: scale(1.15, 1.45) translateY(-22px); }
+  100% { transform: scale(1, 1) translateY(0); }
+}
+
+/* 3. Puppy: Joyful Double Backflip & Tail-Wag Shake */
+@keyframes moveBackflipPuppy {
+  0% { transform: scale(1) translateY(0) rotate(0deg); }
+  30% { transform: scale(1.75) translateY(-30px) rotate(-180deg); }
+  60% { transform: scale(1.9) translateY(-36px) rotate(-360deg); filter: drop-shadow(0 0 14px #ffa94d); }
+  80% { transform: scale(1.35) translateY(-6px) rotate(-375deg); }
+  90% { transform: scale(1.2) translateY(-3px) rotate(-345deg); }
+  100% { transform: scale(1) translateY(0) rotate(-360deg); }
+}
+
+/* 4. Froggy: Deep Crouch & Giant Parabolic Ribbit Leap */
+@keyframes moveSuperFrogLeap {
+  0% { transform: scale(1, 1) translateY(0); }
+  20% { transform: scale(1.6, 0.55) translateY(8px); }
+  50% { transform: scale(1.95, 1.95) translateY(-48px) rotate(18deg); filter: drop-shadow(0 0 15px #69db7c); }
+  78% { transform: scale(1.5, 0.68) translateY(4px) rotate(-8deg); }
+  100% { transform: scale(1, 1) translateY(0) rotate(0deg); }
+}
+
+/* 5. Monkey: Jungle Vine Swing Pendulum & Banana Flip */
+@keyframes moveTarzanMonkey {
+  0% { transform: scale(1) rotate(0deg); transform-origin: 50% -25px; }
+  25% { transform: scale(1.75) translate(-16px, -22px) rotate(42deg); }
+  55% { transform: scale(1.9) translate(16px, -28px) rotate(-42deg); filter: drop-shadow(0 0 14px #ffd43b); }
+  80% { transform: scale(1.5) translate(0, -18px) rotate(360deg); }
+  100% { transform: scale(1) translate(0, 0) rotate(360deg); }
+}
+
+/* 6. Kitty: Graceful Ballet Pirouette Twirl */
+@keyframes moveBalletKitty {
+  0% { transform: scale(1) translateY(0) rotateY(0deg); }
+  35% { transform: scale(1.8) translateY(-28px) rotateY(360deg) rotate(-12deg); filter: drop-shadow(0 0 14px #f783ac); }
+  70% { transform: scale(1.85) translateY(-32px) rotateY(720deg) rotate(12deg); }
+  100% { transform: scale(1) translateY(0) rotateY(720deg) rotate(0deg); }
+}
+
+/* 7. Penguin: Ice Belly-Slide & Triple Axel Spin */
+@keyframes moveFigureSkatePenguin {
+  0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+  25% { transform: scale(1.7) translate(-14px, -8px) rotate(-55deg); filter: drop-shadow(0 0 14px #74c0fc); }
+  55% { transform: scale(1.9) translate(12px, -32px) rotate(720deg); filter: drop-shadow(0 0 18px #a5d8ff); }
+  85% { transform: scale(1.35) translate(4px, -6px) rotate(1080deg); }
+  100% { transform: scale(1) translate(0, 0) rotate(1080deg); }
+}
+
+/* 8. Chick: Turbo Wing Flutter & Rocket Takeoff */
+@keyframes moveRocketChick {
+  0% { transform: scale(1) translateY(0); }
+  15% { transform: scale(1.5) translate(-4px, -12px) rotate(-15deg); }
+  30% { transform: scale(1.65) translate(4px, -22px) rotate(15deg); }
+  45% { transform: scale(1.85) translate(-4px, -34px) rotate(-15deg); filter: drop-shadow(0 0 16px #ffec99); }
+  65% { transform: scale(1.95) translate(0, -44px) rotate(360deg); }
+  100% { transform: scale(1) translateY(0) rotate(360deg); }
+}
+
+/* 9. Piggy: Funky Disco Boogie & Confetti Pop */
+@keyframes moveDiscoPiggy {
+  0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+  20% { transform: scale(1.75, 1.45) translate(-12px, -18px) rotate(-24deg); filter: drop-shadow(0 0 14px #e599f7); }
+  45% { transform: scale(1.45, 1.85) translate(12px, -28px) rotate(24deg); }
+  70% { transform: scale(2.0) translate(0, -36px) rotate(-360deg); filter: drop-shadow(0 0 18px #ff6b6b); }
+  100% { transform: scale(1) translate(0, 0) rotate(-360deg); }
 }
 
 /* Floating +10 ⭐ Score Popup */
@@ -1292,21 +1425,94 @@ html, body {
 }
 
 .celeb-sparkles {
-  font-size: 1.6rem;
-  margin-bottom: 6px;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.celeb-special-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff922b 0%, #f03e3e 100%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 0.92rem;
+  padding: 5px 16px;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 #a61e4d, 0 4px 12px rgba(240, 62, 62, 0.35);
+  margin-bottom: 8px;
+  letter-spacing: 0.4px;
 }
 
 .celeb-animal-stage {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin: 10px 0 14px;
+  gap: 16px;
+  margin: 12px 0 14px;
+  min-height: 110px;
+}
+
+.celeb-hero-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.celeb-prop {
+  font-size: 2.3rem;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.2));
+}
+
+.celeb-prop.prop-left {
+  animation: propSpinLeft 1.1s ease-in-out infinite;
+}
+
+.celeb-prop.prop-right {
+  animation: propSpinRight 1.1s ease-in-out infinite;
+}
+
+@keyframes propSpinLeft {
+  0%, 100% { transform: translateY(0) rotate(-18deg) scale(1); }
+  50% { transform: translateY(-10px) rotate(22deg) scale(1.2); }
+}
+
+@keyframes propSpinRight {
+  0%, 100% { transform: translateY(0) rotate(18deg) scale(1); }
+  50% { transform: translateY(-10px) rotate(-22deg) scale(1.2); }
 }
 
 .celeb-animal-emoji {
-  font-size: 4rem;
-  animation: animalCelebrateHome 1s ease-in-out infinite;
+  font-size: 4.5rem;
+  display: inline-block;
+}
+
+/* 9 Grand Finale Home Animations in the Modal! */
+.celeb-hero-wrap.finale-animal-1 .celeb-animal-emoji {
+  animation: moveKungFuPanda 1.25s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-2 .celeb-animal-emoji {
+  animation: moveTurboBunny 1.15s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-3 .celeb-animal-emoji {
+  animation: moveBackflipPuppy 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-4 .celeb-animal-emoji {
+  animation: moveSuperFrogLeap 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-5 .celeb-animal-emoji {
+  animation: moveTarzanMonkey 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-6 .celeb-animal-emoji {
+  animation: moveBalletKitty 1.25s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-7 .celeb-animal-emoji {
+  animation: moveFigureSkatePenguin 1.25s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-8 .celeb-animal-emoji {
+  animation: moveRocketChick 1.15s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.celeb-hero-wrap.finale-animal-9 .celeb-animal-emoji {
+  animation: moveDiscoPiggy 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
 }
 
 .celeb-arrow {
@@ -1318,17 +1524,29 @@ html, body {
 }
 
 .celeb-title {
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: #d9480f;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.celeb-move-desc {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2b8a3e;
+  background: #ebfbee;
+  border: 2px solid #8ce99a;
+  border-radius: 12px;
+  padding: 5px 12px;
+  margin: 0 auto 8px;
+  display: inline-block;
 }
 
 .celeb-subtitle {
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #5c4922;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .celeb-path-badges {
@@ -1428,7 +1646,6 @@ html, body {
    ========================================================================== */
 
 /* --- 1. iPad & Tablet Landscape (Side-by-Side Zero-Scroll Layout) --- */
-html.device-tablet.orientation-landscape .app-shell,
 @media (min-width: 768px) and (max-width: 1180px) and (orientation: landscape) {
   .app-shell {
     padding: 6px 10px 8px;
@@ -1545,8 +1762,7 @@ html.device-tablet.orientation-landscape .app-shell,
 }
 
 /* --- 2. iPad & Tablet Portrait (Stacked Board + 2-Column Bottom Controls) --- */
-html.device-tablet.orientation-portrait .main-workspace,
-@media (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
+@media (min-width: 681px) and (max-width: 1024px) and (orientation: portrait) {
   .main-workspace {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -1581,115 +1797,177 @@ html.device-tablet.orientation-portrait .main-workspace,
   }
 }
 
-/* --- 3. iPhone & Mobile Phones (Compact Zero-Overflow Responsive Layout) --- */
-html.device-mobile .app-shell,
-@media (max-width: 640px) {
-  .app-shell {
-    padding: 6px 6px 14px;
-    gap: 6px;
+/* --- 3. iPhone & Mobile Phones (Crisp Single-Screen Chrome Mobile Layout) --- */
+@media (max-width: 680px) {
+  html, body {
+    overflow-x: hidden;
   }
 
+  .app-shell {
+    padding: 4px 5px 10px;
+    gap: 5px;
+    max-width: 100vw;
+  }
+
+  /* Row 1: Brand + Mode Switcher | Row 2: Compact Stats & Tool Buttons */
   .top-header {
-    padding: 6px 8px;
-    gap: 6px;
+    padding: 5px 8px;
+    gap: 5px;
     border-radius: 14px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 rgba(168, 146, 62, 0.2);
+  }
+
+  .brand-group {
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .rainbow-badge {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
   }
 
   .rainbow-title {
-    font-size: 0.92rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .subtitle-text {
     display: none;
   }
 
+  .mode-switcher {
+    padding: 2px;
+    border-radius: 10px;
+    gap: 2px;
+  }
+
   .mode-btn {
-    padding: 5px 9px;
-    font-size: 0.78rem;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    gap: 3px;
+    border-radius: 8px;
+  }
+
+  .utility-bar {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
 
   .stat-pill {
-    padding: 3px 8px;
-    font-size: 0.76rem;
+    padding: 2px 7px;
+    font-size: 0.72rem;
+    gap: 3px;
+    border-width: 1.5px;
   }
 
   .tool-btn {
-    padding: 4px 8px;
-    font-size: 0.76rem;
-    border-radius: 9px;
+    padding: 3px 7px;
+    font-size: 0.72rem;
+    border-radius: 8px;
+    border-width: 1.5px;
+    box-shadow: 0 2px 0 #bfa748;
   }
 
+  /* Smooth Horizontal Swipe Strip for Animal Paths */
   .animal-selector-bar {
-    padding: 4px 8px;
-    gap: 6px;
-    border-radius: 12px;
+    padding: 4px 6px;
+    gap: 5px;
+    border-radius: 11px;
+    border-width: 1.5px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .animal-selector-bar::-webkit-scrollbar {
+    display: none;
   }
 
   .selector-label {
-    font-size: 0.76rem;
+    display: none;
   }
 
   .animal-pill-btn {
     padding: 3px 8px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
+    gap: 3px;
+    border-width: 1.5px;
   }
 
+  /* Single Column Stack: Board on Top, Compact Question + 6x2 Keypad Below */
   .main-workspace {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
   }
 
   .board-frame {
-    padding: 6px 4px 8px;
+    padding: 5px 4px 6px;
     border-radius: 16px;
-    border-width: 3px;
+    border-width: 2.5px;
+    box-shadow: 0 5px 0 #9f8732, 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .deco-item {
     display: none;
   }
 
+  /* 11-Column Grid Engineered for 360px-430px iPhone Widths */
   .triangle-grid {
-    grid-template-columns: 24px repeat(9, minmax(24px, 1fr)) 36px;
-    grid-template-rows: 40px 26px repeat(9, minmax(28px, 1fr));
+    grid-template-columns: 20px repeat(9, minmax(0, 1fr)) 24px;
+    grid-template-rows: 32px 22px repeat(9, 28px);
+    width: 100%;
   }
 
   .top-animal-avatar {
-    width: 30px;
-    height: 30px;
-    font-size: 1.25rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1.05rem;
     border-width: 2px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+  }
+
+  .top-animal-dock.active-path .top-animal-avatar {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 2.5px #ff922b, 0 4px 8px rgba(0,0,0,0.22);
   }
 
   .top-start-arrow {
-    font-size: 0.5rem;
+    font-size: 0.45rem;
+    margin-top: 0;
+  }
+
+  .header-circle-wrap {
+    padding: 1px;
   }
 
   .num-circle {
-    width: 21px;
-    height: 21px;
-    font-size: 0.78rem;
+    width: 19px;
+    height: 19px;
+    font-size: 0.74rem;
     border-width: 1.5px;
+    box-shadow: 0 1.5px 0 rgba(0,0,0,0.2);
   }
 
   .tri-cell {
     min-height: 28px;
-    font-size: 0.85rem;
-  }
-
-  .tri-cell.solved-cell .cell-input-box {
     font-size: 0.88rem;
   }
 
+  .tri-cell.solved-cell .cell-input-box {
+    font-size: 0.92rem;
+  }
+
   .diagonal-dashed-box {
-    width: calc(100% - 3px);
-    height: calc(100% - 3px);
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
     border-width: 1.5px;
-    border-radius: 5px;
+    border-radius: 4px;
   }
 
   .diagonal-crown {
@@ -1697,77 +1975,180 @@ html.device-mobile .app-shell,
   }
 
   .cell-input-box {
-    width: calc(100% - 4px);
-    height: calc(100% - 4px);
-    border-radius: 5px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border-radius: 4px;
     border-width: 1.5px;
   }
 
+  .tri-cell.selected-cell .cell-input-box {
+    border-width: 2px;
+    box-shadow: 0 0 0 2.5px rgba(255, 195, 0, 0.75);
+  }
+
   .cell-mini-label {
-    font-size: 0.52rem;
+    font-size: 0.54rem;
+    letter-spacing: -0.5px;
   }
 
   .step-paw-badge {
     display: none;
   }
 
+  /* Compact Right-Side Home Column (Never Overflows Horizontally!) */
   .right-animal-home {
     padding-left: 2px;
   }
 
   .home-badge-card {
-    padding: 1px 3px;
-    border-radius: 8px;
-    gap: 1px;
+    padding: 1px 2px;
+    border-radius: 6px;
+    gap: 0;
+    border-width: 1.5px;
+    width: 22px;
+    height: 22px;
+    justify-content: center;
   }
 
   .home-animal-icon {
     font-size: 0.82rem;
   }
 
+  /* Hide the second icon inside the tiny 22px right column on mobile so it fits cleanly */
   .home-house-icon {
-    font-size: 0.72rem;
+    display: none;
   }
 
-  /* Move Teacher Cat & Journey Guide cleanly below the grid on narrow mobile screens */
+  /* Place Teacher Cat Inside the Empty Bottom-Left Triangle of the Board! */
   .lower-left-stage {
-    position: static;
-    width: 100%;
-    max-width: 100%;
-    margin-top: 8px;
-    gap: 6px;
+    position: absolute;
+    left: 22px;
+    bottom: 6px;
+    width: 55%;
+    max-width: 215px;
+    gap: 4px;
+    z-index: 6;
   }
 
-  .journey-guide-card {
-    max-width: 100%;
-    padding: 6px 10px;
+  /* Hide redundant cards on iPhone so the board + keypad fit on 1 screen */
+  .journey-guide-card,
+  .square-legend-badge,
+  .homes-rack-card {
+    display: none !important;
   }
 
-  .teacher-cat-svg-wrap {
-    width: 52px;
-    height: 56px;
+  .teacher-cat-corner {
+    gap: 3px;
   }
 
   .cat-speech-bubble {
-    font-size: 0.76rem;
-    padding: 6px 10px;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    padding: 5px 8px;
+    border-radius: 10px 10px 10px 3px;
+    border-width: 1.5px;
+    box-shadow: 0 2px 0 rgba(121, 85, 72, 0.18);
   }
 
+  .teacher-cat-svg-wrap {
+    width: 40px;
+    height: 44px;
+  }
+
+  /* Compact Question Dock + 2-Row (6x2) Keypad Below the Board */
   .control-sidebar {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
-  .question-card, .keypad-card, .homes-rack-card {
-    padding: 10px;
-    border-radius: 16px;
+  .question-card {
+    padding: 7px 10px;
+    border-radius: 14px;
+    border-width: 2px;
+    gap: 5px;
+    box-shadow: 0 3px 0 rgba(168, 146, 62, 0.2);
+  }
+
+  .active-animal-pill {
+    padding: 2px 9px;
+    font-size: 0.74rem;
+  }
+
+  .hint-pill-btn {
+    padding: 2px 8px;
+    font-size: 0.72rem;
+  }
+
+  .equation-display {
+    padding: 5px 8px;
+    border-radius: 12px;
+    gap: 6px;
+  }
+
+  .eq-num {
+    width: 30px;
+    height: 30px;
+    font-size: 1.15rem;
+  }
+
+  .eq-op, .eq-eq {
+    font-size: 1.15rem;
+  }
+
+  .eq-answer-box {
+    min-width: 52px;
+    height: 34px;
+    font-size: 1.3rem;
+    border-radius: 10px;
+    border-width: 2px;
+  }
+
+  .visual-hint-box {
+    padding: 4px 6px;
+    border-radius: 10px;
+  }
+
+  .hint-formula-text {
+    font-size: 0.7rem;
+    margin-bottom: 3px;
+  }
+
+  .visual-dots-grid {
+    max-height: 42px;
+    gap: 3px;
+  }
+
+  .dot-group-pill {
+    font-size: 0.62rem;
+    padding: 1px 5px;
+  }
+
+  .keypad-card {
+    padding: 7px 8px;
+    border-radius: 14px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 rgba(168, 146, 62, 0.2);
+  }
+
+  /* 6 Columns x 2 Rows Keypad on iPhone: Saves 85px of height & big finger targets! */
+  .keypad-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
   }
 
   .key-btn {
-    height: 44px;
-    font-size: 1.25rem;
+    height: 40px;
+    font-size: 1.18rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 0 #bfa748;
   }
 
+  .key-enter {
+    font-size: 0.92rem;
+  }
+
+  /* Walking Animal Sprite Perched on Cell Top-Right Rim on iPhone (Never Blocks Number!) */
   .walking-animal-sprite {
     width: 18px;
     height: 18px;
@@ -1777,8 +2158,46 @@ html.device-mobile .app-shell,
     border-width: 1.5px;
   }
 
+  .walker-prop-badge {
+    font-size: 0.52rem;
+    bottom: -3px;
+    right: -5px;
+  }
+
+  .walker-cheer-bubble {
+    font-size: 0.58rem;
+    padding: 1px 5px;
+  }
+
   .tri-cell.has-walker .diagonal-dashed-box > span:first-child,
   .tri-cell.has-walker .cell-input-box > span:first-child {
-    transform: translateX(-6px);
+    transform: none !important;
+  }
+
+  /* Celebration Modal on iPhone */
+  .celebration-modal {
+    padding: 16px 14px;
+    border-radius: 22px;
+  }
+
+  .celeb-animal-emoji {
+    font-size: 3.2rem;
+  }
+
+  .celeb-prop {
+    font-size: 1.7rem;
+  }
+
+  .celeb-house-emoji {
+    font-size: 2.6rem;
+  }
+
+  .celeb-title {
+    font-size: 1.25rem;
+  }
+
+  .celeb-move-desc {
+    font-size: 0.84rem;
+    padding: 4px 8px;
   }
 }

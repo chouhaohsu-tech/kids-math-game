@@ -16,92 +16,173 @@
     {
       id: 1,
       emoji: '🐼',
+      propEmoji: '🎋',
+      actionEmoji: '🥋',
       homeEmoji: '🎋',
       color: '#db7093',
       cellColor: '#e582a1',
       name: { en: 'Panda', zh: '小貓熊' },
-      homeName: { en: 'Bamboo House', zh: '竹林小屋' },
-      cheer: { en: 'Bamboo-tiful, Ning!', zh: '太棒了，Ning！' }
+      homeName: { en: 'Bamboo Dojo', zh: '竹林功夫館' },
+      cheer: { en: 'Kung Fu Bamboo Kick! Skadoosh, Ning!', zh: '功夫竹子飛踢！Ning 太棒了！' },
+      stepBubble: { en: '🥋 Kung Fu Kick! 🎋', zh: '🥋 功夫竹子踢！🎋' },
+      finaleBadge: { en: '🥋 DRAGON WARRIOR KUNG FU PANDA! 🎋', zh: '🥋 神龍大俠功夫貓熊！ 🎋' },
+      finaleDesc: {
+        en: 'Panda spins the giant bamboo staff and performs the Dragon Warrior Kung Fu Kick!',
+        zh: '小貓熊揮舞魔法綠竹竿，使出神龍大俠360度旋風功夫飛踢！'
+      },
+      burstIcons: ['🐼', '🎋', '🥋', '⚡', '🥟', '🌟']
     },
     {
       id: 2,
       emoji: '🐰',
+      propEmoji: '🥕',
+      actionEmoji: '🚀',
       homeEmoji: '🥕',
       color: '#c95f63',
       cellColor: '#d67175',
       name: { en: 'Bunny', zh: '小兔兔' },
       homeName: { en: 'Carrot Burrow', zh: '紅蘿蔔屋' },
-      cheer: { en: 'Hop-hop hooray, Ning!', zh: '蹦蹦跳好棒喔！' }
+      cheer: { en: 'Turbo Carrot Spring! Boing-boing, Ning!', zh: '超級紅蘿蔔彈跳！Ning 好棒！' },
+      stepBubble: { en: '🥕 Turbo Spring! 🚀', zh: '🥕 火箭大彈跳！🚀' },
+      finaleBadge: { en: '🥕 MOON-JUMP TURBO BUNNY! 🚀', zh: '🥕 衝上雲霄彈跳兔！ 🚀' },
+      finaleDesc: {
+        en: 'Bunny munches a golden carrot and launches into a triple sky-high moon jump!',
+        zh: '小兔兔咬著黃金紅蘿蔔，連續三次超級大彈跳衝上雲霄！'
+      },
+      burstIcons: ['🐰', '🥕', '🚀', '🌸', '⭐', '💖']
     },
     {
       id: 3,
       emoji: '🐶',
+      propEmoji: '🦴',
+      actionEmoji: '🛹',
       homeEmoji: '🦴',
       color: '#d8833b',
       cellColor: '#e4944e',
       name: { en: 'Puppy', zh: '小狗狗' },
       homeName: { en: 'Cozy Kennel', zh: '骨頭狗屋' },
-      cheer: { en: 'Woof-woof! Awesome, Ning!', zh: '汪汪！Ning 真聰明！' }
+      cheer: { en: 'Woof-woof! Double Backflip catch, Ning!', zh: '汪汪！空中後空翻接骨頭！' },
+      stepBubble: { en: '🦴 Backflip Catch! 🐾', zh: '🦴 後空翻接骨頭！🐾' },
+      finaleBadge: { en: '🦴 ACROBAT BACKFLIP PUPPY! 🏆', zh: '🦴 特技後空翻小狗王！ 🏆' },
+      finaleDesc: {
+        en: 'Puppy tosses the golden bone into the air and lands a double 360° backflip!',
+        zh: '小狗狗把黃金骨頭拋向空中，完美使出雙重360度大後空翻！'
+      },
+      burstIcons: ['🐶', '🦴', '🐾', '🛹', '🏆', '✨']
     },
     {
       id: 4,
       emoji: '🐸',
+      propEmoji: '🪷',
+      actionEmoji: '👑',
       homeEmoji: '🪷',
       color: '#eab731',
       cellColor: '#f2c447',
       name: { en: 'Froggy', zh: '小青蛙' },
       homeName: { en: 'Lily Pad Pond', zh: '荷葉池塘' },
-      cheer: { en: 'Ribbit! Great leap, Ning!', zh: '呱呱！跳得好遠！' }
+      cheer: { en: 'Ribbit-Splash! Super Lily-Pad Leap, Ning!', zh: '呱呱！荷葉水上漂大跳躍！' },
+      stepBubble: { en: '🪷 Super Ribbit Leap! 💦', zh: '🪷 荷葉超級跳！💦' },
+      finaleBadge: { en: '👑 FROG PRINCE RAINBOW SPLASH! 🪷', zh: '👑 青蛙王子彩虹大飛躍！ 🪷' },
+      finaleDesc: {
+        en: 'Froggy puts on the golden crown and vaults across the rainbow pond with a giant splash!',
+        zh: '小青蛙戴上黃金皇冠，在荷葉池塘上空劃出超大彩虹飛躍！'
+      },
+      burstIcons: ['🐸', '🪷', '👑', '💦', '🌈', '⭐']
     },
     {
       id: 5,
       emoji: '🐵',
+      propEmoji: '🍌',
+      actionEmoji: '🌴',
       homeEmoji: '🍌',
       color: '#87aa48',
       cellColor: '#98b95b',
       name: { en: 'Monkey', zh: '小猴子' },
       homeName: { en: 'Banana Treehouse', zh: '香蕉樹屋' },
-      cheer: { en: 'Ooh-ooh! Super smart, Ning!', zh: '吱吱！超級厲害！' }
+      cheer: { en: 'Ooh-ooh! Tarzan Jungle Vine Swing, Ning!', zh: '吱吱！泰山藤蔓大擺盪！' },
+      stepBubble: { en: '🍌 Jungle Vine Swing! 🌴', zh: '🍌 叢林藤蔓飛盪！🌴' },
+      finaleBadge: { en: '🌴 JUNGLE KING ACROBAT MONKEY! 🍌', zh: '🌴 叢林泰山體操小猴王！ 🍌' },
+      finaleDesc: {
+        en: 'Monkey swings across the jungle vines juggling golden bananas in mid-air!',
+        zh: '小猴子抓著叢林藤蔓飛盪空中，邊翻筋斗邊拋接黃金香蕉！'
+      },
+      burstIcons: ['🐵', '🍌', '🌴', '🥥', '🎉', '🌟']
     },
     {
       id: 6,
       emoji: '🐱',
+      propEmoji: '🧶',
+      actionEmoji: '🩰',
       homeEmoji: '🧶',
       color: '#5d9b7e',
       cellColor: '#6ead8f',
       name: { en: 'Kitty', zh: '小花貓' },
       homeName: { en: 'Cozy Basket', zh: '毛線球屋' },
-      cheer: { en: 'Purr-fect answer, Ning!', zh: '喵嗚！完全正確！' }
+      cheer: { en: 'Purr-fect Ballet Pirouette Twirl, Ning!', zh: '喵嗚！優雅芭蕾旋轉舞步！' },
+      stepBubble: { en: '🧶 Ballet Twirl! 🩰', zh: '🧶 芭蕾轉圈圈！🩰' },
+      finaleBadge: { en: '🩰 PRIMA BALLERINA KITTY STAR! 🧶', zh: '🩰 首席芭蕾舞星小花貓！ 🧶' },
+      finaleDesc: {
+        en: 'Kitty dances a dazzling 720° ballet pirouette with ribbons of rainbow yarn!',
+        zh: '小花貓帶著彩色毛線彩帶，跳出超華麗的720度芭蕾大旋轉！'
+      },
+      burstIcons: ['🐱', '🧶', '🩰', '🎀', '💖', '✨']
     },
     {
       id: 7,
       emoji: '🐧',
+      propEmoji: '🧊',
+      actionEmoji: '⛸️',
       homeEmoji: '🧊',
       color: '#4e9da6',
       cellColor: '#60b0b9',
       name: { en: 'Penguin', zh: '小企鵝' },
       homeName: { en: 'Snowy Igloo', zh: '冰雪小屋' },
-      cheer: { en: 'Coolest math star, Ning!', zh: '太酷了，數學小達人！' }
+      cheer: { en: 'Ice Belly-Slide & Triple Axel Spin, Ning!', zh: '冰雪肚皮滑行＋三周半跳躍！' },
+      stepBubble: { en: '⛸️ Ice Spin Slide! ❄️', zh: '⛸️ 溜冰大旋轉！❄️' },
+      finaleBadge: { en: '⛸️ OLYMPIC ICE SKATING PENGUIN! ❄️', zh: '⛸️ 冰雪花式溜冰企鵝冠軍！ ❄️' },
+      finaleDesc: {
+        en: 'Penguin belly-slides on sparkling ice and spins a 1080° figure-skating finale!',
+        zh: '小企鵝在閃亮冰面上肚皮衝刺，完美演出1080度花式溜冰大旋轉！'
+      },
+      burstIcons: ['🐧', '❄️', '🧊', '⛸️', '💎', '🌟']
     },
     {
       id: 8,
       emoji: '🐥',
+      propEmoji: '🪺',
+      actionEmoji: '🎵',
       homeEmoji: '🪺',
       color: '#6a7aa6',
       cellColor: '#7c8cb8',
       name: { en: 'Chick', zh: '小黃雞' },
       homeName: { en: 'Warm Nest', zh: '溫暖鳥巢' },
-      cheer: { en: 'Chirp-chirp! Brilliant, Ning!', zh: '啾啾！算得真快！' }
+      cheer: { en: 'Chirp-chirp! Rocket Wing Flutter, Ning!', zh: '啾啾！小翅膀噴射飛翔！' },
+      stepBubble: { en: '🐥 Rocket Flutter! 🎵', zh: '🐥 翅膀噴射飛！🎵' },
+      finaleBadge: { en: '🎵 ROCKSTAR SKY-FLYING CHICK! 🌟', zh: '🎵 搖滾天團飛天小黃雞！ 🌟' },
+      finaleDesc: {
+        en: 'Chick flutters into the sky with golden musical notes and does a loop-the-loop!',
+        zh: '小黃雞拍動翅膀伴隨金色音符衝上天空，表演空中360度翻圈特技！'
+      },
+      burstIcons: ['🐥', '🎵', '🎶', '🪺', '🌻', '⭐']
     },
     {
       id: 9,
       emoji: '🐷',
+      propEmoji: '🎈',
+      actionEmoji: '🪩',
       homeEmoji: '🏡',
       color: '#ac517f',
       cellColor: '#bd6390',
       name: { en: 'Piggy', zh: '小粉豬' },
       homeName: { en: 'Berry Cottage', zh: '花園小木屋' },
-      cheer: { en: 'Oink-oink! Incredible, Ning!', zh: '哼哼！Ning 太神啦！' }
+      cheer: { en: 'Oink-oink! Funky Disco Boogie Dance, Ning!', zh: '哼哼！動感迪斯可派對熱舞！' },
+      stepBubble: { en: '🪩 Disco Boogie! 🎈', zh: '🪩 派對熱舞跳！🎈' },
+      finaleBadge: { en: '🪩 SUPERSTAR DISCO PARTY PIGGY! 🎉', zh: '🪩 超級巨星派對熱舞小粉豬！ 🎉' },
+      finaleDesc: {
+        en: 'Piggy drops the disco ball and throws a giant fireworks dance party at the cottage!',
+        zh: '小粉豬點亮旋轉迪斯可球，在花園小木屋前跳起盛大煙火派對舞！'
+      },
+      burstIcons: ['🐷', '🪩', '🎈', '🎉', '🍰', '🌈']
     }
   ];
 
@@ -462,8 +543,14 @@
     rackProgressPct: document.getElementById('rackProgressPct'),
     homesMiniRack: document.getElementById('homesMiniRack'),
     celebrationOverlay: document.getElementById('celebrationOverlay'),
+    celebSpecialBadge: document.getElementById('celebSpecialBadge'),
+    celebHeroWrap: document.getElementById('celebHeroWrap'),
+    celebPropLeft: document.getElementById('celebPropLeft'),
+    celebPropRight: document.getElementById('celebPropRight'),
     celebAnimalEmoji: document.getElementById('celebAnimalEmoji'),
+    celebHouseEmoji: document.getElementById('celebHouseEmoji'),
     celebTitle: document.getElementById('celebTitle'),
+    celebMoveDesc: document.getElementById('celebMoveDesc'),
     celebSubtitle: document.getElementById('celebSubtitle'),
     celebPathBadges: document.getElementById('celebPathBadges'),
     btnCelebContinue: document.getElementById('btnCelebContinue'),
@@ -579,10 +666,11 @@
       dom.triangleGrid.appendChild(homeCell);
     }
 
-    // Create the floating walking animal sprite inside walkerLayer
+    // Create the floating walking animal sprite inside walkerLayer (with signature prop badge!)
     dom.walkerLayer.innerHTML = `
       <div id="activeWalkerSprite" class="walking-animal-sprite">
         <span id="walkerEmoji">🐼</span>
+        <span id="walkerProp" class="walker-prop-badge">🎋</span>
         <div id="walkerCheerBubble" class="walker-cheer-bubble hidden">Yay!</div>
       </div>
     `;
@@ -801,19 +889,24 @@
     });
 
     if (!walker || !walkerEmoji) return;
+    const walkerProp = document.getElementById('walkerProp');
     walkerEmoji.textContent = animal.emoji;
+    if (walkerProp) {
+      walkerProp.textContent = animal.propEmoji || '⭐';
+    }
     walker.style.borderColor = animal.color;
 
     const stopInfo = getAnimalCurrentStop(focusAnimal);
     let targetEl = null;
+    const isMobileScreen = window.innerWidth <= 680;
     if (stopInfo.type === 'HOME') {
       targetEl = document.getElementById(`rightHome-${focusAnimal}`);
     } else if (stopInfo.type === 'TOP') {
       targetEl = document.getElementById(`topDock-${focusAnimal}`);
     } else {
       targetEl = document.getElementById(`cell-${stopInfo.r}-${stopInfo.c}`);
-      if (targetEl) {
-        // Mark this cell with `has-walker` so its number shifts left and never gets covered!
+      if (targetEl && !isMobileScreen) {
+        // On desktop/tablet, mark this cell with `has-walker` so its number shifts left and stands beside the animal!
         targetEl.classList.add('has-walker');
       }
     }
@@ -823,12 +916,21 @@
       const targetRect = targetEl.getBoundingClientRect();
       if (boardRect.width > 0 && targetRect.width > 0) {
         if (stopInfo.type === 'CELL') {
-          // Place the animal on the right side of the cell (76% across, 52% down)
-          // while `.has-walker` shifts the number to the left side of the cell!
-          const sideX = targetRect.left - boardRect.left + targetRect.width * 0.76;
-          const sideY = targetRect.top - boardRect.top + targetRect.height * 0.52;
-          walker.style.left = `${sideX}px`;
-          walker.style.top = `${sideY}px`;
+          if (isMobileScreen) {
+            // On compact iPhone screens, perch the animal on the top-right corner rim of the cell
+            // so the solved number inside the box remains 100% centered and unobstructed!
+            const cornerX = targetRect.right - boardRect.left - 3;
+            const cornerY = targetRect.top - boardRect.top + 3;
+            walker.style.left = `${cornerX}px`;
+            walker.style.top = `${cornerY}px`;
+          } else {
+            // On desktop/iPad, place the animal on the right side of the cell (76% across, 52% down)
+            // while `.has-walker` shifts the number to the left side of the cell!
+            const sideX = targetRect.left - boardRect.left + targetRect.width * 0.76;
+            const sideY = targetRect.top - boardRect.top + targetRect.height * 0.52;
+            walker.style.left = `${sideX}px`;
+            walker.style.top = `${sideY}px`;
+          }
         } else {
           const centerX = targetRect.left - boardRect.left + targetRect.width / 2;
           const centerY = targetRect.top - boardRect.top + targetRect.height / 2;
@@ -839,18 +941,22 @@
     }
   }
 
-  function triggerWalkerCelebration(r, c) {
+  function triggerWalkerCelebration(r, c, animalIdx = 1) {
     const walker = document.getElementById('activeWalkerSprite');
     const bubble = document.getElementById('walkerCheerBubble');
+    const animal = ANIMALS[animalIdx] || ANIMALS[1];
+
     if (walker) {
-      walker.classList.remove('celebrating');
+      for (let i = 1; i <= 9; i++) {
+        walker.classList.remove(`move-animal-${i}`);
+      }
       void walker.offsetWidth;
-      walker.classList.add('celebrating');
+      walker.classList.add(`move-animal-${animal.id}`);
     }
     if (bubble) {
-      bubble.textContent = state.lang === 'zh' ? '好棒！🎉' : 'Yay! 🎉';
+      bubble.textContent = animal.stepBubble ? animal.stepBubble[state.lang] : 'Yay! 🎉';
       bubble.classList.remove('hidden');
-      setTimeout(() => bubble.classList.add('hidden'), 1400);
+      setTimeout(() => bubble.classList.add('hidden'), 1550);
     }
 
     const targets = [
@@ -1026,8 +1132,8 @@
         const rect = cellEl.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.emoji);
-        spawnFloatingScore(cx, cy - 10, `+10 ⭐ ${cheeringAnimal.emoji}`);
+        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.burstIcons || [cheeringAnimal.emoji]);
+        spawnFloatingScore(cx, cy - 10, `+10 ⭐ ${cheeringAnimal.emoji}${cheeringAnimal.propEmoji}`);
       }
 
       // Voice encouragement (Chinese chant or English multiplication)
@@ -1038,7 +1144,7 @@
       }
 
       refreshBoardVisuals();
-      triggerWalkerCelebration(r, c);
+      triggerWalkerCelebration(r, c, cheeringAnimalIdx);
 
       // Check if any animal just completed its entire L-path home!
       checkNewlyCompletedAnimalHomes();
@@ -1092,15 +1198,54 @@
 
   function showAnimalHomeCelebration(animalIdx, isGrandFinale) {
     const t = I18N[state.lang];
-    const animal = ANIMALS[animalIdx];
+    const animal = ANIMALS[animalIdx] || ANIMALS[1];
 
     playAnimalHomeFanfare();
-    spawnConfettiBurst(window.innerWidth / 2, window.innerHeight / 3, isGrandFinale ? 90 : 48);
+    spawnConfettiBurst(
+      window.innerWidth / 2,
+      window.innerHeight / 3,
+      isGrandFinale ? 95 : 54,
+      animal.burstIcons || [animal.emoji, animal.propEmoji, animal.actionEmoji]
+    );
+
+    if (dom.celebSpecialBadge) {
+      dom.celebSpecialBadge.textContent = isGrandFinale
+        ? state.lang === 'zh'
+          ? '🏆 九大功夫萌寵全員到齊！ 🏆'
+          : '🏆 ALL 9 SUPER ANIMALS HOME! 🏆'
+        : animal.finaleBadge[state.lang];
+    }
+
+    if (dom.celebHeroWrap) {
+      for (let i = 1; i <= 9; i++) {
+        dom.celebHeroWrap.classList.remove(`finale-animal-${i}`);
+      }
+      dom.celebHeroWrap.classList.add(`finale-animal-${animal.id}`);
+    }
+
+    if (dom.celebPropLeft) {
+      dom.celebPropLeft.textContent = isGrandFinale ? '🏆' : animal.propEmoji;
+    }
+    if (dom.celebPropRight) {
+      dom.celebPropRight.textContent = isGrandFinale ? '👑' : animal.actionEmoji;
+    }
+    if (dom.celebHouseEmoji) {
+      dom.celebHouseEmoji.textContent = isGrandFinale ? '🏰' : animal.homeEmoji;
+    }
 
     dom.celebAnimalEmoji.textContent = isGrandFinale ? '🐼🐰🐶🐸🐵🐱🐧🐥🐷' : animal.emoji;
     dom.celebTitle.textContent = isGrandFinale
       ? t.celebAllTitle
       : t.celebSingleTitle(animal.name[state.lang]);
+
+    if (dom.celebMoveDesc) {
+      dom.celebMoveDesc.textContent = isGrandFinale
+        ? state.lang === 'zh'
+          ? '9隻小動物使出專屬招牌絕技，為 Ning 舉辦盛大煙火慶功宴！'
+          : 'All 9 animal friends perform their signature special moves for Ning!'
+        : animal.finaleDesc[state.lang];
+    }
+
     dom.celebSubtitle.textContent = isGrandFinale
       ? t.celebAllSub(formatTime(state.timerSeconds), state.mistakes)
       : t.celebSingleSub(animalIdx);
@@ -1280,7 +1425,7 @@
     setTimeout(() => pop.remove(), 1100);
   }
 
-  function spawnConfettiBurst(x, y, count = 42, animalEmoji = '⭐') {
+  function spawnConfettiBurst(x, y, count = 42, customIcons = null) {
     resizeCanvas();
     const colors = [
       '#ff1744', '#ff9100', '#ffea00', '#00e676',
@@ -1323,8 +1468,10 @@
       });
     }
 
-    // 3. Flying Celebration Emojis (Animal + Stars + Hearts + Rainbow)
-    const celebIcons = [animalEmoji, '⭐', '🌟', '🎉', '💖', '🌈', '✨', '🎵'];
+    // 3. Flying Celebration Emojis (Animal + Signature Props + Stars + Rainbow)
+    const celebIcons = Array.isArray(customIcons) && customIcons.length > 0
+      ? customIcons
+      : [typeof customIcons === 'string' ? customIcons : '⭐', '🌟', '🎉', '💖', '🌈', '✨'];
     const emojiCount = 12;
     for (let j = 0; j < emojiCount; j++) {
       const angle = (Math.PI * 2 * j) / emojiCount + (Math.random() - 0.5) * 0.3;
