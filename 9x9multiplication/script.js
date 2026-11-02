@@ -956,7 +956,8 @@
     if (bubble) {
       bubble.textContent = animal.stepBubble ? animal.stepBubble[state.lang] : 'Yay! 🎉';
       bubble.classList.remove('hidden');
-      setTimeout(() => bubble.classList.add('hidden'), 1550);
+      if (state.bubbleHideTimer) clearTimeout(state.bubbleHideTimer);
+      state.bubbleHideTimer = setTimeout(() => bubble.classList.add('hidden'), 3800);
     }
 
     const targets = [
@@ -970,7 +971,7 @@
       el.classList.remove('cheer-jump');
       void el.offsetWidth;
       el.classList.add('cheer-jump');
-      setTimeout(() => el.classList.remove('cheer-jump'), 750);
+      setTimeout(() => el.classList.remove('cheer-jump'), 1450);
     });
   }
 
@@ -1184,7 +1185,7 @@
         state.score += 25;
 
         if (!allNineComplete) {
-          setTimeout(() => showAnimalHomeCelebration(n, false), 450);
+          setTimeout(() => showAnimalHomeCelebration(n, false), 1400);
           return;
         }
       }
@@ -1192,7 +1193,7 @@
 
     if (allNineComplete) {
       stopTimer();
-      setTimeout(() => showAnimalHomeCelebration(9, true), 450);
+      setTimeout(() => showAnimalHomeCelebration(9, true), 1400);
     }
   }
 
@@ -1422,7 +1423,7 @@
     pop.style.top = `${y}px`;
     pop.textContent = text;
     document.body.appendChild(pop);
-    setTimeout(() => pop.remove(), 1100);
+    setTimeout(() => pop.remove(), 2400);
   }
 
   function spawnConfettiBurst(x, y, count = 42, customIcons = null) {
@@ -1437,7 +1438,7 @@
       x,
       y,
       radius: 8,
-      maxRadius: 110,
+      maxRadius: 115,
       alpha: 0.9,
       color: '#ffd43b'
     });
@@ -1445,25 +1446,25 @@
       x,
       y,
       radius: 4,
-      maxRadius: 75,
+      maxRadius: 80,
       alpha: 0.85,
       color: '#ff6b6b'
     });
 
-    // 2. Confetti & glowing star sparks
+    // 2. Confetti & glowing star sparks (Gentle, slow-motion burst!)
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.45;
-      const speed = 4 + Math.random() * 9.5;
+      const speed = 2.2 + Math.random() * 5.2;
       particles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 3.8,
-        size: 7 + Math.random() * 7,
+        vy: Math.sin(angle) * speed - 2.4,
+        size: 8 + Math.random() * 7,
         color: colors[i % colors.length],
         alpha: 1,
         rot: Math.random() * Math.PI * 2,
-        vRot: (Math.random() - 0.5) * 0.28,
+        vRot: (Math.random() - 0.5) * 0.12,
         isStar: i % 3 === 0
       });
     }
@@ -1475,17 +1476,17 @@
     const emojiCount = 12;
     for (let j = 0; j < emojiCount; j++) {
       const angle = (Math.PI * 2 * j) / emojiCount + (Math.random() - 0.5) * 0.3;
-      const speed = 3.5 + Math.random() * 6.5;
+      const speed = 1.8 + Math.random() * 3.8;
       emojiSprites.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 4.5,
-        size: 20 + Math.random() * 12,
+        vy: Math.sin(angle) * speed - 2.8,
+        size: 24 + Math.random() * 12,
         icon: celebIcons[j % celebIcons.length],
         alpha: 1,
-        rot: (Math.random() - 0.5) * 0.5,
-        vRot: (Math.random() - 0.5) * 0.08
+        rot: (Math.random() - 0.5) * 0.35,
+        vRot: (Math.random() - 0.5) * 0.035
       });
     }
 
@@ -1510,11 +1511,11 @@
     const ctx = dom.fxCanvas.getContext('2d');
     ctx.clearRect(0, 0, dom.fxCanvas.width, dom.fxCanvas.height);
 
-    // Render shockwave rings
+    // Render shockwave rings (Slower expansion)
     for (let i = shockwaves.length - 1; i >= 0; i--) {
       const sw = shockwaves[i];
-      sw.radius += (sw.maxRadius - sw.radius) * 0.16;
-      sw.alpha -= 0.032;
+      sw.radius += (sw.maxRadius - sw.radius) * 0.085;
+      sw.alpha -= 0.016;
       if (sw.alpha <= 0) {
         shockwaves.splice(i, 1);
         continue;
@@ -1529,15 +1530,15 @@
       ctx.restore();
     }
 
-    // Render confetti & stars
+    // Render confetti & stars (Gentle float & slow fade)
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vx *= 0.985;
-      p.vy += 0.24; // gravity
+      p.vx *= 0.988;
+      p.vy += 0.11; // gentle gravity
       p.rot += p.vRot;
-      p.alpha -= 0.015;
+      p.alpha -= 0.008;
 
       if (p.alpha <= 0) {
         particles.splice(i, 1);
@@ -1557,14 +1558,14 @@
       ctx.restore();
     }
 
-    // Render flying emoji sprites
+    // Render flying emoji sprites (Gentle float & slow fade)
     for (let i = emojiSprites.length - 1; i >= 0; i--) {
       const e = emojiSprites[i];
       e.x += e.vx;
       e.y += e.vy;
-      e.vy += 0.2;
+      e.vy += 0.09;
       e.rot += e.vRot;
-      e.alpha -= 0.016;
+      e.alpha -= 0.008;
 
       if (e.alpha <= 0) {
         emojiSprites.splice(i, 1);
@@ -1722,6 +1723,10 @@
     root.classList.toggle('device-desktop', isDesktop);
     root.classList.toggle('orientation-landscape', orientation === 'landscape');
     root.classList.toggle('orientation-portrait', orientation === 'portrait');
+
+    if (dom.triangleGrid && dom.triangleGrid.children.length > 0) {
+      requestAnimationFrame(() => updateJourneyCardAndWalker());
+    }
   }
 
   window.addEventListener('resize', detectAndApplyDeviceProfile);
