@@ -4376,7 +4376,7 @@ html.device-tablet .app-shell {
 html.device-desktop .top-header,
 html.device-ipad .top-header,
 html.device-tablet .top-header {
-  padding: 4px 12px !important;
+  padding: 3px 10px !important;
   min-height: 38px !important;
   height: auto !important;
   border-radius: 14px !important;
@@ -4387,7 +4387,7 @@ html.device-tablet .top-header {
   justify-content: space-between !important;
   flex-wrap: nowrap !important;
   overflow: visible !important;
-  gap: 8px !important;
+  gap: 6px !important;
 }
 
 html.device-desktop .brand-group,
@@ -4395,23 +4395,24 @@ html.device-ipad .brand-group,
 html.device-tablet .brand-group {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 5px !important;
   flex-shrink: 0 !important;
 }
 
 html.device-desktop .rainbow-badge,
 html.device-ipad .rainbow-badge,
 html.device-tablet .rainbow-badge {
-  font-size: 1.4rem !important;
+  font-size: 1.25rem !important;
   line-height: 1 !important;
 }
 
 html.device-desktop .rainbow-title,
 html.device-ipad .rainbow-title,
 html.device-tablet .rainbow-title {
-  font-size: clamp(0.92rem, 1.2vw, 1.18rem) !important;
+  font-size: clamp(0.82rem, 1.1vw, 1.05rem) !important;
   white-space: nowrap !important;
   line-height: 1.1 !important;
+  letter-spacing: -0.2px !important;
 }
 
 html.device-desktop .subtitle-text,
@@ -4425,16 +4426,16 @@ html.device-ipad .mode-switcher,
 html.device-tablet .mode-switcher {
   display: flex !important;
   flex-shrink: 0 !important;
-  padding: 3px !important;
-  gap: 3px !important;
+  padding: 2px !important;
+  gap: 2px !important;
   border-radius: 10px !important;
 }
 
 html.device-desktop .mode-btn,
 html.device-ipad .mode-btn,
 html.device-tablet .mode-btn {
-  padding: 3px 10px !important;
-  font-size: 0.82rem !important;
+  padding: 3px 8px !important;
+  font-size: 0.78rem !important;
   white-space: nowrap !important;
   border-radius: 8px !important;
 }
@@ -4445,15 +4446,15 @@ html.device-tablet .utility-bar {
   display: flex !important;
   align-items: center !important;
   flex-wrap: nowrap !important;
-  gap: 4px !important;
+  gap: 3px !important;
   flex-shrink: 0 !important;
 }
 
 html.device-desktop .stat-pill,
 html.device-ipad .stat-pill,
 html.device-tablet .stat-pill {
-  padding: 2px 7px !important;
-  font-size: 0.8rem !important;
+  padding: 2px 6px !important;
+  font-size: 0.76rem !important;
   white-space: nowrap !important;
   height: 28px !important;
   border-radius: 8px !important;
@@ -4473,13 +4474,30 @@ html.device-tablet .tool-btn {
   flex-shrink: 0 !important;
 }
 
+/* Explicit auto width for buttons containing text so they NEVER truncate or cover other buttons */
 html.device-desktop .tool-btn.view-toggle-btn,
 html.device-ipad .tool-btn.view-toggle-btn,
-html.device-tablet .tool-btn.view-toggle-btn {
+html.device-tablet .tool-btn.view-toggle-btn,
+html.device-desktop .tool-btn.lang-toggle,
+html.device-ipad .tool-btn.lang-toggle,
+html.device-tablet .tool-btn.lang-toggle,
+html.device-desktop .tool-btn.new-case-btn,
+html.device-ipad .tool-btn.new-case-btn,
+html.device-tablet .tool-btn.new-case-btn,
+html.device-desktop .new-case-btn,
+html.device-ipad .new-case-btn,
+html.device-tablet .new-case-btn {
   width: auto !important;
+  min-width: 0 !important;
   padding: 0 8px !important;
   font-size: 0.78rem !important;
   height: 28px !important;
+  gap: 3px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
 }
 
 /* Clue Mode Toolbar */
@@ -4502,7 +4520,19 @@ html.device-tablet .clue-toolbar {
 html.device-desktop .clue-case-info,
 html.device-ipad .clue-case-info,
 html.device-tablet .clue-case-info {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+html.device-desktop .diff-btn-group,
+html.device-ipad .diff-btn-group,
+html.device-tablet .diff-btn-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
   flex-wrap: nowrap !important;
 }
 
@@ -4510,14 +4540,19 @@ html.device-desktop .clue-badge-pill,
 html.device-ipad .clue-badge-pill,
 html.device-tablet .clue-badge-pill {
   padding: 2px 8px !important;
-  font-size: 0.82rem !important;
+  font-size: 0.8rem !important;
+  white-space: nowrap !important;
 }
 
 html.device-desktop .diff-btn,
 html.device-ipad .diff-btn,
 html.device-tablet .diff-btn {
-  padding: 2px 8px !important;
-  font-size: 0.8rem !important;
+  padding: 2px 7px !important;
+  font-size: 0.78rem !important;
+  white-space: nowrap !important;
+  height: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 html.device-desktop .main-workspace,

@@ -1050,8 +1050,8 @@
       dom.viewToggleIcon.textContent = isPathView ? '🗺️' : '🐾';
       dom.viewToggleLabel.textContent =
         state.lang === 'zh'
-          ? isPathView ? (isCompactBar ? '九九表' : '完整九九表') : (isCompactBar ? '路線' : '大步石路線')
-          : isPathView ? (isCompactBar ? '9×9' : '9×9 Table') : (isCompactBar ? 'Path' : 'Animal Path');
+          ? isPathView ? '九九表' : '動物路徑'
+          : isPathView ? '9×9 Table' : 'Path';
     }
     if (dom.btnSwitchToFullMap) {
       dom.btnSwitchToFullMap.textContent =
