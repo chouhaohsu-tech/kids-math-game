@@ -3219,6 +3219,14 @@ body {
   }
 
   /* Full 9x9 Triangle Board in Landscape: ALL 11 ROWS 100% VISIBLE & CLEAN SIZING */
+  .board-section {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
   .board-frame:not(.hidden) {
     padding: 2px 4px !important;
     border-radius: 10px !important;
@@ -3226,16 +3234,23 @@ body {
     box-shadow: 0 2px 0 #9f8732 !important;
     height: auto !important;
     width: 100% !important;
-    overflow: visible !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
     margin: 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: flex-start !important;
+    box-sizing: border-box !important;
   }
 
-  /* Compact Clue Mode Toolbar in Landscape */
+  /* Compact Clue Mode Toolbar in Landscape: ONLY VISIBLE IN CLUE MODE */
   .test-toolbar,
   .clue-toolbar {
+    display: none !important;
+  }
+
+  .mode-clue .test-toolbar:not(.hidden),
+  .mode-clue .clue-toolbar:not(.hidden) {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -3283,12 +3298,13 @@ body {
   }
 
   .triangle-grid {
-    grid-template-columns: 22px repeat(9, var(--cell-w, 34px)) 26px !important;
+    grid-template-columns: 18px repeat(9, minmax(0, 1fr)) 22px !important;
     grid-template-rows: var(--top-row-h, 24px) var(--num-row-h, 17px) repeat(9, var(--cell-h, 21px)) !important;
-    width: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
     height: auto !important;
-    overflow: visible !important;
+    box-sizing: border-box !important;
   }
 
   .top-animal-avatar {
@@ -3306,10 +3322,12 @@ body {
   }
 
   .tri-cell {
-    width: var(--cell-w, 34px) !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: var(--cell-h, 21px) !important;
     min-height: 0 !important;
     font-size: clamp(0.72rem, 1.6vw, 0.92rem) !important;
+    box-sizing: border-box !important;
   }
 
   .cell-mini-label {
@@ -3319,10 +3337,11 @@ body {
 
   .right-animal-home {
     padding-left: 1px !important;
+    width: 22px !important;
   }
 
   .right-animal-home .home-badge-card {
-    width: 22px !important;
+    width: 20px !important;
     height: 18px !important;
     border-width: 1px !important;
     padding: 0 !important;
@@ -3341,7 +3360,7 @@ body {
     display: none !important;
   }
 
-  /* Right Sidebar in Landscape */
+  /* Right Sidebar in Landscape: Never Overlapped! */
   .control-sidebar {
     display: flex !important;
     flex-direction: column !important;
@@ -3350,8 +3369,11 @@ body {
     min-height: 0 !important;
     justify-content: flex-start !important;
     overflow: visible !important;
-    width: 215px !important;
-    flex: 0 0 215px !important;
+    width: 210px !important;
+    max-width: 210px !important;
+    min-width: 210px !important;
+    flex: 0 0 210px !important;
+    box-sizing: border-box !important;
   }
 
   .question-card {
@@ -3518,17 +3540,34 @@ body {
 }
 
 @media (max-width: 920px) and (max-height: 500px) {
+  .orientation-landscape.device-mobile .board-section,
+  .orientation-landscape.device-iphone .board-section {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
   .orientation-landscape.device-mobile .board-frame,
   .orientation-landscape.device-iphone .board-frame {
     padding: 2px 4px !important;
     border-radius: 10px !important;
     border-width: 1.5px !important;
     height: auto !important;
-    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 
   .orientation-landscape.device-mobile .test-toolbar,
   .orientation-landscape.device-iphone .test-toolbar {
+    display: none !important;
+  }
+
+  .mode-clue.orientation-landscape.device-mobile .test-toolbar:not(.hidden),
+  .mode-clue.orientation-landscape.device-iphone .test-toolbar:not(.hidden) {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -3581,20 +3620,32 @@ body {
 
   .orientation-landscape.device-mobile .triangle-grid,
   .orientation-landscape.device-iphone .triangle-grid {
-    grid-template-columns: 22px repeat(9, var(--cell-w, 34px)) 26px !important;
+    grid-template-columns: 18px repeat(9, minmax(0, 1fr)) 22px !important;
     grid-template-rows: var(--top-row-h, 24px) var(--num-row-h, 17px) repeat(9, var(--cell-h, 21px)) !important;
-    width: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
     height: auto !important;
-    overflow: visible !important;
+    box-sizing: border-box !important;
   }
 
   .orientation-landscape.device-mobile .tri-cell,
   .orientation-landscape.device-iphone .tri-cell {
-    width: var(--cell-w, 34px) !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: var(--cell-h, 21px) !important;
     min-height: 0 !important;
     font-size: clamp(0.72rem, 1.6vw, 0.92rem) !important;
+    box-sizing: border-box !important;
+  }
+
+  .orientation-landscape.device-mobile .control-sidebar,
+  .orientation-landscape.device-iphone .control-sidebar {
+    width: 210px !important;
+    max-width: 210px !important;
+    min-width: 210px !important;
+    flex: 0 0 210px !important;
+    box-sizing: border-box !important;
   }
 
   .orientation-landscape.device-mobile .cell-mini-label,
@@ -4858,5 +4909,18 @@ html.device-tablet .brand-group {
 .mode-clue .right-animal-home.reached-home .home-animal-icon {
   animation: none !important;
   transform: none !important;
+}
+
+/* ABSOLUTE OVERRIDE: Never show test/clue toolbar when hidden or in Story Mode! */
+.hidden,
+[hidden],
+.test-toolbar.hidden,
+.clue-toolbar.hidden,
+#testToolbar.hidden,
+body:not(.mode-clue) #testToolbar,
+html:not(.mode-clue) #testToolbar,
+body:not(.mode-clue) .test-toolbar,
+html:not(.mode-clue) .test-toolbar {
+  display: none !important;
 }
 
