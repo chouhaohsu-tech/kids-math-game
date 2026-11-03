@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=9.5.0" />
+  <link rel="stylesheet" href="style.css?v=9.8.0" />
 </head>
 <body>
   <!-- Particle & Fireworks Celebration Canvas -->
@@ -30,15 +30,15 @@
         </div>
       </div>
 
-      <!-- Mode Switcher: Story Mode vs Test Mode -->
+      <!-- Mode Switcher: Story Mode vs Clue Mode (Minesweeper-Style Clue Deduction) -->
       <div class="mode-switcher" role="tablist" aria-label="Game Mode">
         <button id="btnModeStory" class="mode-btn active" data-mode="story" role="tab" aria-selected="true">
           <span class="mode-icon">🏡</span>
           <span id="labelModeStory">Story Mode</span>
         </button>
-        <button id="btnModeTest" class="mode-btn" data-mode="test" role="tab" aria-selected="false">
-          <span class="mode-icon">⚡</span>
-          <span id="labelModeTest">Test Mode</span>
+        <button id="btnModeClue" class="mode-btn" data-mode="clue" role="tab" aria-selected="false">
+          <span class="mode-icon">🔍</span>
+          <span id="labelModeClue">Clue Mode</span>
         </button>
       </div>
 
@@ -82,6 +82,22 @@
       <div class="selector-label" id="selectorPrompt">🐾 Choose Animal Path:</div>
       <div id="animalPillsContainer" class="animal-pills-list">
         <!-- Populated dynamically by script.js for animals 1..9 + All -->
+      </div>
+    </section>
+
+    <!-- ==================== CLUE MODE CONTROLS BAR (MINESWEEPER STYLE MAP UNLOCK) ==================== -->
+    <section id="testToolbar" class="test-toolbar clue-toolbar hidden" aria-label="Clue Mode Options">
+      <div class="test-case-info clue-case-info">
+        <span class="test-badge-pill clue-badge-pill">🔍 <span id="labelTestStatus">Revealed Clues:</span> <strong id="testHolesRemaining">6 / 36</strong></span>
+        <div class="diff-btn-group clue-diff-group" role="radiogroup" aria-label="Starting Seeds Difficulty">
+          <button type="button" class="diff-btn" data-diff="easy" id="diffBtnEasy">🟢 Easy (12 Seeds)</button>
+          <button type="button" class="diff-btn active" data-diff="medium" id="diffBtnMedium">🟡 Medium (6 Seeds)</button>
+          <button type="button" class="diff-btn" data-diff="hard" id="diffBtnHard">🔴 Hard (2 Seeds)</button>
+        </div>
+        <button type="button" class="tool-btn new-case-btn" id="btnNewTest" title="Generate New Clue Map">
+          <span>🔄</span>
+          <span id="labelNewTest">New Map</span>
+        </button>
       </div>
     </section>
 
@@ -245,6 +261,15 @@
             <p id="hintFormulaText" class="hint-formula-text">2 groups of 3 = 3 + 3</p>
             <div id="visualDotsGrid" class="visual-dots-grid"></div>
           </div>
+
+          <!-- Test Mode Surrounding Clue Inspector -->
+          <div id="testClueBox" class="test-clue-box hidden">
+            <div class="test-clue-header">
+              <span class="clue-icon">🔍</span>
+              <span id="testClueHeader" class="clue-header-text">Surrounding Clues:</span>
+            </div>
+            <div id="testCluesList" class="test-clues-list"></div>
+          </div>
         </div>
 
         <!-- Kid-Friendly Musical Keypad -->
@@ -308,6 +333,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=9.5.0"></script>
+  <script src="script.js?v=9.8.0"></script>
 </body>
 </html>

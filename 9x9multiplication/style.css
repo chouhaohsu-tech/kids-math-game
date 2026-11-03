@@ -239,7 +239,12 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.hidden {
+.hidden,
+[hidden],
+*.hidden,
+.board-frame.hidden,
+.focused-path-stage.hidden,
+.app-shell .hidden {
   display: none !important;
 }
 
@@ -2114,23 +2119,25 @@ body {
    ========================================================================== */
 
 /* --- 1. iPad Horizontal / Landscape & Laptop Screens (min-height: 521px so it doesn't collide with iPhone Horizontal!) --- */
-@media (min-width: 761px) and (min-height: 521px) and (max-height: 900px) and (orientation: landscape),
+@media (min-width: 761px) and (min-height: 521px) and (max-height: 950px) and (orientation: landscape),
        (min-width: 761px) and (min-height: 521px) and (max-width: 1380px) and (orientation: landscape) {
   .app-shell {
-    padding: 5px 10px 10px;
+    padding: 6px 14px 10px;
     gap: 6px;
+    height: var(--app-height, 100dvh);
     min-height: var(--app-height, 100dvh);
-    height: auto;
-    max-height: none;
-    overflow-x: hidden;
-    overflow-y: visible;
+    max-height: var(--app-height, 100dvh);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .top-header {
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 14px;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
   }
 
   .rainbow-badge {
@@ -2138,7 +2145,7 @@ body {
   }
 
   .rainbow-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 
   .subtitle-text {
@@ -2146,18 +2153,18 @@ body {
   }
 
   .mode-btn {
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 0.94rem;
   }
 
   .stat-pill {
-    padding: 4px 10px;
-    font-size: 0.9rem;
+    padding: 4px 11px;
+    font-size: 0.92rem;
   }
 
   .tool-btn {
-    padding: 5px 10px;
-    font-size: 0.86rem;
+    padding: 6px 12px;
+    font-size: 0.88rem;
   }
 
   /* Hide redundant Animal Selector Bar on iPad Landscape since all 9 animals sit right on top of the board! */
@@ -2165,66 +2172,85 @@ body {
     display: none !important;
   }
 
+  /* Hide floating back-to-path button on iPad Landscape so it never clutters the triangle! */
+  .back-to-path-btn {
+    display: none !important;
+  }
+
   .main-workspace {
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 360px);
+    gap: 12px;
     min-height: 0;
-    height: auto;
+    height: 100%;
+    flex: 1 1 auto;
     align-items: center;
   }
 
   .board-section {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .board-frame:not(.hidden) {
+    padding: 8px 12px;
+    border-radius: 20px;
     height: auto;
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
   }
 
-  .board-frame {
-    padding: 6px 10px 8px;
-    border-radius: 18px;
+  .triangle-grid {
+    grid-template-columns: clamp(34px, 3.8vw, 44px) repeat(9, var(--cell-h, 52px)) clamp(44px, 5vw, 62px);
+    grid-template-rows: var(--top-row-h, 56px) var(--num-row-h, 32px) repeat(9, var(--cell-h, 52px));
     height: auto;
-    width: 100%;
-    max-width: calc(var(--cell-h, 36px) * 13.2);
+    width: auto;
     margin: 0 auto;
   }
 
-  .triangle-grid {
-    grid-template-columns: 34px repeat(9, minmax(0, 1fr)) 48px;
-    grid-template-rows: var(--top-row-h, 42px) var(--num-row-h, 26px) repeat(9, var(--cell-h, 34px));
-    height: auto;
-  }
-
   .tri-cell {
+    width: var(--cell-h, 52px);
+    height: var(--cell-h, 52px);
     min-height: 0;
-    font-size: clamp(1.1rem, 1.75vw, 1.45rem);
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
   }
 
   .tri-cell.solved-cell .cell-input-box {
-    font-size: clamp(1.15rem, 1.85vw, 1.5rem);
+    font-size: clamp(1.25rem, 2.2vw, 1.7rem);
   }
 
   .cell-mini-label {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
   }
 
   .top-animal-avatar {
-    width: calc(var(--top-row-h, 42px) - 4px);
-    height: calc(var(--top-row-h, 42px) - 4px);
-    font-size: calc(var(--top-row-h, 42px) * 0.48);
+    width: calc(var(--top-row-h, 56px) - 6px);
+    height: calc(var(--top-row-h, 56px) - 6px);
+    font-size: calc(var(--top-row-h, 56px) * 0.52);
   }
 
   .num-circle {
-    width: calc(var(--num-row-h, 26px) - 2px);
-    height: calc(var(--num-row-h, 26px) - 2px);
-    font-size: 0.96rem;
+    width: calc(var(--num-row-h, 32px) - 4px);
+    height: calc(var(--num-row-h, 32px) - 4px);
+    font-size: 1.15rem;
   }
 
   /* Keep Teacher Cat strictly in the empty bottom-left triangle on iPad Landscape */
   .lower-left-stage {
-    left: 36px;
-    bottom: 6px;
-    width: 45%;
+    left: clamp(34px, 3.8vw, 44px);
+    bottom: 8px;
+    width: 44%;
     max-width: 360px;
-    gap: 4px;
+    gap: 6px;
   }
 
   /* Hide extra cards on iPad Landscape so Sidebar & Board have plenty of breathing room */
@@ -2235,28 +2261,61 @@ body {
   }
 
   .teacher-cat-svg-wrap {
-    width: 52px;
-    height: 56px;
+    width: 60px;
+    height: 64px;
   }
 
   .cat-speech-bubble {
-    padding: 7px 11px;
-    font-size: 0.94rem;
-    line-height: 1.34;
+    padding: 8px 12px;
+    font-size: 0.96rem;
+    line-height: 1.36;
   }
 
   .control-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     justify-content: center;
     min-height: 0;
-    height: auto;
+    height: 100%;
+    width: clamp(300px, 28vw, 360px);
   }
 
   .question-card, .keypad-card {
-    padding: 10px 12px;
+    padding: 10px 14px;
     border-radius: 18px;
+  }
+
+  .active-animal-pill {
+    font-size: 0.96rem;
+    padding: 5px 12px;
+  }
+
+  .hint-pill-btn {
+    font-size: 0.92rem;
+    padding: 5px 12px;
+  }
+
+  .equation-display {
+    padding: 8px 10px;
+  }
+
+  .eq-num {
+    width: 42px;
+    height: 42px;
+    font-size: 1.55rem;
+  }
+
+  .eq-answer-box {
+    height: 44px;
+    min-width: 62px;
+    font-size: 1.6rem;
+  }
+
+  .key-btn {
+    height: clamp(44px, 5.8vh, 52px);
+    font-size: 1.35rem;
+    border-radius: 14px;
   }
 
   .active-animal-pill {
@@ -3047,7 +3106,7 @@ body {
   }
 
   /* Focused Animal Path Stage in Landscape */
-  .focused-path-stage {
+  .focused-path-stage:not(.hidden) {
     height: auto !important;
     min-height: 0 !important;
     padding: 2px 6px !important;
@@ -3157,7 +3216,7 @@ body {
   }
 
   /* Full 9x9 Triangle Board in Landscape: ALL 11 ROWS 100% VISIBLE */
-  .board-frame {
+  .board-frame:not(.hidden) {
     padding: 2px 4px !important;
     border-radius: 10px !important;
     border-width: 1.5px !important;
@@ -3797,4 +3856,481 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 0 #237032;
   margin-top: 2px;
+}
+
+/* ==========================================================================
+   IPAD LANDSCAPE SCREEN FIT OVERRIDES (ZERO EMPTY SPACE, NO PATH BUTTON LEAK)
+   ========================================================================== */
+.device-ipad.orientation-landscape .back-to-path-btn,
+.device-tablet.orientation-landscape .back-to-path-btn {
+  display: none !important;
+}
+
+.device-ipad.orientation-landscape .app-shell,
+.device-tablet.orientation-landscape .app-shell {
+  height: var(--app-height, 100dvh) !important;
+  max-height: var(--app-height, 100dvh) !important;
+  overflow: hidden !important;
+}
+
+.device-ipad.orientation-landscape .board-frame:not(.hidden),
+.device-tablet.orientation-landscape .board-frame:not(.hidden) {
+  display: flex !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.device-ipad.orientation-landscape .focused-path-stage.hidden,
+.device-tablet.orientation-landscape .focused-path-stage.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   CLUE MODE: MINESWEEPER STYLE MAP UNLOCK & CHAIN-REACTION CLUES
+   ========================================================================== */
+.test-toolbar,
+.clue-toolbar,
+.detective-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2.5px solid #0284c7;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 #0369a1, 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.test-case-info,
+.clue-case-info,
+.detective-case-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.test-badge-pill,
+.clue-badge-pill,
+.detective-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.96rem;
+  color: #0369a1;
+  background: #bae6fd;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1.5px solid #0284c7;
+}
+
+.diff-btn-group,
+.clue-diff-group {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.diff-btn {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 2px solid #d1d5db;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.diff-btn:hover {
+  transform: translateY(-1px);
+}
+
+.diff-btn.active {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0369a1;
+  box-shadow: 0 2px 0 #0284c7;
+  transform: translateY(-1px);
+}
+
+/* Minesweeper Clue-Ready Tiles (Has at least 1 revealed neighbor) */
+.tri-cell.clue-ready {
+  border: 2.5px solid #0284c7 !important;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
+  animation: pulseClueReady 1.8s infinite ease-in-out;
+  cursor: pointer;
+}
+
+.tri-cell.clue-ready.selected-cell {
+  border: 3.5px solid #0369a1 !important;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.45), 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+  background: #bae6fd !important;
+}
+
+@keyframes pulseClueReady {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.5);
+  }
+}
+
+/* Minesweeper Clue Beacon inside Clue-Ready Tiles */
+.clue-beacon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: #0284c7;
+}
+
+.beacon-lens {
+  font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+}
+
+.beacon-count {
+  font-size: clamp(0.72rem, 1vw, 0.88rem);
+  background: #0284c7;
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 999px;
+  line-height: 1.1;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Hidden Mystery Tiles with No Adjacent Clues yet (Fog) */
+.tri-cell.clue-fog {
+  border: 2px dashed #94a3b8 !important;
+  background: #f8fafc !important;
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.tri-cell.clue-fog.selected-cell {
+  border: 3px solid #64748b !important;
+  box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.35) !important;
+}
+
+.clue-fog-icon {
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+/* Revealed Clue Cells */
+.tri-cell.clue-revealed {
+  border: 2px solid #10b981 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%) !important;
+  color: #065f46 !important;
+}
+
+.revealed-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  color: #047857;
+}
+
+/* Newly Unlocked Tile Animation (Cascade/Chain Reaction Pop) */
+.clue-newly-unlocked {
+  animation: clueUnlockPop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes clueUnlockPop {
+  0% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8);
+  }
+  50% {
+    transform: scale(1.16);
+    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.new-case-btn {
+  background: linear-gradient(180deg, #dbeafe 0%, #93c5fd 100%);
+  border-color: #3b82f6;
+  color: #1e40af;
+  box-shadow: 0 3px 0 #2563eb;
+  padding: 4px 12px;
+  font-size: 0.88rem;
+}
+
+/* Hidden Number Holes on the Triangle Grid (Test Mode & Detective) */
+.tri-cell.test-hole,
+.tri-cell.detective-hole {
+  border: 2.5px dashed #f59e0b !important;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+  animation: pulseHole 1.8s infinite ease-in-out;
+  cursor: pointer;
+}
+
+.tri-cell.test-hole.selected-cell,
+.tri-cell.detective-hole.selected-cell {
+  border: 3.5px solid #d97706 !important;
+  box-shadow: 0 0 0 4px rgba(245, 159, 0, 0.45), 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.test-hole-icon,
+.detective-hole-icon {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  color: #d97706;
+  animation: bounceMagnifier 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseHole {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
+  }
+}
+
+@keyframes bounceMagnifier {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(6deg); }
+}
+
+/* Clue Neighbors (Glowing highlight) */
+.tri-cell.clue-neighbor {
+  border: 2.5px solid #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.45), 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+  position: relative;
+  z-index: 10;
+  animation: glowNeighbor 1.6s infinite ease-in-out;
+}
+
+@keyframes glowNeighbor {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35); }
+  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.65); }
+}
+
+.clue-tag {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* Question Card Surrounding Clues Inspector */
+.test-clue-box,
+.detective-clue-box {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: 14px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.test-clue-header,
+.detective-clue-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #166534;
+}
+
+.test-clues-list,
+.detective-clues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.clue-sequence-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 5px 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.seq-num {
+  color: #15803d;
+  font-size: 1.05rem;
+  background: #dcfce7;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.seq-arrow {
+  color: #059669;
+  font-size: 0.82rem;
+}
+
+.seq-target {
+  color: #d97706;
+  font-size: 1.15rem;
+  background: #fef3c7;
+  border: 1.5px dashed #f59e0b;
+  padding: 2px 8px;
+  border-radius: 8px;
+  animation: pulseHole 1.2s infinite ease-in-out;
+}
+
+.clue-item-text {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   ROW & COLUMN SHINE & ANIMAL DANCE CELEBRATION (CRACKED NUMBER)
+   ========================================================================== */
+.shine-col {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.28) 100%) !important;
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.65) !important;
+  position: relative;
+  z-index: 12;
+  animation: pulseShineCol 0.6s infinite alternate ease-in-out;
+}
+
+.shine-row {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.45) 0%, rgba(245, 158, 11, 0.28) 100%) !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.65) !important;
+  position: relative;
+  z-index: 12;
+  animation: pulseShineRow 0.6s infinite alternate ease-in-out;
+}
+
+.shine-intersection {
+  background: linear-gradient(135deg, #fef08a 0%, #a7f3d0 100%) !important;
+  border: 3.5px solid #10b981 !important;
+  box-shadow: 0 0 22px rgba(16, 185, 129, 0.85), 0 0 38px rgba(234, 179, 8, 0.75) !important;
+  transform: scale(1.12) !important;
+  z-index: 25 !important;
+  animation: pulseIntersection 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulseShineCol {
+  0% { box-shadow: 0 0 8px rgba(2, 132, 199, 0.4); }
+  100% { box-shadow: 0 0 18px rgba(2, 132, 199, 0.85); }
+}
+
+@keyframes pulseShineRow {
+  0% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+  100% { box-shadow: 0 0 18px rgba(245, 158, 11, 0.85); }
+}
+
+@keyframes pulseIntersection {
+  0% { transform: scale(1.08); filter: brightness(1); }
+  100% { transform: scale(1.16); filter: brightness(1.25); }
+}
+
+/* Floating Shining Arrows */
+.shine-arrow {
+  position: absolute;
+  pointer-events: none;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 900;
+  z-index: 30;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.arrow-down {
+  animation: travelDownArrow 0.8s infinite ease-in-out;
+}
+
+.arrow-right {
+  animation: travelRightArrow 0.8s infinite ease-in-out;
+}
+
+@keyframes travelDownArrow {
+  0% { transform: translateY(-7px) scale(0.9); opacity: 0.6; }
+  50% { transform: translateY(0px) scale(1.25); opacity: 1; }
+  100% { transform: translateY(7px) scale(0.9); opacity: 0.6; }
+}
+
+@keyframes travelRightArrow {
+  0% { transform: translateX(-7px) scale(0.9); opacity: 0.6; }
+  50% { transform: translateX(0px) scale(1.25); opacity: 1; }
+  100% { transform: translateX(7px) scale(0.9); opacity: 0.6; }
+}
+
+/* Animal Dance Animation */
+.animal-dancing {
+  animation: animalHappyDance 0.55s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
+  z-index: 30 !important;
+}
+
+@keyframes animalHappyDance {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-12px) rotate(-14deg) scale(1.3); }
+  50% { transform: translateY(-4px) rotate(0deg) scale(1.15); }
+  75% { transform: translateY(-12px) rotate(14deg) scale(1.3); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* Floating Dance Celebration Badge over cracked cell */
+.cell-dance-badge {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid #10b981;
+  border-radius: 999px;
+  padding: 3px 11px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.88rem;
+  color: #065f46;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 40;
+  animation: floatDanceBadge 2.2s forwards ease-out;
+  pointer-events: none;
+}
+
+@keyframes floatDanceBadge {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); }
+  18% { opacity: 1; transform: translate(-50%, -10px) scale(1.15); }
+  80% { opacity: 1; transform: translate(-50%, -14px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -26px) scale(0.85); }
 }

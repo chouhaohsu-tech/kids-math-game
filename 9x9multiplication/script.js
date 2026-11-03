@@ -194,7 +194,22 @@
       appTitle: 'NON-REPEATING MULTIPLICATION TABLE',
       appSubtitle: "Ning's Animal Home Adventure • Take Every Animal Home!",
       modeStory: 'Story Mode',
-      modeTest: 'Test Mode',
+      modeClue: 'Clue Mode',
+      modeTest: 'Clue Mode',
+      labelTestStatus: 'Revealed Clues:',
+      testHolesRemaining: (rev, total) => `${rev} / ${total} Unlocked`,
+      testDiffEasy: '🟢 Easy (12 Seeds)',
+      testDiffMed: '🟡 Medium (6 Seeds)',
+      testDiffHard: '🔴 Hard (2 Seeds)',
+      newTestBtn: 'New Map 🔄',
+      catWelcomeTest:
+        'Welcome to Clue Mode, Ning! Like Minesweeper, look at the numbers already revealed on the map. Find hidden tiles next to them to deduce mystery numbers. Each one you solve reveals brand new clues for its neighbors!',
+      testStepLabel: '🔍 Clue Deduction',
+      testClueHeading: 'Surrounding Revealed Clues:',
+      celebTestTitle: '🏆 CLUE MAP CLEARED, NING! 🏆',
+      celebTestSub: (total, timeStr, mistakes) =>
+        `Ning deduced and unlocked all ${total} multiplication tiles in ${timeStr}! Mistakes: ${mistakes}`,
+      nextTestBtn: 'Next Map 🔄',
       langBtnLabel: '中文 / EN',
       selectorPrompt: '🐾 Animal Path:',
       allAnimalsPill: '🌈 All Paths',
@@ -206,8 +221,6 @@
       playAgainBtn: 'OK ✓ Play Again 🔄',
       catWelcomeStory: (animalName, n) =>
         `Hi Ning! Let's take ${animalName} (#${n}) home! Start at the top of Column ${n}, go down to ${n}×${n}=${n * n}, then turn right along Row ${n}!`,
-      catWelcomeTest:
-        'Test Mode Challenge! Tap any box or follow the random prompt to complete all 36 multiplication boxes as fast as you can!',
       catCorrect: (cheer, r, c, ans) =>
         `${cheer} ${r} × ${c} = ${ans}!`,
       catWrong: (r, c) =>
@@ -232,7 +245,22 @@
       appTitle: '不重複九九乘法大冒險',
       appSubtitle: 'Ning 的動物回家之旅 • 帶領每隻小動物平安回家！',
       modeStory: '故事模式',
-      modeTest: '測驗挑戰',
+      modeClue: '線索模式',
+      modeTest: '線索模式',
+      labelTestStatus: '已解鎖線索：',
+      testHolesRemaining: (rev, total) => `已解開 ${rev} / ${total} 格`,
+      testDiffEasy: '🟢 初級 (12個種子)',
+      testDiffMed: '🟡 中級 (6個種子)',
+      testDiffHard: '🔴 掃雷大師 (2個種子)',
+      newTestBtn: '換張新地圖 🔄',
+      catWelcomeTest:
+        '歡迎來到線索模式，Ning！就像踩地雷一樣，先從地圖上已經揭曉的數字線索開始，找出相鄰空格的神秘答案。每解開一格，四周的格子就會獲得全新的線索喔！',
+      testStepLabel: '🔍 線索推導',
+      testClueHeading: '四周相鄰線索：',
+      celebTestTitle: '🏆 太神啦 Ning！線索地圖完全掃清！ 🏆',
+      celebTestSub: (total, timeStr, mistakes) =>
+        `妳在 ${timeStr} 內推導並解開了全部 ${total} 個乘法格子！錯誤次數：${mistakes}`,
+      nextTestBtn: '挑戰新地圖 🔄',
       langBtnLabel: 'EN / 中文',
       selectorPrompt: '🐾 選擇小動物路線：',
       allAnimalsPill: '🌈 全部顯示',
@@ -244,8 +272,6 @@
       playAgainBtn: 'OK ✓ 再玩一次 🔄',
       catWelcomeStory: (animalName, n) =>
         `嗨 Ning！我們帶${animalName}（數字 ${n}）回家吧！從第 ${n} 直行最上方出發，往下走到轉角 ${n}×${n}=${n * n}，再往右走完第 ${n} 橫列就到家囉！`,
-      catWelcomeTest:
-        '測驗挑戰模式開始！請算出每一格的乘法答案，看看 Ning 能不能把 36 個空格全部填滿，帶所有動物回家！',
       catCorrect: (cheer, r, c, ans) =>
         `${cheer} ${r} × ${c} = ${ans}！`,
       catWrong: (r, c) =>
@@ -289,7 +315,13 @@
    * -------------------------------------------------------------------------- */
   const state = {
     lang: 'en',              // 'en' | 'zh'
-    mode: 'story',           // 'story' | 'test'
+    mode: 'story',           // 'story' | 'clue'
+    clueDiff: 'medium',      // 'easy' (12 seeds) | 'medium' (6 seeds) | 'hard' (2 seeds)
+    clueSeeds: new Set(),    // set of 'r-c' keys that were initial revealed seeds
+    clueRevealed: {},        // key 'r-c' -> true if revealed (seeds + solved)
+    testDiff: 'medium',      // backward compatibility alias
+    testHoles: [],           // backward compatibility alias
+    testTotalHoles: 36,
     viewMode: window.innerWidth <= 740 ? 'path' : 'table', // 'path' (Big Stepping Stones) | 'table' (Full 9x9 Triangle)
     userToggledView: false,
     soundEnabled: true,
@@ -303,7 +335,7 @@
     celebratedAnimals: {},   // animalId (1..9) -> boolean
     timerSeconds: 0,
     timerInterval: null,
-    testQueue: []            // randomized cell queue for Test Mode
+    testQueue: []            // randomized cell queue
   };
 
   /* --------------------------------------------------------------------------
@@ -438,7 +470,10 @@
   }
 
   function isCellSolved(r, c) {
-    if (r === c) return true; // Diagonal square numbers are pre-filled at start!
+    if (r === c) return true; // Diagonal square numbers are pre-filled base anchors!
+    if (state.mode === 'clue' || state.mode === 'test' || state.mode === 'detective') {
+      return !!state.clueRevealed[`${r}-${c}`];
+    }
     return !!state.solvedMap[`${r}-${c}`];
   }
 
@@ -503,9 +538,22 @@
     appTitle: document.getElementById('appTitle'),
     appSubtitle: document.getElementById('appSubtitle'),
     btnModeStory: document.getElementById('btnModeStory'),
-    btnModeTest: document.getElementById('btnModeTest'),
+    btnModeClue: document.getElementById('btnModeClue') || document.getElementById('btnModeTest'),
+    btnModeTest: document.getElementById('btnModeClue') || document.getElementById('btnModeTest'),
     labelModeStory: document.getElementById('labelModeStory'),
-    labelModeTest: document.getElementById('labelModeTest'),
+    labelModeClue: document.getElementById('labelModeClue') || document.getElementById('labelModeTest'),
+    labelModeTest: document.getElementById('labelModeClue') || document.getElementById('labelModeTest'),
+    testToolbar: document.getElementById('testToolbar'),
+    labelTestStatus: document.getElementById('labelTestStatus'),
+    testHolesRemaining: document.getElementById('testHolesRemaining'),
+    diffBtnEasy: document.getElementById('diffBtnEasy'),
+    diffBtnMedium: document.getElementById('diffBtnMedium'),
+    diffBtnHard: document.getElementById('diffBtnHard'),
+    btnNewTest: document.getElementById('btnNewTest'),
+    labelNewTest: document.getElementById('labelNewTest'),
+    testClueBox: document.getElementById('testClueBox'),
+    testClueHeader: document.getElementById('testClueHeader'),
+    testCluesList: document.getElementById('testCluesList'),
     homesCountText: document.getElementById('homesCountText'),
     scoreText: document.getElementById('scoreText'),
     timerPill: document.getElementById('timerPill'),
@@ -782,11 +830,19 @@
     dom.appTitle.textContent = t.appTitle;
     dom.appSubtitle.textContent = t.appSubtitle;
     dom.labelModeStory.textContent = isCompactBar
-      ? state.lang === 'zh' ? '故事' : 'Story'
+      ? (state.lang === 'zh' ? '故事' : 'Story')
       : t.modeStory;
-    dom.labelModeTest.textContent = isCompactBar
-      ? state.lang === 'zh' ? '測驗' : 'Test'
-      : t.modeTest;
+    const clueLabelEl = dom.labelModeClue || dom.labelModeTest;
+    if (clueLabelEl) {
+      clueLabelEl.textContent = isCompactBar
+        ? (state.lang === 'zh' ? '線索模式' : 'Clue Mode')
+        : (t.modeClue || t.modeTest);
+    }
+    if (dom.labelModeDetective) {
+      dom.labelModeDetective.textContent = isCompactBar
+        ? state.lang === 'zh' ? '偵探' : 'Detective'
+        : t.modeDetective;
+    }
     dom.langLabel.textContent = t.langBtnLabel;
     dom.selectorPrompt.textContent = t.selectorPrompt;
     dom.legendTitle.textContent = t.legendTitle;
@@ -795,8 +851,46 @@
     dom.rackTitle.textContent = t.rackTitle;
     dom.scoreText.textContent = String(state.score);
 
+    const isClueMode = state.mode === 'clue' || state.mode === 'test';
+    if (dom.testToolbar) {
+      dom.testToolbar.classList.toggle('hidden', !isClueMode);
+    }
+    if (dom.animalSelectorBar) {
+      dom.animalSelectorBar.classList.toggle('hidden', isClueMode);
+    }
+
+    if (isClueMode) {
+      const revealedCount = Object.keys(state.clueRevealed).length;
+      if (dom.testHolesRemaining) {
+        dom.testHolesRemaining.textContent = t.testHolesRemaining(
+          revealedCount,
+          36
+        );
+      }
+      if (dom.labelTestStatus) dom.labelTestStatus.textContent = t.labelTestStatus;
+      if (dom.labelNewTest) dom.labelNewTest.textContent = t.newTestBtn;
+      if (dom.diffBtnEasy) {
+        dom.diffBtnEasy.textContent = t.testDiffEasy;
+        dom.diffBtnEasy.classList.toggle('active', state.clueDiff === 'easy');
+      }
+      if (dom.diffBtnMedium) {
+        dom.diffBtnMedium.textContent = t.testDiffMed;
+        dom.diffBtnMedium.classList.toggle('active', state.clueDiff === 'medium');
+      }
+      if (dom.diffBtnHard) {
+        dom.diffBtnHard.textContent = t.testDiffHard;
+        dom.diffBtnHard.classList.toggle('active', state.clueDiff === 'hard');
+      }
+    }
+
     buildAnimalSelectorPills();
     buildHomesMiniRack();
+
+    // Clue Neighbors Map for selected cell in Clue Mode
+    const clueNeighbors =
+      isClueMode && state.selectedCell
+        ? getRevealedCluesForCell(state.selectedCell.r, state.selectedCell.c).neighborMap
+        : {};
 
     // Determine active L-path set if a specific animal (1..9) is highlighted
     const activeN = state.mode === 'story' ? state.activeAnimal : 0;
@@ -827,18 +921,80 @@
         const cell = document.getElementById(`cell-${r}-${c}`);
         if (!cell) continue;
         const key = `${r}-${c}`;
+        const isDiag = r === c;
         const solved = isCellSolved(r, c);
         const isSelected =
           state.selectedCell && state.selectedCell.r === r && state.selectedCell.c === c;
         const onPath = activePathSet.has(key);
+        const isClueNeighbor = !!clueNeighbors[key];
 
         cell.classList.toggle('selected-cell', !!isSelected);
         cell.classList.toggle('on-active-path', onPath);
-        cell.classList.toggle('dimmed-cell', activeN > 0 && !onPath);
+        cell.classList.toggle(
+          'dimmed-cell',
+          activeN > 0 && !onPath && !isClueMode
+        );
+        cell.classList.toggle('clue-neighbor', isClueNeighbor);
 
-        if (r !== c) {
+        // Remove any old clue tag
+        const oldTag = cell.querySelector('.clue-tag');
+        if (oldTag) oldTag.remove();
+
+        if (isClueNeighbor && isClueMode) {
+          const clueInfo = clueNeighbors[key];
+          const tag = document.createElement('span');
+          tag.className = 'clue-tag';
+          tag.textContent = clueInfo.diff || clueInfo.rel || '';
+          cell.appendChild(tag);
+        }
+
+        if (isDiag) {
+          // Diagonal square cells are always solved anchor stones
+          cell.classList.add('solved-cell', 'is-diagonal');
+          cell.classList.remove('empty-cell');
+          continue;
+        }
+
+        // Upper triangle interactive cells (r < c):
+        if (isClueMode) {
+          const isRevealed = !!state.clueRevealed[key];
+          cell.classList.toggle('solved-cell', isRevealed);
+          cell.classList.toggle('empty-cell', !isRevealed);
+          cell.classList.toggle('clue-revealed', isRevealed);
+
+          const box = document.getElementById(`cellBox-${r}-${c}`);
+          if (box) {
+            if (isRevealed) {
+              cell.classList.remove('clue-ready', 'clue-fog', 'test-hole');
+              box.innerHTML = `<span class="revealed-num">${r * c}</span>`;
+            } else {
+              // Hidden tile: check how many clues surround it
+              const cellClues = getRevealedCluesForCell(r, c);
+              const hasClues = cellClues.count > 0;
+              cell.classList.toggle('clue-ready', hasClues);
+              cell.classList.toggle('clue-fog', !hasClues);
+              cell.classList.add('test-hole');
+
+              if (isSelected) {
+                box.innerHTML = `<span>${state.typedValue !== '' ? state.typedValue : '?'}</span>`;
+              } else if (hasClues) {
+                box.innerHTML = `
+                  <div class="clue-beacon" title="${cellClues.count} clues nearby">
+                    <span class="beacon-lens">🔍</span>
+                    <span class="beacon-count">${cellClues.count}</span>
+                  </div>
+                `;
+              } else {
+                box.innerHTML = `<span class="clue-fog-icon">?</span>`;
+              }
+            }
+          }
+        } else {
+          // Story Mode
           cell.classList.toggle('solved-cell', solved);
           cell.classList.toggle('empty-cell', !solved);
+          cell.classList.remove('clue-ready', 'clue-fog', 'clue-revealed', 'test-hole');
+
           const box = document.getElementById(`cellBox-${r}-${c}`);
           if (box) {
             if (solved) {
@@ -1087,8 +1243,25 @@
    *     while the number shifts slightly left so they NEVER overlap!)
    * -------------------------------------------------------------------------- */
   function updateJourneyCardAndWalker() {
-    const t = I18N[state.lang];
+    const isClueMode = state.mode === 'clue' || state.mode === 'test';
     const walker = document.getElementById('activeWalkerSprite');
+
+    // In Clue Mode, animal icons do not move in the triangle board!
+    if (isClueMode) {
+      if (walker) walker.classList.add('hidden');
+      if (dom.walkerLayer) dom.walkerLayer.classList.add('hidden');
+      if (dom.journeyGuideCard) dom.journeyGuideCard.classList.add('hidden');
+      document.querySelectorAll('.tri-cell.has-walker').forEach((el) => {
+        el.classList.remove('has-walker');
+      });
+      return;
+    }
+
+    if (walker) walker.classList.remove('hidden');
+    if (dom.walkerLayer) dom.walkerLayer.classList.remove('hidden');
+    if (dom.journeyGuideCard) dom.journeyGuideCard.classList.remove('hidden');
+
+    const t = I18N[state.lang];
     const walkerEmoji = document.getElementById('walkerEmoji');
 
     // Determine which animal to display in the Journey Tracker & Walker
@@ -1183,6 +1356,9 @@
   }
 
   function triggerWalkerCelebration(r, c, animalIdx = 1) {
+    if (state.mode === 'clue' || state.mode === 'test') {
+      return; // In clue mode, animal icons stay at their docks/homes and do not move in the triangle
+    }
     const walker = document.getElementById('activeWalkerSprite');
     const bubble = document.getElementById('walkerCheerBubble');
     const fpWalker = document.getElementById('fpWalkerSprite');
@@ -1227,6 +1403,143 @@
   }
 
   /* --------------------------------------------------------------------------
+   * 9B. ROW & COLUMN SHINE + ANIMAL DANCE CELEBRATION (CRACKED NUMBER)
+   * -------------------------------------------------------------------------- */
+  function triggerRowColShineAndAnimalDance(r, c) {
+    const expected = r * c;
+    const animalRow = ANIMALS[r];
+    const animalCol = ANIMALS[c];
+
+    // Collect elements along Column c (from top dock, col header, down to (r, c) and (c, c))
+    const colElements = [];
+    const topDock = document.getElementById(`topDock-${c}`);
+    const colHeader = document.getElementById(`colHeader-${c}`);
+    if (topDock) colElements.push(topDock);
+    if (colHeader) colElements.push(colHeader);
+
+    for (let rowIdx = 1; rowIdx <= Math.min(r, c); rowIdx++) {
+      const cell = document.getElementById(`cell-${rowIdx}-${c}`);
+      if (cell) colElements.push(cell);
+    }
+
+    // Collect elements along Row r (from row header, diagonal across Row r to right home)
+    const rowElements = [];
+    const rowHeader = document.getElementById(`rowHeader-${r}`);
+    const rightHome = document.getElementById(`rightHome-${r}`);
+    if (rowHeader) rowElements.push(rowHeader);
+
+    for (let colIdx = r; colIdx <= 9; colIdx++) {
+      const cell = document.getElementById(`cell-${r}-${colIdx}`);
+      if (cell) rowElements.push(cell);
+    }
+    if (rightHome) rowElements.push(rightHome);
+
+    const intersectionCell = document.getElementById(`cell-${r}-${c}`);
+
+    // Apply shining classes
+    colElements.forEach((el) => el.classList.add('shine-col'));
+    rowElements.forEach((el) => el.classList.add('shine-row'));
+    if (intersectionCell) {
+      intersectionCell.classList.add('shine-intersection');
+    }
+
+    // Glowing downward arrows along Column c pointing toward (r, c)
+    const activeArrows = [];
+    for (let rowIdx = 1; rowIdx < r; rowIdx++) {
+      const cell = document.getElementById(`cell-${rowIdx}-${c}`);
+      if (cell) {
+        const arrow = document.createElement('div');
+        arrow.className = 'shine-arrow arrow-down';
+        arrow.textContent = '⬇️';
+        arrow.style.top = '2px';
+        arrow.style.left = '50%';
+        arrow.style.transform = 'translateX(-50%)';
+        cell.appendChild(arrow);
+        activeArrows.push(arrow);
+      }
+    }
+
+    // Glowing rightward arrows along Row r pointing toward (r, c)
+    for (let colIdx = r; colIdx < c; colIdx++) {
+      const cell = document.getElementById(`cell-${r}-${colIdx}`);
+      if (cell) {
+        const arrow = document.createElement('div');
+        arrow.className = 'shine-arrow arrow-right';
+        arrow.textContent = '➡️';
+        arrow.style.top = '50%';
+        arrow.style.left = '4px';
+        arrow.style.transform = 'translateY(-50%)';
+        cell.appendChild(arrow);
+        activeArrows.push(arrow);
+      }
+    }
+
+    // Corresponding Animal Dance: top dock (Col animal) and right home (Row animal)
+    if (topDock) {
+      topDock.classList.add('animal-dancing');
+      const rect = topDock.getBoundingClientRect();
+      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 28, [
+        animalCol.emoji,
+        '⭐',
+        '✨'
+      ]);
+    }
+
+    if (rightHome) {
+      rightHome.classList.add('animal-dancing');
+      const rect = rightHome.getBoundingClientRect();
+      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 28, [
+        animalRow.emoji,
+        animalRow.homeEmoji,
+        '⭐'
+      ]);
+    }
+
+    // Floating dance celebration badge on intersection cell
+    if (intersectionCell) {
+      const danceBadge = document.createElement('div');
+      danceBadge.className = 'cell-dance-badge';
+      danceBadge.innerHTML = `
+        <span>${animalRow.emoji}</span>
+        <span>💃🕺</span>
+        <span>${animalCol.emoji}</span>
+        <span><strong>${r} × ${c} = ${expected}!</strong></span>
+      `;
+      intersectionCell.appendChild(danceBadge);
+      activeArrows.push(danceBadge);
+
+      const rect = intersectionCell.getBoundingClientRect();
+      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 35, [
+        animalRow.emoji,
+        animalCol.emoji,
+        '⭐',
+        '✨',
+        '🎉'
+      ]);
+    }
+
+    // Cheerful Cat message highlighting the row & col animals dancing
+    dom.catSpeechText.textContent =
+      state.lang === 'zh'
+        ? `✨ ${animalRow.name[state.lang]}（第 ${r} 列）與 ${animalCol.name[state.lang]}（第 ${c} 行）開心地跳起舞來了！${r} × ${c} = ${expected} 破解成功！🎉`
+        : `✨ ${animalRow.name[state.lang]} (Row ${r}) & ${animalCol.name[state.lang]} (Col ${c}) are dancing! ${r} × ${c} = ${expected} cracked! 🎉`;
+
+    // Clean up animation classes after 2.2 seconds
+    setTimeout(() => {
+      colElements.forEach((el) => el.classList.remove('shine-col'));
+      rowElements.forEach((el) => el.classList.remove('shine-row'));
+      if (intersectionCell) {
+        intersectionCell.classList.remove('shine-intersection');
+      }
+      if (topDock) topDock.classList.remove('animal-dancing');
+      if (rightHome) rightHome.classList.remove('animal-dancing');
+      activeArrows.forEach((arr) => {
+        if (arr.parentNode) arr.parentNode.removeChild(arr);
+      });
+    }, 2200);
+  }
+
+  /* --------------------------------------------------------------------------
    * 10. UPDATE RIGHT SIDEBAR QUESTION CARD & VISUAL GROUPING HINT
    * -------------------------------------------------------------------------- */
   function updateSidebarQuestionCard() {
@@ -1241,12 +1554,14 @@
         : ANIMALS[r];
 
     const isCompactPhone = window.innerWidth <= 740;
-    dom.activeAnimalBadge.textContent =
-      state.mode === 'test'
-        ? (isCompactPhone ? '⚡' : t.testChallengeLabel)
-        : isCompactPhone
+    if (state.mode === 'test') {
+      dom.activeAnimalBadge.textContent = t.testStepLabel;
+    } else {
+      dom.activeAnimalBadge.textContent =
+        isCompactPhone
           ? `${animalForStep.emoji} ${animalForStep.name[state.lang]}`
           : t.activeStepLabel(animalForStep.emoji, animalForStep.name[state.lang]);
+    }
 
     dom.eqFactorA.textContent = String(r);
     dom.eqFactorA.className = `eq-num band-${r}`;
@@ -1272,17 +1587,151 @@
 
     // Build visual group pills when in Story Mode or when Hint is toggled
     dom.visualDotsGrid.innerHTML = '';
-    if (state.mode === 'story' || state.showHintDots) {
-      dom.visualHintBox.classList.remove('hidden');
-      for (let g = 1; g <= r; g++) {
-        const pill = document.createElement('div');
-        pill.className = 'dot-group-pill';
-        const dots = '⭐'.repeat(Math.min(c, 5)) + (c > 5 ? `+${c - 5}` : '');
-        pill.textContent = `${c} (${dots})`;
-        dom.visualDotsGrid.appendChild(pill);
+    const isClueMode = state.mode === 'clue' || state.mode === 'test';
+    if (isClueMode) {
+      if (dom.activeAnimalBadge) {
+        dom.activeAnimalBadge.textContent = t.testStepLabel;
       }
-    } else {
+      if (dom.testClueBox) {
+        dom.testClueBox.classList.remove('hidden');
+        if (dom.testClueHeader) {
+          dom.testClueHeader.textContent = t.testClueHeading;
+        }
+        if (dom.testCluesList) {
+          dom.testCluesList.innerHTML = '';
+          const cellClues = getRevealedCluesForCell(r, c);
+          const left = cellClues.neighborMap[`${r}-${c - 1}`];
+          const right = cellClues.neighborMap[`${r}-${c + 1}`];
+          const top = cellClues.neighborMap[`${r - 1}-${c}`];
+          const bottom = cellClues.neighborMap[`${r + 1}-${c}`];
+
+          if (cellClues.count === 0) {
+            const noClueItem = document.createElement('div');
+            noClueItem.className = 'clue-item-text';
+            noClueItem.innerHTML =
+              state.lang === 'zh'
+                ? `💡 <strong>四周暫無已揭開的鄰居</strong>：建議先點擊旁邊有 🔍 標記的格子獲得線索喔！`
+                : `💡 <strong>No revealed neighbors yet</strong>: Try solving a nearby 🔍 tile first to unlock clues!`;
+            dom.testCluesList.appendChild(noClueItem);
+
+            dom.catSpeechText.textContent =
+              state.lang === 'zh'
+                ? `Ning，這格四周都還在迷霧中喔！建議先解開有 🔍 標記的相鄰格子，線索就會解開囉！`
+                : `Ning, this tile is still surrounded by fog! Try unlocking a nearby 🔍 tile first to reveal clues!`;
+          } else {
+            // 1. Horizontal Sequence Clue (Skip counting in Row r!)
+            if (left && right) {
+              const seq = document.createElement('div');
+              seq.className = 'clue-sequence-bar';
+              seq.innerHTML = `
+                <span class="seq-num">${left.val}</span>
+                <span class="seq-arrow">+${r} ➔</span>
+                <span class="seq-target">❓</span>
+                <span class="seq-arrow">+${r} ➔</span>
+                <span class="seq-num">${right.val}</span>
+              `;
+              dom.testCluesList.appendChild(seq);
+            } else if (left) {
+              const seq = document.createElement('div');
+              seq.className = 'clue-sequence-bar';
+              seq.innerHTML = `
+                <span class="seq-num">${left.val}</span>
+                <span class="seq-arrow">+${r} ➔</span>
+                <span class="seq-target">❓</span>
+              `;
+              dom.testCluesList.appendChild(seq);
+
+              const leftItem = document.createElement('div');
+              leftItem.className = 'clue-item-text';
+              leftItem.innerHTML =
+                state.lang === 'zh'
+                  ? `⬅️ 左邊是 <strong>${left.val}</strong>（橫列每次 +${r}）➔ <strong>${left.val} + ${r} = ？</strong>`
+                  : `⬅️ Left neighbor is <strong>${left.val}</strong> (Row adds +${r}) ➔ <strong>${left.val} + ${r} = ?</strong>`;
+              dom.testCluesList.appendChild(leftItem);
+            } else if (right) {
+              const seq = document.createElement('div');
+              seq.className = 'clue-sequence-bar';
+              seq.innerHTML = `
+                <span class="seq-target">❓</span>
+                <span class="seq-arrow">◀ -${r}</span>
+                <span class="seq-num">${right.val}</span>
+              `;
+              dom.testCluesList.appendChild(seq);
+
+              const rightItem = document.createElement('div');
+              rightItem.className = 'clue-item-text';
+              rightItem.innerHTML =
+                state.lang === 'zh'
+                  ? `➡️ 右邊是 <strong>${right.val}</strong>（橫列每次 -${r}）➔ <strong>${right.val} - ${r} = ？</strong>`
+                  : `➡️ Right neighbor is <strong>${right.val}</strong> (Row subtracts -${r}) ➔ <strong>${right.val} - ${r} = ?</strong>`;
+              dom.testCluesList.appendChild(rightItem);
+            }
+
+            // 2. Vertical Column Clues (Top and Bottom)
+            if (top) {
+              const topItem = document.createElement('div');
+              topItem.className = 'clue-item-text';
+              topItem.innerHTML =
+                state.lang === 'zh'
+                  ? `⬆️ 上方是 <strong>${top.val}</strong>（直行往下多 +${c}）➔ <strong>${top.val} + ${c} = ？</strong>`
+                  : `⬆️ Top neighbor is <strong>${top.val}</strong> (Column adds +${c}) ➔ <strong>${top.val} + ${c} = ?</strong>`;
+              dom.testCluesList.appendChild(topItem);
+            }
+            if (bottom) {
+              const btmItem = document.createElement('div');
+              btmItem.className = 'clue-item-text';
+              btmItem.innerHTML =
+                state.lang === 'zh'
+                  ? `⬇️ 下方是 <strong>${bottom.val}</strong>（直行往上少 -${c}）➔ <strong>${bottom.val} - ${c} = ？</strong>`
+                  : `⬇️ Bottom neighbor is <strong>${bottom.val}</strong> (Column subtracts -${c}) ➔ <strong>${bottom.val} - ${c} = ?</strong>`;
+              dom.testCluesList.appendChild(btmItem);
+            }
+
+            // Update Cat speech with direct clue guidance
+            if (left) {
+              dom.catSpeechText.textContent =
+                state.lang === 'zh'
+                  ? `Ning 請看線索：左邊是 ${left.val}，第 ${r} 列往右多 +${r}，空格是 ${left.val} + ${r} = ？`
+                  : `Ning, look at the clue: left is ${left.val}. Row ${r} adds +${r}. What is ${left.val} + ${r}?`;
+            } else if (top) {
+              dom.catSpeechText.textContent =
+                state.lang === 'zh'
+                  ? `Ning 請看線索：上面是 ${top.val}，第 ${c} 行往下多 +${c}，空格是 ${top.val} + ${c} = ？`
+                  : `Ning, look at the clue: top is ${top.val}. Column ${c} adds +${c}. What is ${top.val} + ${c}?`;
+            } else if (right) {
+              dom.catSpeechText.textContent =
+                state.lang === 'zh'
+                  ? `Ning 請看線索：右邊是 ${right.val}，往左減 -${r}，空格是 ${right.val} - ${r} = ？`
+                  : `Ning, look at the clue: right is ${right.val}. Subtract -${r}: ${right.val} - ${r} = ?`;
+            }
+          }
+
+          const gridItem = document.createElement('div');
+          gridItem.className = 'clue-item-text';
+          gridItem.innerHTML =
+            state.lang === 'zh'
+              ? `📍 格子座標：第 <strong>${r}</strong> 橫列 × 第 <strong>${c}</strong> 直行`
+              : `📍 Grid Position: Row <strong>${r}</strong> × Column <strong>${c}</strong>`;
+          dom.testCluesList.appendChild(gridItem);
+        }
+      }
       dom.visualHintBox.classList.add('hidden');
+    } else {
+      if (dom.testClueBox) {
+        dom.testClueBox.classList.add('hidden');
+      }
+      if (state.mode === 'story' || state.showHintDots) {
+        dom.visualHintBox.classList.remove('hidden');
+        for (let g = 1; g <= r; g++) {
+          const pill = document.createElement('div');
+          pill.className = 'dot-group-pill';
+          const dots = '⭐'.repeat(Math.min(c, 5)) + (c > 5 ? `+${c - 5}` : '');
+          pill.textContent = `${c} (${dots})`;
+          dom.visualDotsGrid.appendChild(pill);
+        }
+      } else {
+        dom.visualHintBox.classList.add('hidden');
+      }
     }
   }
 
@@ -1367,6 +1816,9 @@
     if (entered === expected) {
       // CORRECT ANSWER!
       state.solvedMap[`${r}-${c}`] = true;
+      if (state.mode === 'clue' || state.mode === 'test' || state.mode === 'detective') {
+        state.clueRevealed[`${r}-${c}`] = true;
+      }
       state.score += 10;
       state.typedValue = '';
 
@@ -1384,14 +1836,14 @@
           ? document.getElementById(`fpStone-${r}-${c}`)
           : document.getElementById(`cell-${r}-${c}`);
       if (cellEl) {
-        cellEl.classList.remove('just-solved');
+        cellEl.classList.remove('just-solved', 'clue-newly-unlocked');
         void cellEl.offsetWidth;
-        cellEl.classList.add('just-solved');
+        cellEl.classList.add('just-solved', 'clue-newly-unlocked');
         const rect = cellEl.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.burstIcons || [cheeringAnimal.emoji]);
-        spawnFloatingScore(cx, cy - 10, `+10 ⭐ ${cheeringAnimal.emoji}${cheeringAnimal.propEmoji}`);
+        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.burstIcons || [cheeringAnimal.emoji, '🔍']);
+        spawnFloatingScore(cx, cy - 10, `+10 ⭐ 🔍`);
       }
 
       // Voice encouragement (Chinese chant or English multiplication)
@@ -1403,12 +1855,15 @@
 
       refreshBoardVisuals();
       triggerWalkerCelebration(r, c, cheeringAnimalIdx);
+      triggerRowColShineAndAnimalDance(r, c);
 
-      // Check if any animal just completed its entire L-path home!
-      checkNewlyCompletedAnimalHomes();
-
-      // Advance to the next empty cell
-      advanceToNextTargetCell();
+      // Advance to next target cell
+      if (state.mode === 'clue' || state.mode === 'test' || state.mode === 'detective') {
+        advanceToNextTargetCell();
+      } else {
+        checkNewlyCompletedAnimalHomes();
+        advanceToNextTargetCell();
+      }
     } else {
       // GENTLE MISTAKE FEEDBACK
       state.mistakes += 1;
@@ -1555,6 +2010,65 @@
   }
 
   function advanceToNextTargetCell() {
+    if (state.mode === 'clue' || state.mode === 'test' || state.mode === 'detective') {
+      const revealedCount = Object.keys(state.clueRevealed).length;
+      if (revealedCount >= 36) {
+        showClueSweeperVictory();
+        return;
+      }
+
+      // Check unsolved immediate neighbors of current cell (they now have brand new clues!)
+      if (state.selectedCell) {
+        const { r, c } = state.selectedCell;
+        const candidateNeighbors = [
+          { r, c: c - 1 },
+          { r, c: c + 1 },
+          { r: r - 1, c },
+          { r: r + 1, c }
+        ].filter((p) => p.r >= 1 && p.c <= 9 && p.r < p.c && !state.clueRevealed[`${p.r}-${p.c}`]);
+
+        if (candidateNeighbors.length > 0) {
+          candidateNeighbors.sort((a, b) => {
+            return (
+              getRevealedCluesForCell(b.r, b.c).count -
+              getRevealedCluesForCell(a.r, a.c).count
+            );
+          });
+          state.selectedCell = candidateNeighbors[0];
+          state.typedValue = '';
+          refreshBoardVisuals();
+          return;
+        }
+      }
+
+      // If no immediate neighbors unrevealed, pick the unrevealed cell with the highest clue count
+      const allUnrevealed = [];
+      for (let r = 1; r <= 8; r++) {
+        for (let c = r + 1; c <= 9; c++) {
+          if (!state.clueRevealed[`${r}-${c}`]) {
+            allUnrevealed.push({ r, c });
+          }
+        }
+      }
+
+      allUnrevealed.sort((a, b) => {
+        return (
+          getRevealedCluesForCell(b.r, b.c).count -
+          getRevealedCluesForCell(a.r, a.c).count
+        );
+      });
+
+      if (allUnrevealed.length > 0) {
+        state.selectedCell = allUnrevealed[0];
+        state.typedValue = '';
+        refreshBoardVisuals();
+        return;
+      }
+
+      showClueSweeperVictory();
+      return;
+    }
+
     if (state.mode === 'story' && state.activeAnimal >= 1 && state.activeAnimal <= 9) {
       const nextInPath = getNextUnsolvedInAnimalPath(state.activeAnimal);
       if (nextInPath) {
@@ -1572,58 +2086,226 @@
           return;
         }
       }
-    } else {
-      // Test Mode: pull next unsolved cell from shuffled testQueue
-      while (state.testQueue.length > 0) {
-        const next = state.testQueue.shift();
-        if (!isCellSolved(next.r, next.c)) {
-          state.selectedCell = next;
-          refreshBoardVisuals();
-          return;
-        }
-      }
-      // Fallback scan if queue exhausted
-      for (let r = 1; r <= 9; r++) {
-        for (let c = r + 1; c <= 9; c++) {
-          if (!isCellSolved(r, c)) {
-            state.selectedCell = { r, c };
-            refreshBoardVisuals();
-            return;
-          }
-        }
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+   * 12B. CLUE MODE: MINESWEEPER STYLE MAP UNLOCK & CHAIN-REACTION CLUES ENGINE
+   * -------------------------------------------------------------------------- */
+  function getRevealedCluesForCell(r, c) {
+    const clues = [];
+    const neighborMap = {};
+
+    // 1. Left Neighbor: (r, c - 1)
+    if (c - 1 >= r) {
+      const isDiag = c - 1 === r;
+      const isRev = isDiag || !!state.clueRevealed[`${r}-${c - 1}`];
+      if (isRev) {
+        const val = isDiag ? r * r : r * (c - 1);
+        const clueObj = {
+          dir: 'left',
+          r: r,
+          c: c - 1,
+          val: val,
+          diff: `+${r}`,
+          math: `${val} + ${r} = ${r * c}`,
+          isDiag: isDiag
+        };
+        clues.push(clueObj);
+        neighborMap[`${r}-${c - 1}`] = clueObj;
       }
     }
+
+    // 2. Right Neighbor: (r, c + 1)
+    if (c + 1 <= 9) {
+      const isRev = !!state.clueRevealed[`${r}-${c + 1}`];
+      if (isRev) {
+        const val = r * (c + 1);
+        const clueObj = {
+          dir: 'right',
+          r: r,
+          c: c + 1,
+          val: val,
+          diff: `-${r}`,
+          math: `${val} - ${r} = ${r * c}`,
+          isDiag: false
+        };
+        clues.push(clueObj);
+        neighborMap[`${r}-${c + 1}`] = clueObj;
+      }
+    }
+
+    // 3. Top Neighbor: (r - 1, c)
+    if (r - 1 >= 1) {
+      const isDiag = r - 1 === c;
+      const isRev = isDiag || !!state.clueRevealed[`${r - 1}-${c}`];
+      if (isRev) {
+        const val = isDiag ? c * c : (r - 1) * c;
+        const clueObj = {
+          dir: 'top',
+          r: r - 1,
+          c: c,
+          val: val,
+          diff: `+${c}`,
+          math: `${val} + ${c} = ${r * c}`,
+          isDiag: isDiag
+        };
+        clues.push(clueObj);
+        neighborMap[`${r - 1}-${c}`] = clueObj;
+      }
+    }
+
+    // 4. Bottom Neighbor: (r + 1, c)
+    if (r + 1 <= c) {
+      const isDiag = r + 1 === c;
+      const isRev = isDiag || !!state.clueRevealed[`${r + 1}-${c}`];
+      if (isRev) {
+        const val = isDiag ? c * c : (r + 1) * c;
+        const clueObj = {
+          dir: 'bottom',
+          r: r + 1,
+          c: c,
+          val: val,
+          diff: `-${c}`,
+          math: `${val} - ${c} = ${r * c}`,
+          isDiag: isDiag
+        };
+        clues.push(clueObj);
+        neighborMap[`${r + 1}-${c}`] = clueObj;
+      }
+    }
+
+    return { clues, count: clues.length, neighborMap };
+  }
+
+  // Backward compatibility wrapper
+  function getDetectiveNeighborMap(r, c) {
+    return getRevealedCluesForCell(r, c).neighborMap;
+  }
+
+  function initClueMode(diff = state.clueDiff) {
+    state.clueDiff = diff || 'medium';
+    state.testDiff = state.clueDiff;
+    const seedMap = { easy: 12, medium: 6, hard: 2 };
+    const seedCount = seedMap[state.clueDiff] || 6;
+
+    // Upper triangle cells: 1 <= r < c <= 9 (36 cells)
+    const candidates = [];
+    for (let r = 1; r <= 8; r++) {
+      for (let c = r + 1; c <= 9; c++) {
+        candidates.push({ r, c });
+      }
+    }
+
+    // Shuffle
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+
+    const seeds = candidates.slice(0, seedCount);
+    state.clueSeeds = new Set(seeds.map((s) => `${s.r}-${s.c}`));
+    state.clueRevealed = {};
+    state.solvedMap = {};
+
+    seeds.forEach((s) => {
+      const k = `${s.r}-${s.c}`;
+      state.clueRevealed[k] = true;
+      state.solvedMap[k] = true;
+    });
+
+    // Unrevealed candidates sorted by number of starting clues
+    const unrevealed = candidates.slice(seedCount);
+    unrevealed.sort((a, b) => {
+      const ca = getRevealedCluesForCell(a.r, a.c).count;
+      const cb = getRevealedCluesForCell(b.r, b.c).count;
+      return cb - ca;
+    });
+
+    state.selectedCell = unrevealed[0] || null;
+    state.typedValue = '';
+    state.mistakes = 0;
+    state.showHintDots = false;
+
+    startTimer();
+
+    const t = I18N[state.lang];
+    dom.catSpeechText.textContent = t.catWelcomeTest;
+    refreshBoardVisuals();
+  }
+
+  function initTestMode(diff) {
+    initClueMode(diff);
+  }
+
+  function showClueSweeperVictory() {
+    stopTimer();
+    playAnimalHomeFanfare();
+    const t = I18N[state.lang];
+    dom.celebrationOverlay.classList.remove('hidden');
+
+    const timeStr = formatTime(state.timerSeconds);
+
+    dom.celebSpecialBadge.textContent =
+      state.lang === 'zh'
+        ? '🏆 乘法線索掃雷大師！整張地圖完全掃清！ 🏆'
+        : '🏆 MASTER CLUE SWEEPER! FULL MAP CLEARED! 🏆';
+
+    dom.celebHeroWrap.innerHTML = `
+      <span class="celeb-prop prop-left">🔍</span>
+      <span class="celeb-animal-emoji">🐱</span>
+      <span class="celeb-prop prop-right">⭐</span>
+    `;
+    dom.celebHouseEmoji.textContent = '🏆';
+    dom.celebMoveDesc.textContent =
+      state.lang === 'zh'
+        ? `太厲害了 Ning！妳在 ${timeStr} 內推導並解開了全部 36 個乘法格子！`
+        : `Ning deduced and unlocked all 36 multiplication tiles in ${timeStr}! Amazing job!`;
+
+    dom.celebTitle.textContent = t.celebTestTitle;
+    dom.celebSubtitle.textContent = t.celebTestSub(36, timeStr, state.mistakes);
+
+    dom.celebPathBadges.innerHTML = '';
+    const badge = document.createElement('span');
+    badge.className = 'celeb-fact-pill';
+    badge.textContent =
+      state.lang === 'zh'
+        ? `🔍 難度：${state.clueDiff.toUpperCase()} • 錯誤：${state.mistakes} 次`
+        : `🔍 Difficulty: ${state.clueDiff.toUpperCase()} • Mistakes: ${state.mistakes}`;
+    dom.celebPathBadges.appendChild(badge);
+
+    dom.btnCelebContinue.textContent = t.nextTestBtn;
+    dom.btnCelebContinue.onclick = () => {
+      dom.celebrationOverlay.classList.add('hidden');
+      initClueMode();
+    };
+
+    spawnConfettiBurst(window.innerWidth / 2, window.innerHeight / 2, 90, [
+      '🔍',
+      '⭐',
+      '✨',
+      '🐱',
+      '🏆',
+      '🎉'
+    ]);
+  }
+
+  function showTestCelebration() {
+    showClueSweeperVictory();
   }
 
   /* --------------------------------------------------------------------------
    * 13. MODE SWITCHING, TIMER & RESET
    * -------------------------------------------------------------------------- */
-  function buildShuffledTestQueue() {
-    const cells = [];
-    for (let r = 1; r <= 9; r++) {
-      for (let c = r + 1; c <= 9; c++) {
-        if (!isCellSolved(r, c)) {
-          cells.push({ r, c });
-        }
-      }
-    }
-    for (let i = cells.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cells[i], cells[j]] = [cells[j], cells[i]];
-    }
-    state.testQueue = cells;
-  }
-
   function setGameMode(mode) {
-    state.mode = mode;
-    dom.btnModeStory.classList.toggle('active', mode === 'story');
-    dom.btnModeTest.classList.toggle('active', mode === 'test');
-    dom.timerPill.classList.toggle('hidden', mode !== 'test');
+    state.mode = (mode === 'test' || mode === 'clue') ? 'clue' : 'story';
+    dom.btnModeStory.classList.toggle('active', state.mode === 'story');
+    dom.btnModeTest.classList.toggle('active', state.mode === 'clue');
+    dom.timerPill.classList.toggle('hidden', state.mode !== 'clue');
 
     const t = I18N[state.lang];
-    if (mode === 'story') {
+    if (state.mode === 'story') {
       stopTimer();
-      // Find first animal with unsolved steps ( note: Animal 1 starts at [1,1] and goes across row 1: 1x2..1x9 )
       let startAnimal = 1;
       for (let n = 1; n <= 9; n++) {
         if (!isAnimalPathComplete(n)) {
@@ -1633,11 +2315,9 @@
       }
       selectAnimalPath(startAnimal);
     } else {
+      // Clue Mode (Minesweeper Style Map Deduction)
       state.activeAnimal = 0;
-      buildShuffledTestQueue();
-      dom.catSpeechText.textContent = t.catWelcomeTest;
-      startTimer();
-      advanceToNextTargetCell();
+      initClueMode();
     }
     refreshBoardVisuals();
   }
@@ -1903,9 +2583,23 @@
       }
     });
 
-    // Mode Switcher
+    // Mode Switcher (Story vs Clue Mode)
     dom.btnModeStory.addEventListener('click', () => setGameMode('story'));
-    dom.btnModeTest.addEventListener('click', () => setGameMode('test'));
+    dom.btnModeTest.addEventListener('click', () => setGameMode('clue'));
+
+    // Clue Mode Toolbar Buttons (Difficulty & New Map)
+    if (dom.diffBtnEasy) {
+      dom.diffBtnEasy.addEventListener('click', () => initClueMode('easy'));
+    }
+    if (dom.diffBtnMedium) {
+      dom.diffBtnMedium.addEventListener('click', () => initClueMode('medium'));
+    }
+    if (dom.diffBtnHard) {
+      dom.diffBtnHard.addEventListener('click', () => initClueMode('hard'));
+    }
+    if (dom.btnNewTest) {
+      dom.btnNewTest.addEventListener('click', () => initClueMode());
+    }
 
     // View Switcher: Focused Animal Path View vs Full 9x9 Table View
     if (dom.btnToggleView) {
@@ -2013,9 +2707,10 @@
         (isAndroid || (vw > 760 && vw <= 1220 && maxTouch > 0)));
     const isDesktop = !isMobile && !isTablet;
 
-    // Default to Focused Animal Path View on iPhone/Mobile unless the user explicitly toggled!
+    // Default to Focused Animal Path View ONLY on mobile portrait!
+    // On iPad, tablet, desktop, or any landscape device, default strictly to the 9x9 Triangle Table!
     if (!state.userToggledView) {
-      state.viewMode = isMobile ? 'path' : 'table';
+      state.viewMode = isMobile && orientation === 'portrait' ? 'path' : 'table';
     }
 
     const root = document.documentElement;
@@ -2047,17 +2742,26 @@
       topRowH = Math.floor(cellH * 1.26);
       numRowH = Math.floor(cellH * 0.82);
     } else {
-      // PC Desktop & iPad Landscape: Fitted right in the browser window without scrolling!
-      const hasSelector = vw > 1220 && vh > 780;
-      const headerAllowance = hasSelector ? 102 : 66;
-      const sidebarW = vw <= 1200 ? 290 : 330;
-      const paddingAllowance = 32;
-      const reservedH = headerAllowance + paddingAllowance + 28;
+      // PC Desktop & iPad Landscape: Sized dynamically to fill the screen without scrolling or excess empty space!
+      const isIPadLandscape =
+        (isIPad || isTablet || (vw >= 768 && vw <= 1380)) && orientation === 'landscape';
+      const hasSelector = vw > 1220 && vh > 780 && state.mode === 'story';
+      const headerAllowance = hasSelector ? 96 : 56;
+      const sidebarW = isIPadLandscape
+        ? Math.max(300, Math.min(360, Math.floor(vw * 0.28)))
+        : vw <= 1200
+          ? 290
+          : 330;
+      const paddingAllowance = 20;
+      const reservedH = headerAllowance + paddingAllowance + 20;
       const availH = Math.max(320, vh - reservedH);
-      const availW = Math.max(380, vw - sidebarW - 60);
-      const maxBoardGridH = Math.min(availH, Math.floor(availW * 0.84));
-      cellH = Math.max(26, Math.min(46, Math.floor(maxBoardGridH / 11.2)));
-      topRowH = Math.floor(cellH * 1.24);
+      const availW = Math.max(380, vw - sidebarW - 44);
+      // Grid dimensions (11 rows total, 11 cols total):
+      const maxByH = Math.floor(availH / 11.1);
+      const maxByW = Math.floor(availW / 11.0);
+      const optimalCellH = Math.min(maxByH, maxByW);
+      cellH = Math.max(32, Math.min(62, optimalCellH));
+      topRowH = Math.floor(cellH * 1.25);
       numRowH = Math.floor(cellH * 0.82);
     }
 
