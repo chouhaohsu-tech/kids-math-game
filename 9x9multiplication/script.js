@@ -1750,6 +1750,7 @@
       state.selectedCell = nextCell;
       state.typedValue = '';
     }
+    detectAndApplyDeviceProfile();
     refreshBoardVisuals();
   }
 
@@ -2319,6 +2320,7 @@
       state.activeAnimal = 0;
       initClueMode();
     }
+    detectAndApplyDeviceProfile();
     refreshBoardVisuals();
   }
 
@@ -2752,11 +2754,12 @@
         (isIPad || isTablet || (vw >= 768 && vw <= 1380)) && orientation === 'landscape';
       const hasSelector = vw > 1220 && vh > 780 && state.mode === 'story';
       const headerAllowance = hasSelector ? 80 : 42;
+      const clueBarAllowance = state.mode === 'clue' ? 38 : 0;
       const sidebarW = isIPadLandscape
         ? Math.max(260, Math.min(310, Math.floor(vw * 0.26)))
         : 285;
       const paddingAllowance = 10;
-      const reservedH = headerAllowance + paddingAllowance + 12;
+      const reservedH = headerAllowance + clueBarAllowance + paddingAllowance + 12;
       const availH = Math.max(260, vh - reservedH);
       const availW = Math.max(340, vw - sidebarW - 44 - 72);
       // Grid dimensions (11 rows total: 1 top animal row + 1 number header row + 9 table cell rows):
