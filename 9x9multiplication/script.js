@@ -1750,9 +1750,10 @@
 
     if (entered === expected) {
       // CORRECT ANSWER!
-      state.solvedMap[`${r}-${c}`] = true;
       if (state.mode === 'clue' || state.mode === 'test' || state.mode === 'detective') {
         state.clueRevealed[`${r}-${c}`] = true;
+      } else {
+        state.solvedMap[`${r}-${c}`] = true;
       }
       state.score += 10;
       state.typedValue = '';
@@ -2141,12 +2142,10 @@
     const seeds = candidates.slice(0, seedCount);
     state.clueSeeds = new Set(seeds.map((s) => `${s.r}-${s.c}`));
     state.clueRevealed = {};
-    state.solvedMap = {};
 
     seeds.forEach((s) => {
       const k = `${s.r}-${s.c}`;
       state.clueRevealed[k] = true;
-      state.solvedMap[k] = true;
     });
 
     // Unrevealed candidates sorted by number of starting clues
@@ -2283,6 +2282,8 @@
 
   function resetGame() {
     state.solvedMap = {};
+    state.clueRevealed = {};
+    state.clueSeeds = new Set();
     state.celebratedAnimals = {};
     state.score = 0;
     state.mistakes = 0;
