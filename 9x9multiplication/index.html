@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=9.17.0" />
+  <link rel="stylesheet" href="style.css?v=9.18.0" />
 </head>
 <body>
   <!-- Particle & Fireworks Celebration Canvas -->
@@ -41,6 +41,22 @@
           <span id="labelModeClue">Clue Mode</span>
         </button>
       </div>
+
+      <!-- ==================== CLUE MODE CONTROLS BAR (INTEGRATED IN TOP HEADER) ==================== -->
+      <section id="testToolbar" class="test-toolbar clue-toolbar hidden" aria-label="Clue Mode Options">
+        <div class="test-case-info clue-case-info">
+          <span class="test-badge-pill clue-badge-pill">🔍 <span id="labelTestStatus"></span><strong id="testHolesRemaining">6/36</strong></span>
+          <div class="diff-btn-group clue-diff-group" role="radiogroup" aria-label="Starting Seeds Difficulty">
+            <button type="button" class="diff-btn" data-diff="easy" id="diffBtnEasy">🟢 Easy</button>
+            <button type="button" class="diff-btn active" data-diff="medium" id="diffBtnMedium">🟡 Med</button>
+            <button type="button" class="diff-btn" data-diff="hard" id="diffBtnHard">🔴 Hard</button>
+          </div>
+          <button type="button" class="tool-btn new-case-btn" id="btnNewTest" title="Generate New Clue Map">
+            <span>🔄</span>
+            <span id="labelNewTest">New</span>
+          </button>
+        </div>
+      </section>
 
       <!-- Right Utility Controls: Language, Voice, Sound, Reset -->
       <div class="utility-bar">
@@ -86,25 +102,9 @@
     </section>
 
     <!-- ==================== MAIN WORKSPACE: BOARD + INTERACTION PANEL ==================== -->
-    <main class="main-workspace">
-      <!-- LEFT / CENTER: FOCUSED ANIMAL PATH STAGE (Default on iPhone) OR FULL 9x9 TRIANGLE BOARD -->
+    <main class="main-workspace" id="mainWorkspace">
+      <!-- LEFT / CENTER: FOCUSED ANIMAL PATH STAGE OR FULL 9x9 TRIANGLE BOARD -->
       <section class="board-section" aria-label="9x9 Non-Repeating Multiplication Board">
-        <!-- ==================== CLUE MODE CONTROLS BAR (MINESWEEPER STYLE MAP UNLOCK) ==================== -->
-        <section id="testToolbar" class="test-toolbar clue-toolbar hidden" aria-label="Clue Mode Options">
-          <div class="test-case-info clue-case-info">
-            <span class="test-badge-pill clue-badge-pill">🔍 <span id="labelTestStatus">Revealed Clues:</span> <strong id="testHolesRemaining">6 / 36</strong></span>
-            <div class="diff-btn-group clue-diff-group" role="radiogroup" aria-label="Starting Seeds Difficulty">
-              <button type="button" class="diff-btn" data-diff="easy" id="diffBtnEasy">🟢 Easy (12 Seeds)</button>
-              <button type="button" class="diff-btn active" data-diff="medium" id="diffBtnMedium">🟡 Medium (6 Seeds)</button>
-              <button type="button" class="diff-btn" data-diff="hard" id="diffBtnHard">🔴 Hard (2 Seeds)</button>
-            </div>
-            <button type="button" class="tool-btn new-case-btn" id="btnNewTest" title="Generate New Clue Map">
-              <span>🔄</span>
-              <span id="labelNewTest">New Map</span>
-            </button>
-          </div>
-        </section>
-
         <!-- ==================== FOCUSED ANIMAL L-PATH STAGE (BIG STEPPING STONES FOR IPHONE & IPAD!) ==================== -->
         <div class="focused-path-stage hidden" id="focusedPathStage">
           <!-- 9 Animal Friends Quick-Select Bar -->
@@ -236,8 +236,8 @@
         </div>
       </section>
 
-      <!-- RIGHT SIDEBAR: QUESTION CARD & MUSICAL NUMBER KEYPAD -->
-      <aside class="control-sidebar" aria-label="Question & Number Keypad">
+      <!-- IN-TRIANGLE BOTTOM-LEFT DOCK: QUESTION BAR & 2x6 MUSICAL NUMBER KEYPAD -->
+      <aside class="control-sidebar in-grid-dock" id="controlSidebar" aria-label="Question & Number Keypad">
         <!-- Active Equation Prompt Card -->
         <div class="question-card" id="questionCard">
           <div class="question-card-header">
@@ -286,7 +286,7 @@
             <button class="key-btn" data-key="9">9</button>
             <button class="key-btn key-clear" data-key="BACK" id="btnClear" title="Backspace / Clear">⌫</button>
             <button class="key-btn" data-key="0">0</button>
-            <button class="key-btn key-enter" data-key="ENTER" id="btnSubmit" title="Check Answer">OK ✓</button>
+            <button class="key-btn key-enter" data-key="ENTER" id="btnSubmit" title="Check Answer">OK</button>
           </div>
         </div>
 
@@ -333,6 +333,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=9.17.0"></script>
+  <script src="script.js?v=9.18.0"></script>
 </body>
 </html>

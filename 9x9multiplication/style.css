@@ -4924,3 +4924,529 @@ html:not(.mode-clue) .test-toolbar {
   display: none !important;
 }
 
+/* ==========================================================================
+   v9.18.0 FULL-WIDTH TRIANGLE + IN-GRID BOTTOM-LEFT DOCK (2x6 KEYPAD + OK)
+   - Eliminates the right-side sidebar column so the 9x9 triangle gets 100% width
+   - Locks the Question + 2x6 Keypad strictly into empty CSS Grid coordinates:
+     Columns 1..5 (grid-column: 2 / 7) & Rows 6..9 (grid-row: 8 / 12)
+   - Integrates Clue Mode seed controls directly into the top header bar
+   - Prevents any icon or button overlap across iPad, iPhone & PC (Portrait/Landscape)
+   ========================================================================== */
+
+/* 1. Hide redundant overlays that previously collided with the board or icons */
+#animalSelectorBar,
+#btnBackToPathView,
+#lowerLeftStage,
+.lower-left-stage,
+.homes-rack-card,
+.deco-item {
+  display: none !important;
+}
+
+/* 2. Clean, Single-Row Top Header Bar (Never overflows page width) */
+html body .top-header {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  padding: 4px 10px !important;
+  min-height: 34px !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+/* Hide bulky title text in Clue Mode or on screens <= 1180px so header buttons never overflow */
+html.mode-clue body .brand-group,
+@media (max-width: 1180px) {
+  html body .brand-group {
+    display: none !important;
+  }
+}
+
+/* Clue Mode Controls integrated right inside the Top Header */
+html.mode-clue body #testToolbar:not(.hidden) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+html.mode-clue body #testToolbar .clue-case-info {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  width: auto !important;
+}
+
+html.mode-clue body #testToolbar .clue-badge-pill {
+  padding: 2px 8px !important;
+  font-size: clamp(0.7rem, 1.1vw, 0.84rem) !important;
+  height: 26px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  white-space: nowrap !important;
+}
+
+html.mode-clue body #testToolbar .clue-diff-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+html.mode-clue body #testToolbar .diff-btn,
+html.mode-clue body #testToolbar #btnNewTest {
+  padding: 2px 8px !important;
+  height: 26px !important;
+  font-size: clamp(0.68rem, 1.05vw, 0.82rem) !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  width: auto !important;
+}
+
+/* 3. Full-Width Workspace & Board Frame (100% of screen width for the 9x9 Triangle!) */
+html body #mainWorkspace {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  gap: 6px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html body #mainWorkspace > .board-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+}
+
+html body #boardFrame:not(.hidden) {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: clamp(4px, 0.8vh, 10px) clamp(6px, 1vw, 14px) !important;
+  border-radius: 16px !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* 4. The 11-Column Full-Width CSS Grid:
+      Col 1: Left Row Number Badges (1..9)
+      Cols 2..10: 9 Equal Fluid Columns (1fr each) for Multiplication Columns 1..9
+      Col 11: Right Animal Home Badges (1..9)
+*/
+html body #triangleGrid {
+  display: grid !important;
+  grid-template-columns: clamp(22px, 3vw, 34px) repeat(9, minmax(0, 1fr)) clamp(28px, 3.8vw, 44px) !important;
+  grid-template-rows: var(--top-row-h, 36px) var(--num-row-h, 24px) repeat(9, var(--cell-h, 32px)) !important;
+  gap: clamp(2px, 0.35vw, 4px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  align-items: stretch !important;
+}
+
+html body #triangleGrid .tri-cell {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  font-size: clamp(0.78rem, calc(var(--cell-h, 30px) * 0.46), 1.35rem) !important;
+}
+
+/* 5. Clean Top Animal Avatars, Number Circles & Right Animal Homes (Zero Icon Overlap!) */
+html body #triangleGrid .top-animal-dock {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+html body #triangleGrid .top-animal-avatar {
+  width: min(calc(var(--top-row-h, 32px) * 0.82), 36px) !important;
+  height: min(calc(var(--top-row-h, 32px) * 0.82), 36px) !important;
+  font-size: clamp(0.82rem, calc(var(--top-row-h, 32px) * 0.5), 1.35rem) !important;
+  border-width: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+html body #triangleGrid .top-start-arrow {
+  display: none !important;
+}
+
+html body #triangleGrid .header-circle-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html body #triangleGrid .num-circle {
+  width: min(calc(var(--num-row-h, 22px) * 0.88), 26px) !important;
+  height: min(calc(var(--num-row-h, 22px) * 0.88), 26px) !important;
+  font-size: clamp(0.68rem, calc(var(--num-row-h, 22px) * 0.54), 0.95rem) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid .right-animal-home {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html body #triangleGrid .home-badge-card {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 2px !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html body #triangleGrid .home-animal-icon,
+html body #triangleGrid .home-house-icon {
+  font-size: clamp(0.68rem, calc(var(--cell-h, 28px) * 0.42), 1.05rem) !important;
+  line-height: 1 !important;
+}
+
+/* On narrow/compact screens, show the home icon cleanly (and animal icon when reached-home) so two emojis never crowd */
+@media (max-width: 960px), (max-height: 540px) {
+  html body #triangleGrid .right-animal-home:not(.reached-home) .home-animal-icon {
+    display: none !important;
+  }
+  html body #triangleGrid .right-animal-home.reached-home .home-house-icon {
+    display: none !important;
+  }
+}
+
+/* Compact Clue Beacons & Neighbor Clue Tags inside cells */
+html body #triangleGrid .clue-beacon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid .beacon-lens {
+  font-size: clamp(0.66rem, calc(var(--cell-h, 28px) * 0.38), 1rem) !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid .beacon-count {
+  font-size: clamp(0.62rem, calc(var(--cell-h, 28px) * 0.34), 0.84rem) !important;
+  padding: 1px 4px !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid .clue-tag {
+  top: -4px !important;
+  right: -2px !important;
+  font-size: clamp(0.55rem, calc(var(--cell-h, 28px) * 0.28), 0.72rem) !important;
+  padding: 0 3px !important;
+  line-height: 1.15 !important;
+  border-radius: 999px !important;
+  z-index: 18 !important;
+}
+
+/* Compact Walking Animal Sprite so it never blocks cell numbers */
+html body #activeWalkerSprite {
+  width: clamp(20px, calc(var(--cell-h, 28px) * 0.68), 32px) !important;
+  height: clamp(20px, calc(var(--cell-h, 28px) * 0.68), 32px) !important;
+  font-size: clamp(0.78rem, calc(var(--cell-h, 28px) * 0.45), 1.15rem) !important;
+}
+
+html body #activeWalkerSprite .walker-prop-badge {
+  display: none !important;
+}
+
+/* 6. THE IN-GRID BOTTOM-LEFT DOCK (#triangleGrid > #controlSidebar)
+      Strictly occupies Multiplication Columns 1..5 (grid-column: 2 / 7)
+      and Multiplication Rows 6..9 (grid-row: 8 / 12).
+      Mathematically impossible to overlap Left Row Numbers (Col 1)
+      or Diagonal Square Cells (Row 5 Col 5 = 25, Row 6 Col 6 = 36)!
+*/
+html body #triangleGrid > #controlSidebar {
+  grid-column: 2 / 7 !important;
+  grid-row: 8 / 12 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: clamp(4px, 0.7vh, 8px) clamp(5px, 0.8vw, 10px) !important;
+  background: #fffdf0 !important;
+  border: 2.5px solid #f59f00 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: clamp(3px, 0.5vh, 6px) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  z-index: 20 !important;
+}
+
+html.mode-clue body #triangleGrid > #controlSidebar {
+  border-color: #0284c7 !important;
+}
+
+/* Top Row of In-Grid Dock: Equation on Left + Clue/Hint Pill on Right */
+html body #triangleGrid > #controlSidebar #questionCard {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+}
+
+/* Hide extra header/dot rows inside the dock so the top bar stays 1 single clean row */
+html body #triangleGrid > #controlSidebar .question-card-header,
+html body #triangleGrid > #controlSidebar #visualDotsGrid,
+html body #triangleGrid > #controlSidebar #testClueHeader,
+html body #triangleGrid > #controlSidebar .test-clue-header {
+  display: none !important;
+}
+
+html body #triangleGrid > #controlSidebar #equationDisplay {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: clamp(3px, 0.5vw, 6px) !important;
+  background: #f5ebd0 !important;
+  border: 1.5px solid #e2cf7a !important;
+  border-radius: 8px !important;
+  padding: 2px 6px !important;
+  width: auto !important;
+  max-width: 56% !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+html body #triangleGrid > #controlSidebar .eq-num {
+  width: clamp(18px, calc(var(--cell-h, 28px) * 0.68), 28px) !important;
+  height: clamp(18px, calc(var(--cell-h, 28px) * 0.68), 28px) !important;
+  font-size: clamp(0.75rem, calc(var(--cell-h, 28px) * 0.42), 1.1rem) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid > #controlSidebar .eq-op,
+html body #triangleGrid > #controlSidebar .eq-eq {
+  font-size: clamp(0.75rem, calc(var(--cell-h, 28px) * 0.42), 1.1rem) !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+}
+
+html body #triangleGrid > #controlSidebar #eqAnswerBox {
+  min-width: clamp(24px, calc(var(--cell-h, 28px) * 0.85), 38px) !important;
+  height: clamp(20px, calc(var(--cell-h, 28px) * 0.72), 30px) !important;
+  font-size: clamp(0.8rem, calc(var(--cell-h, 28px) * 0.45), 1.15rem) !important;
+  padding: 0 4px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+/* Right Pill in Dock Top Row: Story Hint Box OR Clue Sequence Pill */
+html body #triangleGrid > #controlSidebar #visualHintBox:not(.hidden) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fffbeb !important;
+  border: 1.5px solid #fcd34d !important;
+  border-radius: 8px !important;
+  padding: 2px 6px !important;
+  margin: 0 !important;
+  max-width: 44% !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+
+html body #triangleGrid > #controlSidebar #hintFormulaText {
+  font-size: clamp(0.65rem, calc(var(--cell-h, 28px) * 0.35), 0.9rem) !important;
+  font-weight: 800 !important;
+  color: #92400e !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+}
+
+html body #triangleGrid > #controlSidebar #testClueBox:not(.hidden) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 44% !important;
+}
+
+html body #triangleGrid > #controlSidebar #testCluesList {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+html body #triangleGrid > #controlSidebar .clue-sequence-bar {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  background: #ecfdf5 !important;
+  border: 1.5px solid #34d399 !important;
+  border-radius: 8px !important;
+  padding: 2px 6px !important;
+  white-space: nowrap !important;
+}
+
+html body #triangleGrid > #controlSidebar .seq-num {
+  font-size: clamp(0.68rem, calc(var(--cell-h, 28px) * 0.36), 0.92rem) !important;
+  padding: 1px 4px !important;
+  border-radius: 5px !important;
+  line-height: 1.1 !important;
+}
+
+html body #triangleGrid > #controlSidebar .seq-arrow {
+  font-size: clamp(0.64rem, calc(var(--cell-h, 28px) * 0.34), 0.86rem) !important;
+  line-height: 1.1 !important;
+}
+
+html body #triangleGrid > #controlSidebar .seq-target {
+  font-size: clamp(0.68rem, calc(var(--cell-h, 28px) * 0.36), 0.92rem) !important;
+  padding: 1px 4px !important;
+  border-radius: 5px !important;
+  line-height: 1.1 !important;
+  animation: none !important;
+}
+
+/* Bottom 2x6 Musical Keypad inside In-Grid Dock */
+html body #triangleGrid > #controlSidebar .keypad-card {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html body #triangleGrid > #controlSidebar #keypadGrid {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(2px, 0.45vw, 5px) !important;
+}
+
+html body #triangleGrid > #controlSidebar .key-btn {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: clamp(5px, 0.6vw, 9px) !important;
+  font-size: clamp(0.82rem, calc(var(--cell-h, 28px) * 0.48), 1.3rem) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 0 rgba(180, 145, 50, 0.6) !important;
+}
+
+html body #triangleGrid > #controlSidebar .key-btn.key-enter {
+  font-size: clamp(0.72rem, calc(var(--cell-h, 28px) * 0.4), 1.1rem) !important;
+  box-shadow: 0 2px 0 #15803d !important;
+}
+
+html body #triangleGrid > #controlSidebar .key-btn.key-clear {
+  font-size: clamp(0.75rem, calc(var(--cell-h, 28px) * 0.42), 1.15rem) !important;
+  box-shadow: 0 2px 0 #e11d48 !important;
+}
+
+

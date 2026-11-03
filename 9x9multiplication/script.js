@@ -196,12 +196,12 @@
       modeStory: 'Story Mode',
       modeClue: 'Clue Mode',
       modeTest: 'Clue Mode',
-      labelTestStatus: 'Revealed Clues:',
-      testHolesRemaining: (rev, total) => `${rev} / ${total} Unlocked`,
-      testDiffEasy: '🟢 Easy (12 Seeds)',
-      testDiffMed: '🟡 Medium (6 Seeds)',
-      testDiffHard: '🔴 Hard (2 Seeds)',
-      newTestBtn: 'New Map 🔄',
+      labelTestStatus: '',
+      testHolesRemaining: (rev, total) => `${rev}/${total}`,
+      testDiffEasy: '🟢 Easy',
+      testDiffMed: '🟡 Med',
+      testDiffHard: '🔴 Hard',
+      newTestBtn: 'New',
       catWelcomeTest:
         'Welcome to Clue Mode, Ning! Like Minesweeper, look at the numbers already revealed on the map. Find hidden tiles next to them to deduce mystery numbers. Each one you solve reveals brand new clues for its neighbors!',
       testStepLabel: '🔍 Clue Deduction',
@@ -232,9 +232,9 @@
         `Top of Col ${n} ⬇️ Corner (${n}×${n}=${n * n}) ➡️ End of Row ${n} Home!`,
       activeStepLabel: (animalEmoji, animalName) => `${animalEmoji} ${animalName}'s Step`,
       testChallengeLabel: '⚡ Speed Challenge',
-      hintFormula: (r, c, sumStr) => `${r} groups of ${c} = ${sumStr}`,
+      hintFormula: (r, c, sumStr) => `💡 ${r} groups of ${c}`,
       hintFromPrev: (prevVal, addVal, r, c) =>
-        `Previous box is ${prevVal} → ${prevVal} + ${addVal} = ?  (${r} groups of ${c})`,
+        `💡 ${prevVal} + ${addVal} = ?`,
       celebSingleTitle: (animalName) => `Yay Ning! ${animalName} is Home!`,
       celebSingleSub: (n) => `You completed the entire #${n} multiplication path!`,
       celebAllTitle: '🏆 AMAZING NING! ALL 9 ANIMALS ARE HOME! 🏆',
@@ -247,12 +247,12 @@
       modeStory: '故事模式',
       modeClue: '線索模式',
       modeTest: '線索模式',
-      labelTestStatus: '已解鎖線索：',
-      testHolesRemaining: (rev, total) => `已解開 ${rev} / ${total} 格`,
-      testDiffEasy: '🟢 初級 (12個種子)',
-      testDiffMed: '🟡 中級 (6個種子)',
-      testDiffHard: '🔴 掃雷大師 (2個種子)',
-      newTestBtn: '換張新地圖 🔄',
+      labelTestStatus: '',
+      testHolesRemaining: (rev, total) => `${rev}/${total}`,
+      testDiffEasy: '🟢 簡單',
+      testDiffMed: '🟡 中等',
+      testDiffHard: '🔴 困難',
+      newTestBtn: '新局',
       catWelcomeTest:
         '歡迎來到線索模式，Ning！就像踩地雷一樣，先從地圖上已經揭曉的數字線索開始，找出相鄰空格的神秘答案。每解開一格，四周的格子就會獲得全新的線索喔！',
       testStepLabel: '🔍 線索推導',
@@ -283,9 +283,9 @@
         `第 ${n} 行頂端出發 ⬇️ 平方數轉角 (${n}×${n}=${n * n}) ➡️ 第 ${n} 列最右邊的家！`,
       activeStepLabel: (animalEmoji, animalName) => `${animalEmoji} ${animalName}的步伐`,
       testChallengeLabel: '⚡ 隨機跳題挑戰',
-      hintFormula: (r, c, sumStr) => `${r} 個 ${c} 相加 = ${sumStr}`,
+      hintFormula: (r, c, sumStr) => `💡 ${r} 個 ${c} 相加`,
       hintFromPrev: (prevVal, addVal, r, c) =>
-        `上一格是 ${prevVal} → ${prevVal} + ${addVal} = ? （${r} 個 ${c} 相加）`,
+        `💡 ${prevVal} + ${addVal} = ?`,
       celebSingleTitle: (animalName) => `太棒了 Ning！${animalName}平安到家囉！`,
       celebSingleSub: (n) => `妳完成了數字 ${n} 的整條 L 型乘法路線！`,
       celebAllTitle: '🏆 太神啦 Ning！9 隻小動物全部平安回家！ 🏆',
@@ -322,7 +322,7 @@
     testDiff: 'medium',      // backward compatibility alias
     testHoles: [],           // backward compatibility alias
     testTotalHoles: 36,
-    viewMode: window.innerWidth <= 740 ? 'path' : 'table', // 'path' (Big Stepping Stones) | 'table' (Full 9x9 Triangle)
+    viewMode: 'table',       // Default to Full 9x9 Triangle with In-Triangle Bottom-Left Dock on all devices!
     userToggledView: false,
     soundEnabled: true,
     activeAnimal: 1,         // 1..9 or 0 for 'all'
@@ -582,6 +582,8 @@
     fpTrailGrid: document.getElementById('fpTrailGrid'),
     fpWalkerLayer: document.getElementById('fpWalkerLayer'),
     boardFrame: document.getElementById('boardFrame'),
+    mainWorkspace: document.getElementById('mainWorkspace') || document.querySelector('.main-workspace'),
+    controlSidebar: document.getElementById('controlSidebar') || document.querySelector('.control-sidebar'),
     btnBackToPathView: document.getElementById('btnBackToPathView'),
     labelBackToPath: document.getElementById('labelBackToPath'),
     triangleGrid: document.getElementById('triangleGrid'),
@@ -628,6 +630,13 @@
    * 7. BUILD THE 9x9 TRIANGLE GRID & ANIMAL DOCKS
    * -------------------------------------------------------------------------- */
   function buildBoardDOM() {
+    if (
+      dom.controlSidebar &&
+      dom.mainWorkspace &&
+      dom.controlSidebar.parentNode === dom.triangleGrid
+    ) {
+      dom.mainWorkspace.appendChild(dom.controlSidebar);
+    }
     dom.triangleGrid.innerHTML = '';
 
     // --- ROW 0: Top Animal Starting Docks (Columns 1..9) ---
@@ -751,6 +760,11 @@
           <div id="fpWalkerBubble" class="walker-cheer-bubble hidden">Yay!</div>
         </div>
       `;
+    }
+
+    // Dock the Question & 2x6 Keypad directly into the empty Bottom-Left Grid region (Cols 1-5, Rows 6-9) when in Table View!
+    if (dom.controlSidebar && state.viewMode !== 'path') {
+      dom.triangleGrid.appendChild(dom.controlSidebar);
     }
   }
 
@@ -1043,6 +1057,14 @@
     const isPathView = state.viewMode === 'path';
     dom.focusedPathStage.classList.toggle('hidden', !isPathView);
     dom.boardFrame.classList.toggle('hidden', isPathView);
+
+    if (dom.controlSidebar) {
+      if (isPathView && dom.mainWorkspace && dom.controlSidebar.parentNode !== dom.mainWorkspace) {
+        dom.mainWorkspace.appendChild(dom.controlSidebar);
+      } else if (!isPathView && dom.triangleGrid && dom.controlSidebar.parentNode !== dom.triangleGrid) {
+        dom.triangleGrid.appendChild(dom.controlSidebar);
+      }
+    }
 
     // Update top header view toggle button
     const isCompactBar = window.innerWidth <= 760 || window.innerHeight <= 520;
@@ -1566,68 +1588,47 @@
           const bottom = cellClues.neighborMap[`${r + 1}-${c}`];
 
           if (cellClues.count === 0) {
-            const noClueItem = document.createElement('div');
-            noClueItem.className = 'clue-item-text';
-            noClueItem.innerHTML =
-              state.lang === 'zh'
-                ? `💡 <strong>四周暫無已揭開的鄰居</strong>：建議先點擊旁邊有 🔍 標記的格子獲得線索喔！`
-                : `💡 <strong>No revealed neighbors yet</strong>: Try solving a nearby 🔍 tile first to unlock clues!`;
-            dom.testCluesList.appendChild(noClueItem);
+            const seq = document.createElement('div');
+            seq.className = 'clue-sequence-bar';
+            seq.innerHTML = `<span class="seq-arrow">${
+              state.lang === 'zh' ? '🔍 先解開 🔍 格' : '🔍 Tap a 🔍 tile'
+            }</span>`;
+            dom.testCluesList.appendChild(seq);
 
             dom.catSpeechText.textContent =
               state.lang === 'zh'
                 ? `Ning，這格四周都還在迷霧中喔！建議先解開有 🔍 標記的相鄰格子，線索就會解開囉！`
                 : `Ning, this tile is still surrounded by fog! Try unlocking a nearby 🔍 tile first to reveal clues!`;
           } else {
-            // 1. Horizontal Sequence Clue (Skip counting in Row r!)
-            if (left && right) {
-              const seq = document.createElement('div');
-              seq.className = 'clue-sequence-bar';
+            // Single compact 1-line Clue Pill (matches approved iPad/iPhone dock design!)
+            const seq = document.createElement('div');
+            seq.className = 'clue-sequence-bar';
+            if (left) {
               seq.innerHTML = `
                 <span class="seq-num">${left.val}</span>
                 <span class="seq-arrow">+${r} ➔</span>
-                <span class="seq-target">❓</span>
-                <span class="seq-arrow">+${r} ➔</span>
-                <span class="seq-num">${right.val}</span>
+                <span class="seq-target">?</span>
               `;
-              dom.testCluesList.appendChild(seq);
-            } else if (left) {
-              const seq = document.createElement('div');
-              seq.className = 'clue-sequence-bar';
-              seq.innerHTML = `
-                <span class="seq-num">${left.val}</span>
-                <span class="seq-arrow">+${r} ➔</span>
-                <span class="seq-target">❓</span>
-              `;
-              dom.testCluesList.appendChild(seq);
-            } else if (right) {
-              const seq = document.createElement('div');
-              seq.className = 'clue-sequence-bar';
-              seq.innerHTML = `
-                <span class="seq-target">❓</span>
-                <span class="seq-arrow">◀ -${r}</span>
-                <span class="seq-num">${right.val}</span>
-              `;
-              dom.testCluesList.appendChild(seq);
             } else if (top) {
-              const seq = document.createElement('div');
-              seq.className = 'clue-sequence-bar';
               seq.innerHTML = `
                 <span class="seq-num">${top.val}</span>
-                <span class="seq-arrow">⬇ +${c}</span>
-                <span class="seq-target">❓</span>
+                <span class="seq-arrow">+${c} ➔</span>
+                <span class="seq-target">?</span>
               `;
-              dom.testCluesList.appendChild(seq);
-            } else if (bottom) {
-              const seq = document.createElement('div');
-              seq.className = 'clue-sequence-bar';
+            } else if (right) {
               seq.innerHTML = `
-                <span class="seq-target">❓</span>
-                <span class="seq-arrow">⬆ -${c}</span>
-                <span class="seq-num">${bottom.val}</span>
+                <span class="seq-num">${right.val}</span>
+                <span class="seq-arrow">-${r} ➔</span>
+                <span class="seq-target">?</span>
               `;
-              dom.testCluesList.appendChild(seq);
+            } else if (bottom) {
+              seq.innerHTML = `
+                <span class="seq-num">${bottom.val}</span>
+                <span class="seq-arrow">-${c} ➔</span>
+                <span class="seq-target">?</span>
+              `;
             }
+            dom.testCluesList.appendChild(seq);
 
             // Update Cat speech with direct clue guidance
             if (left) {
@@ -2650,6 +2651,9 @@
       refreshBoardVisuals();
     };
     dom.btnHint.addEventListener('click', triggerHint);
+    if (dom.visualHintBox) {
+      dom.visualHintBox.addEventListener('click', triggerHint);
+    }
     dom.teacherCatBtn.addEventListener('click', triggerHint);
 
     // Reset Game
@@ -2706,66 +2710,45 @@
 
     const isDesktop = !isMobile && !isTablet;
 
-    // Default to Focused Animal Path View ONLY on mobile portrait!
-    // On iPad, tablet, desktop, or any landscape device, default strictly to the 9x9 Triangle Table!
+    // Default to the Full-Width 9x9 Triangle Table with In-Grid Bottom-Left Dock on all devices!
     if (!state.userToggledView) {
-      state.viewMode = isMobile && orientation === 'portrait' ? 'path' : 'table';
+      state.viewMode = 'table';
     }
 
     const root = document.documentElement;
     root.style.setProperty('--app-height', `${vh}px`);
     root.style.setProperty('--app-width', `${vw}px`);
 
-    // Deterministically compute exact board row heights in pixels so iOS WebKit
-    // never stretches or overflows the 11-row multiplication grid!
+    // Deterministically compute exact board row heights in pixels so the 11-row
+    // multiplication grid fills the screen cleanly with zero scrolling or overlap!
     let cellH = 38;
-    let topRowH = 48;
-    let numRowH = 30;
+    let topRowH = 42;
+    let numRowH = 26;
 
     if (isMobile && orientation === 'landscape') {
-      // iPhone Horizontal: Dynamically calculate cell height and width so all 11 rows fit in screen height without barcode squishing!
-      const availH = Math.max(160, vh - 36 - (state.mode === 'clue' ? 28 : 0));
-      cellH = Math.max(17, Math.min(25, Math.floor(availH / 11.2)));
-      topRowH = Math.floor(cellH * 1.15);
-      numRowH = Math.floor(cellH * 0.85);
-
-      const sidebarW = 215;
-      const availW = Math.max(280, vw - sidebarW - 32);
-      const cellW = Math.max(28, Math.min(44, Math.floor((availW - 54) / 9)));
-      root.style.setProperty('--cell-w', `${cellW}px`);
+      // iPhone Horizontal: Full-width board (no right sidebar!), single slim top header (32px)
+      const availH = Math.max(185, vh - 40);
+      cellH = Math.max(21, Math.min(34, Math.floor(availH / 11.0)));
+      topRowH = Math.floor(cellH * 1.05);
+      numRowH = Math.floor(cellH * 0.76);
     } else if (isMobile) {
-      // iPhone Vertical
-      cellH = 26;
-      topRowH = 32;
-      numRowH = 20;
+      // iPhone Vertical: Full-width board
+      const availH = Math.max(260, Math.min(vh - 90, Math.floor(vw * 1.08)));
+      cellH = Math.max(26, Math.min(38, Math.floor(availH / 11.0)));
+      topRowH = Math.floor(cellH * 1.1);
+      numRowH = Math.floor(cellH * 0.78);
     } else if (orientation === 'portrait') {
-      // iPad / Tablet Portrait
-      const reservedVertical = 48 + 215 + 32;
-      const maxBoardGridH = Math.max(300, Math.min(vh - reservedVertical, Math.floor(vw * 0.88)));
-      cellH = Math.max(28, Math.floor(maxBoardGridH / 11.1));
-      topRowH = Math.floor(cellH * 1.26);
-      numRowH = Math.floor(cellH * 0.82);
+      // iPad / Tablet Portrait: Full-width board
+      const availH = Math.max(340, Math.min(vh - 90, Math.floor(vw * 0.92)));
+      cellH = Math.max(34, Math.min(56, Math.floor(availH / 11.0)));
+      topRowH = Math.floor(cellH * 1.12);
+      numRowH = Math.floor(cellH * 0.78);
     } else {
-      // PC Desktop & iPad Landscape: Sized dynamically to fill the screen without scrolling or excess empty space!
-      const isIPadLandscape =
-        (isIPad || isTablet || (vw >= 768 && vw <= 1380)) && orientation === 'landscape';
-      const hasSelector = vw > 1220 && vh > 780 && state.mode === 'story';
-      const headerAllowance = hasSelector ? 80 : 42;
-      const clueBarAllowance = state.mode === 'clue' ? 38 : 0;
-      const sidebarW = isIPadLandscape
-        ? Math.max(260, Math.min(310, Math.floor(vw * 0.26)))
-        : 285;
-      const paddingAllowance = 12;
-      const reservedH = headerAllowance + clueBarAllowance + paddingAllowance + 28;
-      const availH = Math.max(220, vh - reservedH);
-      const availW = Math.max(320, vw - sidebarW - 44 - 72);
-      // Grid dimensions (11 rows total: 1 top animal row + 1 number header row + 9 table cell rows):
-      // Ratio: topRowH = 1.18 * cellH, numRowH = 0.78 * cellH, 9 * cellH => 10.96 * cellH
-      const maxByH = Math.floor(availH / 10.96);
-      const maxByW = Math.floor(availW / 9.0);
-      const optimalCellH = Math.min(maxByH, maxByW);
-      cellH = Math.max(22, Math.min(56, optimalCellH));
-      topRowH = Math.floor(cellH * 1.18);
+      // iPad Landscape & Desktop PC: Full-width board, zero right sidebar!
+      const reservedH = 66;
+      const availH = Math.max(260, vh - reservedH);
+      cellH = Math.max(28, Math.min(58, Math.floor(availH / 11.0)));
+      topRowH = Math.floor(cellH * 1.12);
       numRowH = Math.floor(cellH * 0.78);
     }
 
