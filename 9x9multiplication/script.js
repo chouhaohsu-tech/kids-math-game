@@ -2696,15 +2696,19 @@
     const vh = Math.round(window.visualViewport ? window.visualViewport.height : window.innerHeight);
     const orientation = vw >= vh ? 'landscape' : 'portrait';
 
+    // A mobile phone is strictly an iPhone, an Android phone, or a small touchscreen device (<= 768px wide)
     const isMobile =
-      isIPhone ||
-      (isAndroid && /Mobile/.test(ua)) ||
-      vw <= 760 ||
-      vh <= 520;
+      !isIPad &&
+      (isIPhone ||
+       (isAndroid && /Mobile/.test(ua)) ||
+       (maxTouch > 0 && vw <= 768) ||
+       (vw < 640));
+
     const isTablet =
       isIPad ||
       (!isMobile &&
-        (isAndroid || (vw > 760 && vw <= 1220 && maxTouch > 0)));
+        (isAndroid || (vw >= 768 && vw <= 1380 && maxTouch > 0)));
+
     const isDesktop = !isMobile && !isTablet;
 
     // Default to Focused Animal Path View ONLY on mobile portrait!

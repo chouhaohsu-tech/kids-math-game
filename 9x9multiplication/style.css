@@ -795,10 +795,11 @@ body {
 .triangle-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 44px repeat(9, minmax(0, 1fr)) 64px;
+  grid-template-columns: clamp(34px, 3.5vw, 44px) repeat(9, var(--cell-h, 44px)) clamp(48px, 4.5vw, 64px);
   grid-template-rows: var(--top-row-h, 48px) var(--num-row-h, 30px) repeat(9, var(--cell-h, 38px));
   gap: 0;
-  width: 100%;
+  width: auto;
+  margin: 0 auto;
   height: auto;
   min-height: 0;
   z-index: 2;
@@ -2391,8 +2392,10 @@ body {
   }
 
   .triangle-grid {
-    grid-template-columns: 36px repeat(9, minmax(0, 1fr)) 52px;
+    grid-template-columns: 36px repeat(9, var(--cell-h, 36px)) 52px;
     grid-template-rows: var(--top-row-h, 46px) var(--num-row-h, 28px) repeat(9, var(--cell-h, 36px));
+    width: auto;
+    margin: 0 auto;
     height: auto;
   }
 
@@ -3441,45 +3444,50 @@ body {
   overflow: visible !important;
 }
 
-.orientation-landscape.device-mobile .board-frame,
-.orientation-landscape.device-iphone .board-frame {
-  padding: 2px 4px !important;
-  border-radius: 10px !important;
-  border-width: 1.5px !important;
-  height: auto !important;
-  overflow: visible !important;
-}
+@media (max-width: 920px) and (max-height: 500px) {
+  .orientation-landscape.device-mobile .board-frame,
+  .orientation-landscape.device-iphone .board-frame {
+    padding: 2px 4px !important;
+    border-radius: 10px !important;
+    border-width: 1.5px !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
 
-.orientation-landscape.device-mobile .triangle-grid,
-.orientation-landscape.device-iphone .triangle-grid {
-  grid-template-columns: 16px repeat(9, minmax(0, 1fr)) 18px !important;
-  grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
-  width: 100% !important;
-  height: auto !important;
-  overflow: visible !important;
-}
+  .orientation-landscape.device-mobile .triangle-grid,
+  .orientation-landscape.device-iphone .triangle-grid {
+    grid-template-columns: 16px repeat(9, var(--cell-h, 17px)) 18px !important;
+    grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
+    width: auto !important;
+    margin: 0 auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
 
-.orientation-landscape.device-mobile .tri-cell,
-.orientation-landscape.device-iphone .tri-cell {
-  min-height: 0 !important;
-  font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
-}
+  .orientation-landscape.device-mobile .tri-cell,
+  .orientation-landscape.device-iphone .tri-cell {
+    width: var(--cell-h, 17px) !important;
+    height: var(--cell-h, 17px) !important;
+    min-height: 0 !important;
+    font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
+  }
 
-.orientation-landscape.device-mobile .keypad-grid,
-.orientation-landscape.device-iphone .keypad-grid {
-  grid-template-columns: repeat(6, 1fr) !important;
-  gap: 3px !important;
-}
+  .orientation-landscape.device-mobile .keypad-grid,
+  .orientation-landscape.device-iphone .keypad-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 3px !important;
+  }
 
-.orientation-landscape.device-mobile .key-btn,
-.orientation-landscape.device-iphone .key-btn {
-  height: 28px !important;
-  font-size: 1.05rem !important;
-}
+  .orientation-landscape.device-mobile .key-btn,
+  .orientation-landscape.device-iphone .key-btn {
+    height: 28px !important;
+    font-size: 1.05rem !important;
+  }
 
-.orientation-landscape.device-mobile .lower-left-stage,
-.orientation-landscape.device-iphone .lower-left-stage {
-  display: none !important;
+  .orientation-landscape.device-mobile .lower-left-stage,
+  .orientation-landscape.device-iphone .lower-left-stage {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================
