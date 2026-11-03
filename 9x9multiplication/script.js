@@ -2751,23 +2751,22 @@
       const isIPadLandscape =
         (isIPad || isTablet || (vw >= 768 && vw <= 1380)) && orientation === 'landscape';
       const hasSelector = vw > 1220 && vh > 780 && state.mode === 'story';
-      const headerAllowance = hasSelector ? 96 : 56;
+      const headerAllowance = hasSelector ? 80 : 42;
       const sidebarW = isIPadLandscape
-        ? Math.max(300, Math.min(360, Math.floor(vw * 0.28)))
-        : vw <= 1200
-          ? 290
-          : 330;
-      const paddingAllowance = 20;
-      const reservedH = headerAllowance + paddingAllowance + 20;
-      const availH = Math.max(320, vh - reservedH);
-      const availW = Math.max(380, vw - sidebarW - 44);
-      // Grid dimensions (11 rows total, 11 cols total):
-      const maxByH = Math.floor(availH / 11.1);
-      const maxByW = Math.floor(availW / 11.0);
+        ? Math.max(260, Math.min(310, Math.floor(vw * 0.26)))
+        : 285;
+      const paddingAllowance = 10;
+      const reservedH = headerAllowance + paddingAllowance + 12;
+      const availH = Math.max(260, vh - reservedH);
+      const availW = Math.max(340, vw - sidebarW - 44 - 72);
+      // Grid dimensions (11 rows total: 1 top animal row + 1 number header row + 9 table cell rows):
+      // Ratio: topRowH = 1.18 * cellH, numRowH = 0.78 * cellH, 9 * cellH => 10.96 * cellH
+      const maxByH = Math.floor(availH / 10.96);
+      const maxByW = Math.floor(availW / 9.0);
       const optimalCellH = Math.min(maxByH, maxByW);
-      cellH = Math.max(32, Math.min(62, optimalCellH));
-      topRowH = Math.floor(cellH * 1.25);
-      numRowH = Math.floor(cellH * 0.82);
+      cellH = Math.max(24, Math.min(68, optimalCellH));
+      topRowH = Math.floor(cellH * 1.18);
+      numRowH = Math.floor(cellH * 0.78);
     }
 
     root.style.setProperty('--cell-h', `${cellH}px`);

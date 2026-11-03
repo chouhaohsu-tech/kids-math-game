@@ -3523,13 +3523,16 @@ body {
   }
 
   .main-workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 340px);
-    gap: clamp(10px, 1.5vw, 18px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    gap: clamp(14px, 2vw, 24px);
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .board-section {
@@ -3537,16 +3540,17 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    flex: 0 0 auto;
+    width: auto;
     height: auto;
   }
 
   .board-frame {
-    padding: clamp(6px, 1vh, 12px) clamp(10px, 1.2vw, 16px);
-    border-radius: 20px;
+    padding: clamp(3px, 0.6vh, 8px) clamp(6px, 0.8vw, 12px);
+    border-radius: 16px;
     width: auto;
     max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
   }
 
   .triangle-grid {
@@ -4352,12 +4356,55 @@ body {
    - Teacher Cat & Speech Bubble are ALWAYS visible
    - Header title & all controls are properly sized and styled
    ========================================================================== */
+/* Eliminate the empty space: Place Board and Sidebar snugly side-by-side in center! */
+html.device-desktop .app-shell,
+html.device-ipad .app-shell,
+html.device-tablet .app-shell {
+  max-width: 1300px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: clamp(3px, 0.8vh, 8px) clamp(8px, 1.2vw, 16px) !important;
+  gap: clamp(3px, 0.6vh, 6px) !important;
+  height: var(--app-height, 100dvh) !important;
+  min-height: var(--app-height, 100dvh) !important;
+  max-height: var(--app-height, 100dvh) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html.device-desktop .top-header,
+html.device-ipad .top-header,
+html.device-tablet .top-header {
+  padding: clamp(3px, 0.5vh, 6px) clamp(8px, 1vw, 14px) !important;
+  min-height: 36px !important;
+  height: clamp(36px, 5vh, 44px) !important;
+  border-radius: 12px !important;
+  flex-shrink: 0 !important;
+}
+
 html.device-desktop .main-workspace,
 html.device-ipad .main-workspace,
 html.device-tablet .main-workspace {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 340px) !important;
-  gap: clamp(10px, 1.5vw, 18px) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: clamp(14px, 2vw, 24px) !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+html.device-desktop .board-section,
+html.device-ipad .board-section,
+html.device-tablet .board-section {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  display: flex !important;
+  justify-content: center !important;
   align-items: center !important;
 }
 
@@ -4366,7 +4413,9 @@ html.device-ipad .board-frame,
 html.device-tablet .board-frame {
   width: auto !important;
   max-width: 100% !important;
-  margin: 0 auto !important;
+  margin: 0 !important;
+  padding: clamp(3px, 0.6vh, 8px) clamp(6px, 0.8vw, 12px) !important;
+  border-radius: 16px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -4375,8 +4424,8 @@ html.device-tablet .board-frame {
 html.device-desktop .triangle-grid,
 html.device-ipad .triangle-grid,
 html.device-tablet .triangle-grid {
-  grid-template-columns: clamp(30px, 3.2vw, 44px) repeat(9, var(--cell-h, 38px)) clamp(44px, 4.5vw, 64px) !important;
-  grid-template-rows: var(--top-row-h, 46px) var(--num-row-h, 28px) repeat(9, var(--cell-h, 38px)) !important;
+  grid-template-columns: clamp(28px, 3vw, 40px) repeat(9, var(--cell-h)) clamp(40px, 4vw, 56px) !important;
+  grid-template-rows: var(--top-row-h) var(--num-row-h) repeat(9, var(--cell-h)) !important;
   width: auto !important;
   margin: 0 auto !important;
 }
@@ -4384,9 +4433,20 @@ html.device-tablet .triangle-grid {
 html.device-desktop .tri-cell,
 html.device-ipad .tri-cell,
 html.device-tablet .tri-cell {
-  width: var(--cell-h, 38px) !important;
-  height: var(--cell-h, 38px) !important;
+  width: var(--cell-h) !important;
+  height: var(--cell-h) !important;
   min-height: 0 !important;
+}
+
+html.device-desktop .control-sidebar,
+html.device-ipad .control-sidebar,
+html.device-tablet .control-sidebar {
+  flex: 0 0 clamp(260px, 20vw, 310px) !important;
+  width: clamp(260px, 20vw, 310px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: clamp(4px, 0.8vh, 8px) !important;
+  justify-content: center !important;
 }
 
 html.device-desktop .keypad-card,
