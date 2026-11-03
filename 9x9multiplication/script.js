@@ -910,8 +910,8 @@
         topDock.classList.toggle('is-home', done);
       }
       if (rightHome) {
-        rightHome.classList.toggle('active-path', activeN === n);
-        rightHome.classList.toggle('reached-home', done);
+        rightHome.classList.toggle('active-path', state.mode !== 'clue' && activeN === n);
+        rightHome.classList.toggle('reached-home', state.mode !== 'clue' && done);
       }
     }
 
@@ -1469,11 +1469,12 @@
     }
 
     // Corresponding Animal Dance: top dock (Col animal) and right home (Row animal)
-    if (topDock) {
+    // In Clue Mode, the right-side animal icons stay completely steady and never wobble
+    if (topDock && state.mode !== 'clue') {
       topDock.classList.add('animal-dancing');
     }
 
-    if (rightHome) {
+    if (rightHome && state.mode !== 'clue') {
       rightHome.classList.add('animal-dancing');
     }
 

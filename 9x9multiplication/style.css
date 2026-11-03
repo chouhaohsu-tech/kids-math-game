@@ -4666,3 +4666,14 @@ html.device-tablet .brand-group {
   display: none !important;
 }
 
+/* In Clue Mode, the right-side animal icons stay completely steady and never wobble */
+.mode-clue .right-animal-home,
+.mode-clue .right-animal-home *,
+.mode-clue .right-animal-home .home-badge-card,
+.mode-clue .right-animal-home .home-animal-icon,
+.mode-clue .right-animal-home.animal-dancing,
+.mode-clue .right-animal-home.reached-home .home-animal-icon {
+  animation: none !important;
+  transform: none !important;
+}
+
