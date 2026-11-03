@@ -1451,9 +1451,6 @@
         const arrow = document.createElement('div');
         arrow.className = 'shine-arrow arrow-down';
         arrow.textContent = '⬇️';
-        arrow.style.top = '2px';
-        arrow.style.left = '50%';
-        arrow.style.transform = 'translateX(-50%)';
         cell.appendChild(arrow);
         activeArrows.push(arrow);
       }
@@ -1466,9 +1463,6 @@
         const arrow = document.createElement('div');
         arrow.className = 'shine-arrow arrow-right';
         arrow.textContent = '➡️';
-        arrow.style.top = '50%';
-        arrow.style.left = '4px';
-        arrow.style.transform = 'translateY(-50%)';
         cell.appendChild(arrow);
         activeArrows.push(arrow);
       }
@@ -1477,45 +1471,10 @@
     // Corresponding Animal Dance: top dock (Col animal) and right home (Row animal)
     if (topDock) {
       topDock.classList.add('animal-dancing');
-      const rect = topDock.getBoundingClientRect();
-      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 28, [
-        animalCol.emoji,
-        '⭐',
-        '✨'
-      ]);
     }
 
     if (rightHome) {
       rightHome.classList.add('animal-dancing');
-      const rect = rightHome.getBoundingClientRect();
-      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 28, [
-        animalRow.emoji,
-        animalRow.homeEmoji,
-        '⭐'
-      ]);
-    }
-
-    // Floating dance celebration badge on intersection cell
-    if (intersectionCell) {
-      const danceBadge = document.createElement('div');
-      danceBadge.className = 'cell-dance-badge';
-      danceBadge.innerHTML = `
-        <span>${animalRow.emoji}</span>
-        <span>💃🕺</span>
-        <span>${animalCol.emoji}</span>
-        <span><strong>${r} × ${c} = ${expected}!</strong></span>
-      `;
-      intersectionCell.appendChild(danceBadge);
-      activeArrows.push(danceBadge);
-
-      const rect = intersectionCell.getBoundingClientRect();
-      spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 35, [
-        animalRow.emoji,
-        animalCol.emoji,
-        '⭐',
-        '✨',
-        '🎉'
-      ]);
     }
 
     // Cheerful Cat message highlighting the row & col animals dancing
@@ -1817,7 +1776,7 @@
         const rect = cellEl.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        spawnConfettiBurst(cx, cy, 42, cheeringAnimal.burstIcons || [cheeringAnimal.emoji, '🔍']);
+        spawnCellSparkle(cx, cy, ['✨', '⭐']);
         spawnFloatingScore(cx, cy - 10, `+10 ⭐ 🔍`);
       }
 
@@ -2354,6 +2313,63 @@
     pop.textContent = text;
     document.body.appendChild(pop);
     setTimeout(() => pop.remove(), 2400);
+  }
+
+  function spawnCellSparkle(x, y, icons = ['✨', '⭐']) {
+    resizeCanvas();
+    const colors = ['#ffd43b', '#69db7c', '#4dabf7', '#ffa94d'];
+
+    // 1. Tiny gentle golden ring restricted to cell boundary (maxRadius ~20px)
+    shockwaves.push({
+      x,
+      y,
+      radius: 4,
+      maxRadius: 20,
+      alpha: 0.65,
+      color: '#ffd43b'
+    });
+
+    // 2. Just 8 small, slow-moving micro star sparks (staying within ~25px)
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+      const speed = 0.9 + Math.random() * 1.5;
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.5,
+        size: 3 + Math.random() * 3,
+        color: colors[i % colors.length],
+        alpha: 0.85,
+        rot: Math.random() * Math.PI * 2,
+        vRot: (Math.random() - 0.5) * 0.08,
+        isStar: true
+      });
+    }
+
+    // 3. Just 1 or 2 small cute floating sparkles (size 13-14px)
+    const celebIcons = Array.isArray(icons) && icons.length > 0 ? icons : ['✨', '⭐'];
+    const emojiCount = 2;
+    for (let j = 0; j < emojiCount; j++) {
+      const angle = (Math.PI * 2 * j) / emojiCount;
+      const speed = 0.8 + Math.random() * 0.8;
+      emojiSprites.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: -0.8 - Math.random() * 0.8,
+        size: 13 + Math.random() * 3,
+        icon: celebIcons[j % celebIcons.length] || '✨',
+        alpha: 0.85,
+        rot: (Math.random() - 0.5) * 0.2,
+        vRot: 0.015
+      });
+    }
+
+    if (!animFrameId) {
+      animFrameId = requestAnimationFrame(stepParticles);
+    }
   }
 
   function spawnConfettiBurst(x, y, count = 42, customIcons = null) {
