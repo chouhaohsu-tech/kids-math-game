@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=9.13.0" />
+  <link rel="stylesheet" href="style.css?v=9.14.0" />
 </head>
 <body>
   <!-- Particle & Fireworks Celebration Canvas -->
@@ -85,26 +85,26 @@
       </div>
     </section>
 
-    <!-- ==================== CLUE MODE CONTROLS BAR (MINESWEEPER STYLE MAP UNLOCK) ==================== -->
-    <section id="testToolbar" class="test-toolbar clue-toolbar hidden" aria-label="Clue Mode Options">
-      <div class="test-case-info clue-case-info">
-        <span class="test-badge-pill clue-badge-pill">🔍 <span id="labelTestStatus">Revealed Clues:</span> <strong id="testHolesRemaining">6 / 36</strong></span>
-        <div class="diff-btn-group clue-diff-group" role="radiogroup" aria-label="Starting Seeds Difficulty">
-          <button type="button" class="diff-btn" data-diff="easy" id="diffBtnEasy">🟢 Easy (12 Seeds)</button>
-          <button type="button" class="diff-btn active" data-diff="medium" id="diffBtnMedium">🟡 Medium (6 Seeds)</button>
-          <button type="button" class="diff-btn" data-diff="hard" id="diffBtnHard">🔴 Hard (2 Seeds)</button>
-        </div>
-        <button type="button" class="tool-btn new-case-btn" id="btnNewTest" title="Generate New Clue Map">
-          <span>🔄</span>
-          <span id="labelNewTest">New Map</span>
-        </button>
-      </div>
-    </section>
-
     <!-- ==================== MAIN WORKSPACE: BOARD + INTERACTION PANEL ==================== -->
     <main class="main-workspace">
       <!-- LEFT / CENTER: FOCUSED ANIMAL PATH STAGE (Default on iPhone) OR FULL 9x9 TRIANGLE BOARD -->
       <section class="board-section" aria-label="9x9 Non-Repeating Multiplication Board">
+        <!-- ==================== CLUE MODE CONTROLS BAR (MINESWEEPER STYLE MAP UNLOCK) ==================== -->
+        <section id="testToolbar" class="test-toolbar clue-toolbar hidden" aria-label="Clue Mode Options">
+          <div class="test-case-info clue-case-info">
+            <span class="test-badge-pill clue-badge-pill">🔍 <span id="labelTestStatus">Revealed Clues:</span> <strong id="testHolesRemaining">6 / 36</strong></span>
+            <div class="diff-btn-group clue-diff-group" role="radiogroup" aria-label="Starting Seeds Difficulty">
+              <button type="button" class="diff-btn" data-diff="easy" id="diffBtnEasy">🟢 Easy (12 Seeds)</button>
+              <button type="button" class="diff-btn active" data-diff="medium" id="diffBtnMedium">🟡 Medium (6 Seeds)</button>
+              <button type="button" class="diff-btn" data-diff="hard" id="diffBtnHard">🔴 Hard (2 Seeds)</button>
+            </div>
+            <button type="button" class="tool-btn new-case-btn" id="btnNewTest" title="Generate New Clue Map">
+              <span>🔄</span>
+              <span id="labelNewTest">New Map</span>
+            </button>
+          </div>
+        </section>
+
         <!-- ==================== FOCUSED ANIMAL L-PATH STAGE (BIG STEPPING STONES FOR IPHONE & IPAD!) ==================== -->
         <div class="focused-path-stage hidden" id="focusedPathStage">
           <!-- 9 Animal Friends Quick-Select Bar -->
@@ -333,6 +333,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=9.13.0"></script>
+  <script src="script.js?v=9.14.0"></script>
 </body>
 </html>

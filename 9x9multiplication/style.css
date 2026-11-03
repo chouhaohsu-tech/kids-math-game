@@ -4365,10 +4365,12 @@ html.device-tablet .app-shell {
   margin: 0 auto !important;
   padding: clamp(3px, 0.8vh, 8px) clamp(8px, 1.2vw, 16px) !important;
   gap: clamp(3px, 0.6vh, 6px) !important;
-  height: var(--app-height, 100dvh) !important;
-  min-height: var(--app-height, 100dvh) !important;
-  max-height: var(--app-height, 100dvh) !important;
-  overflow: hidden !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   display: flex !important;
   flex-direction: column !important;
 }
@@ -4507,14 +4509,15 @@ html.device-ipad .test-toolbar,
 html.device-ipad .clue-toolbar,
 html.device-tablet .test-toolbar,
 html.device-tablet .clue-toolbar {
-  padding: 3px 12px !important;
-  margin: 2px auto !important;
-  min-height: 32px !important;
-  border-radius: 12px !important;
+  padding: 3px 6px !important;
+  margin: 0 0 6px 0 !important;
+  min-height: 28px !important;
+  border-radius: 10px !important;
   flex-shrink: 0 !important;
-  width: auto !important;
-  max-width: 900px !important;
-  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  gap: 4px !important;
 }
 
 html.device-desktop .clue-case-info,
@@ -4522,8 +4525,9 @@ html.device-ipad .clue-case-info,
 html.device-tablet .clue-case-info {
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  gap: 4px !important;
   flex-wrap: nowrap !important;
 }
 
@@ -4532,25 +4536,25 @@ html.device-ipad .diff-btn-group,
 html.device-tablet .diff-btn-group {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
   flex-wrap: nowrap !important;
 }
 
 html.device-desktop .clue-badge-pill,
 html.device-ipad .clue-badge-pill,
 html.device-tablet .clue-badge-pill {
-  padding: 2px 8px !important;
-  font-size: 0.8rem !important;
+  padding: 1px 6px !important;
+  font-size: 0.76rem !important;
   white-space: nowrap !important;
 }
 
 html.device-desktop .diff-btn,
 html.device-ipad .diff-btn,
 html.device-tablet .diff-btn {
-  padding: 2px 7px !important;
-  font-size: 0.78rem !important;
+  padding: 1px 5px !important;
+  font-size: 0.74rem !important;
   white-space: nowrap !important;
-  height: 28px !important;
+  height: 25px !important;
   display: inline-flex !important;
   align-items: center !important;
 }
@@ -4561,13 +4565,13 @@ html.device-tablet .main-workspace {
   display: flex !important;
   flex-direction: row !important;
   justify-content: center !important;
-  align-items: center !important;
-  gap: clamp(14px, 2vw, 24px) !important;
+  align-items: flex-start !important;
+  gap: clamp(12px, 1.8vw, 20px) !important;
   flex: 1 1 auto !important;
   min-height: 0 !important;
   height: auto !important;
   width: 100% !important;
-  margin: 0 auto !important;
+  margin: 4px auto 0 !important;
 }
 
 html.device-desktop .board-section,
@@ -4576,7 +4580,8 @@ html.device-tablet .board-section {
   flex: 0 0 auto !important;
   width: auto !important;
   display: flex !important;
-  justify-content: center !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
   align-items: center !important;
 }
 
@@ -4613,34 +4618,42 @@ html.device-tablet .tri-cell {
 html.device-desktop .control-sidebar,
 html.device-ipad .control-sidebar,
 html.device-tablet .control-sidebar {
-  flex: 0 0 clamp(260px, 20vw, 310px) !important;
-  width: clamp(260px, 20vw, 310px) !important;
+  flex: 0 0 clamp(250px, 19vw, 290px) !important;
+  width: clamp(250px, 19vw, 290px) !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: clamp(4px, 0.8vh, 8px) !important;
-  justify-content: center !important;
+  gap: 5px !important;
+  justify-content: flex-start !important;
+}
+
+html.device-desktop .question-card,
+html.device-ipad .question-card,
+html.device-tablet .question-card {
+  padding: 5px 8px !important;
+  border-radius: 14px !important;
+  gap: 4px !important;
 }
 
 html.device-desktop .keypad-card,
 html.device-ipad .keypad-card,
 html.device-tablet .keypad-card {
-  padding: clamp(8px, 1.2vh, 12px) !important;
-  border-radius: 18px !important;
+  padding: 4px 8px !important;
+  border-radius: 14px !important;
 }
 
 html.device-desktop .keypad-grid,
 html.device-ipad .keypad-grid,
 html.device-tablet .keypad-grid {
   grid-template-columns: repeat(3, 1fr) !important;
-  gap: clamp(5px, 0.8vh, 8px) !important;
+  gap: 4px !important;
 }
 
 html.device-desktop .key-btn,
 html.device-ipad .key-btn,
 html.device-tablet .key-btn {
-  height: clamp(38px, 4.6vh, 52px) !important;
-  font-size: clamp(1.15rem, 1.8vh, 1.45rem) !important;
-  border-radius: 12px !important;
+  height: clamp(28px, 3.8vh, 36px) !important;
+  font-size: clamp(1rem, 1.6vh, 1.25rem) !important;
+  border-radius: 9px !important;
 }
 
 html.device-desktop .lower-left-stage,
@@ -4653,5 +4666,11 @@ html.device-desktop .brand-group,
 html.device-ipad .brand-group,
 html.device-tablet .brand-group {
   display: flex !important;
+}
+
+/* Hide Homes Rack in Clue Mode to keep Question Card & Keypad 100% on screen! */
+.homes-rack-card.hidden,
+.mode-clue .homes-rack-card {
+  display: none !important;
 }
 

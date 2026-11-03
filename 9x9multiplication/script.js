@@ -1640,14 +1640,6 @@
                 <span class="seq-target">❓</span>
               `;
               dom.testCluesList.appendChild(seq);
-
-              const leftItem = document.createElement('div');
-              leftItem.className = 'clue-item-text';
-              leftItem.innerHTML =
-                state.lang === 'zh'
-                  ? `⬅️ 左邊是 <strong>${left.val}</strong>（橫列每次 +${r}）➔ <strong>${left.val} + ${r} = ？</strong>`
-                  : `⬅️ Left neighbor is <strong>${left.val}</strong> (Row adds +${r}) ➔ <strong>${left.val} + ${r} = ?</strong>`;
-              dom.testCluesList.appendChild(leftItem);
             } else if (right) {
               const seq = document.createElement('div');
               seq.className = 'clue-sequence-bar';
@@ -1657,34 +1649,24 @@
                 <span class="seq-num">${right.val}</span>
               `;
               dom.testCluesList.appendChild(seq);
-
-              const rightItem = document.createElement('div');
-              rightItem.className = 'clue-item-text';
-              rightItem.innerHTML =
-                state.lang === 'zh'
-                  ? `➡️ 右邊是 <strong>${right.val}</strong>（橫列每次 -${r}）➔ <strong>${right.val} - ${r} = ？</strong>`
-                  : `➡️ Right neighbor is <strong>${right.val}</strong> (Row subtracts -${r}) ➔ <strong>${right.val} - ${r} = ?</strong>`;
-              dom.testCluesList.appendChild(rightItem);
-            }
-
-            // 2. Vertical Column Clues (Top and Bottom)
-            if (top) {
-              const topItem = document.createElement('div');
-              topItem.className = 'clue-item-text';
-              topItem.innerHTML =
-                state.lang === 'zh'
-                  ? `⬆️ 上方是 <strong>${top.val}</strong>（直行往下多 +${c}）➔ <strong>${top.val} + ${c} = ？</strong>`
-                  : `⬆️ Top neighbor is <strong>${top.val}</strong> (Column adds +${c}) ➔ <strong>${top.val} + ${c} = ?</strong>`;
-              dom.testCluesList.appendChild(topItem);
-            }
-            if (bottom) {
-              const btmItem = document.createElement('div');
-              btmItem.className = 'clue-item-text';
-              btmItem.innerHTML =
-                state.lang === 'zh'
-                  ? `⬇️ 下方是 <strong>${bottom.val}</strong>（直行往上少 -${c}）➔ <strong>${bottom.val} - ${c} = ？</strong>`
-                  : `⬇️ Bottom neighbor is <strong>${bottom.val}</strong> (Column subtracts -${c}) ➔ <strong>${bottom.val} - ${c} = ?</strong>`;
-              dom.testCluesList.appendChild(btmItem);
+            } else if (top) {
+              const seq = document.createElement('div');
+              seq.className = 'clue-sequence-bar';
+              seq.innerHTML = `
+                <span class="seq-num">${top.val}</span>
+                <span class="seq-arrow">⬇ +${c}</span>
+                <span class="seq-target">❓</span>
+              `;
+              dom.testCluesList.appendChild(seq);
+            } else if (bottom) {
+              const seq = document.createElement('div');
+              seq.className = 'clue-sequence-bar';
+              seq.innerHTML = `
+                <span class="seq-target">❓</span>
+                <span class="seq-arrow">⬆ -${c}</span>
+                <span class="seq-num">${bottom.val}</span>
+              `;
+              dom.testCluesList.appendChild(seq);
             }
 
             // Update Cat speech with direct clue guidance
@@ -1705,14 +1687,6 @@
                   : `Ning, look at the clue: right is ${right.val}. Subtract -${r}: ${right.val} - ${r} = ?`;
             }
           }
-
-          const gridItem = document.createElement('div');
-          gridItem.className = 'clue-item-text';
-          gridItem.innerHTML =
-            state.lang === 'zh'
-              ? `📍 格子座標：第 <strong>${r}</strong> 橫列 × 第 <strong>${c}</strong> 直行`
-              : `📍 Grid Position: Row <strong>${r}</strong> × Column <strong>${c}</strong>`;
-          dom.testCluesList.appendChild(gridItem);
         }
       }
       dom.visualHintBox.classList.add('hidden');
@@ -2758,16 +2732,16 @@
       const sidebarW = isIPadLandscape
         ? Math.max(260, Math.min(310, Math.floor(vw * 0.26)))
         : 285;
-      const paddingAllowance = 10;
-      const reservedH = headerAllowance + clueBarAllowance + paddingAllowance + 12;
-      const availH = Math.max(260, vh - reservedH);
-      const availW = Math.max(340, vw - sidebarW - 44 - 72);
+      const paddingAllowance = 12;
+      const reservedH = headerAllowance + clueBarAllowance + paddingAllowance + 28;
+      const availH = Math.max(220, vh - reservedH);
+      const availW = Math.max(320, vw - sidebarW - 44 - 72);
       // Grid dimensions (11 rows total: 1 top animal row + 1 number header row + 9 table cell rows):
       // Ratio: topRowH = 1.18 * cellH, numRowH = 0.78 * cellH, 9 * cellH => 10.96 * cellH
       const maxByH = Math.floor(availH / 10.96);
       const maxByW = Math.floor(availW / 9.0);
       const optimalCellH = Math.min(maxByH, maxByW);
-      cellH = Math.max(24, Math.min(68, optimalCellH));
+      cellH = Math.max(22, Math.min(56, optimalCellH));
       topRowH = Math.floor(cellH * 1.18);
       numRowH = Math.floor(cellH * 0.78);
     }
@@ -2775,6 +2749,9 @@
     root.style.setProperty('--cell-h', `${cellH}px`);
     root.style.setProperty('--top-row-h', `${topRowH}px`);
     root.style.setProperty('--num-row-h', `${numRowH}px`);
+
+    root.classList.toggle('mode-clue', state.mode === 'clue');
+    document.body.classList.toggle('mode-clue', state.mode === 'clue');
 
     root.classList.toggle('device-ipad', isIPad);
     root.classList.toggle('device-iphone', isIPhone);
