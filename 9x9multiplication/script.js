@@ -2723,11 +2723,16 @@
     let numRowH = 30;
 
     if (isMobile && orientation === 'landscape') {
-      // iPhone Horizontal: Dynamically calculate cell height so all 11 rows of the triangle fit within the screen height!
-      const availH = Math.max(150, Math.min(260, vh - 44));
-      cellH = Math.max(14, Math.min(22, Math.floor(availH / 11.35)));
-      topRowH = Math.floor(cellH * 1.2);
-      numRowH = Math.floor(cellH * 0.82);
+      // iPhone Horizontal: Dynamically calculate cell height and width so all 11 rows fit in screen height without barcode squishing!
+      const availH = Math.max(160, vh - 36 - (state.mode === 'clue' ? 28 : 0));
+      cellH = Math.max(17, Math.min(25, Math.floor(availH / 11.2)));
+      topRowH = Math.floor(cellH * 1.15);
+      numRowH = Math.floor(cellH * 0.85);
+
+      const sidebarW = 215;
+      const availW = Math.max(280, vw - sidebarW - 32);
+      const cellW = Math.max(28, Math.min(44, Math.floor((availW - 54) / 9)));
+      root.style.setProperty('--cell-w', `${cellW}px`);
     } else if (isMobile) {
       // iPhone Vertical
       cellH = 26;

@@ -3218,7 +3218,7 @@ body {
     font-size: 0.72rem !important;
   }
 
-  /* Full 9x9 Triangle Board in Landscape: ALL 11 ROWS 100% VISIBLE */
+  /* Full 9x9 Triangle Board in Landscape: ALL 11 ROWS 100% VISIBLE & CLEAN SIZING */
   .board-frame:not(.hidden) {
     padding: 2px 4px !important;
     border-radius: 10px !important;
@@ -3233,9 +3233,58 @@ body {
     justify-content: flex-start !important;
   }
 
+  /* Compact Clue Mode Toolbar in Landscape */
+  .test-toolbar,
+  .clue-toolbar {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    padding: 1px 4px !important;
+    margin: 0 0 3px 0 !important;
+    min-height: 24px !important;
+    height: 24px !important;
+    border-radius: 8px !important;
+    border-width: 1.5px !important;
+    box-shadow: 0 2px 0 #0369a1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .test-toolbar .clue-badge-pill {
+    font-size: 0.68rem !important;
+    padding: 1px 5px !important;
+    white-space: nowrap !important;
+  }
+
+  .test-toolbar .clue-difficulty-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 2px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .test-toolbar .clue-diff-btn {
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+  }
+
+  .test-toolbar .new-case-btn {
+    font-size: 0.65rem !important;
+    padding: 1px 5px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+  }
+
   .triangle-grid {
-    grid-template-columns: 16px repeat(9, var(--cell-h, 17px)) 18px !important;
-    grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
+    grid-template-columns: 22px repeat(9, var(--cell-w, 34px)) 26px !important;
+    grid-template-rows: var(--top-row-h, 24px) var(--num-row-h, 17px) repeat(9, var(--cell-h, 21px)) !important;
     width: auto !important;
     margin: 0 auto !important;
     height: auto !important;
@@ -3243,32 +3292,45 @@ body {
   }
 
   .top-animal-avatar {
-    width: calc(var(--top-row-h, 20px) - 2px) !important;
-    height: calc(var(--top-row-h, 20px) - 2px) !important;
-    font-size: calc(var(--top-row-h, 20px) * 0.58) !important;
+    width: calc(var(--top-row-h, 24px) - 2px) !important;
+    height: calc(var(--top-row-h, 24px) - 2px) !important;
+    font-size: calc(var(--top-row-h, 24px) * 0.6) !important;
     border-width: 1.2px !important;
   }
 
   .num-circle {
-    width: calc(var(--num-row-h, 15px) - 1px) !important;
-    height: calc(var(--num-row-h, 15px) - 1px) !important;
-    font-size: 0.58rem !important;
+    width: calc(var(--num-row-h, 17px) - 1px) !important;
+    height: calc(var(--num-row-h, 17px) - 1px) !important;
+    font-size: 0.62rem !important;
     border-width: 1px !important;
   }
 
   .tri-cell {
+    width: var(--cell-w, 34px) !important;
+    height: var(--cell-h, 21px) !important;
     min-height: 0 !important;
-    font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
+    font-size: clamp(0.72rem, 1.6vw, 0.92rem) !important;
+  }
+
+  .cell-mini-label {
+    font-size: 0.72rem !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  .right-animal-home {
+    padding-left: 1px !important;
   }
 
   .right-animal-home .home-badge-card {
-    width: 16px !important;
-    height: 16px !important;
+    width: 22px !important;
+    height: 18px !important;
     border-width: 1px !important;
+    padding: 0 !important;
+    justify-content: center !important;
   }
 
   .home-animal-icon {
-    font-size: 0.68rem !important;
+    font-size: 0.72rem !important;
   }
 
   .lower-left-stage {
@@ -3276,10 +3338,7 @@ body {
   }
 
   .back-to-path-btn {
-    top: 2px !important;
-    left: 2px !important;
-    padding: 1px 5px !important;
-    font-size: 0.65rem !important;
+    display: none !important;
   }
 
   /* Right Sidebar in Landscape */
@@ -3292,13 +3351,18 @@ body {
     justify-content: flex-start !important;
     overflow: visible !important;
     width: 215px !important;
+    flex: 0 0 215px !important;
   }
 
   .question-card {
-    padding: 2px 4px !important;
-    border-radius: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 3px 6px !important;
+    border-radius: 9px !important;
     gap: 2px !important;
     flex: 0 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .question-card-header {
@@ -3306,23 +3370,31 @@ body {
     align-items: center !important;
     justify-content: space-between !important;
     margin-bottom: 1px !important;
+    width: 100% !important;
   }
 
   .active-animal-pill {
     padding: 1px 5px !important;
     font-size: 0.72rem !important;
+    white-space: nowrap !important;
   }
 
   .hint-pill-btn {
     padding: 1px 5px !important;
     font-size: 0.68rem !important;
+    white-space: nowrap !important;
   }
 
   .equation-display {
-    padding: 1px 5px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 2px 4px !important;
     border-radius: 6px !important;
     gap: 3px !important;
-    max-width: 170px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .eq-num, .eq-op, .eq-eq {
@@ -3455,10 +3527,62 @@ body {
     overflow: visible !important;
   }
 
+  .orientation-landscape.device-mobile .test-toolbar,
+  .orientation-landscape.device-iphone .test-toolbar {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    padding: 1px 4px !important;
+    margin: 0 0 3px 0 !important;
+    min-height: 24px !important;
+    height: 24px !important;
+    border-radius: 8px !important;
+    border-width: 1.5px !important;
+    box-shadow: 0 2px 0 #0369a1 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .orientation-landscape.device-mobile .test-toolbar .clue-badge-pill,
+  .orientation-landscape.device-iphone .test-toolbar .clue-badge-pill {
+    font-size: 0.68rem !important;
+    padding: 1px 5px !important;
+    white-space: nowrap !important;
+  }
+
+  .orientation-landscape.device-mobile .test-toolbar .clue-difficulty-bar,
+  .orientation-landscape.device-iphone .test-toolbar .clue-difficulty-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 2px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .orientation-landscape.device-mobile .test-toolbar .clue-diff-btn,
+  .orientation-landscape.device-iphone .test-toolbar .clue-diff-btn {
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+  }
+
+  .orientation-landscape.device-mobile .test-toolbar .new-case-btn,
+  .orientation-landscape.device-iphone .test-toolbar .new-case-btn {
+    font-size: 0.65rem !important;
+    padding: 1px 5px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+  }
+
   .orientation-landscape.device-mobile .triangle-grid,
   .orientation-landscape.device-iphone .triangle-grid {
-    grid-template-columns: 16px repeat(9, var(--cell-h, 17px)) 18px !important;
-    grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
+    grid-template-columns: 22px repeat(9, var(--cell-w, 34px)) 26px !important;
+    grid-template-rows: var(--top-row-h, 24px) var(--num-row-h, 17px) repeat(9, var(--cell-h, 21px)) !important;
     width: auto !important;
     margin: 0 auto !important;
     height: auto !important;
@@ -3467,10 +3591,64 @@ body {
 
   .orientation-landscape.device-mobile .tri-cell,
   .orientation-landscape.device-iphone .tri-cell {
-    width: var(--cell-h, 17px) !important;
-    height: var(--cell-h, 17px) !important;
+    width: var(--cell-w, 34px) !important;
+    height: var(--cell-h, 21px) !important;
     min-height: 0 !important;
-    font-size: clamp(0.68rem, 1.8vw, 0.85rem) !important;
+    font-size: clamp(0.72rem, 1.6vw, 0.92rem) !important;
+  }
+
+  .orientation-landscape.device-mobile .cell-mini-label,
+  .orientation-landscape.device-iphone .cell-mini-label {
+    font-size: 0.72rem !important;
+    letter-spacing: -0.3px !important;
+  }
+
+  .orientation-landscape.device-mobile .question-card,
+  .orientation-landscape.device-iphone .question-card {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 3px 6px !important;
+    border-radius: 9px !important;
+    gap: 2px !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .orientation-landscape.device-mobile .question-card-header,
+  .orientation-landscape.device-iphone .question-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1px !important;
+    width: 100% !important;
+  }
+
+  .orientation-landscape.device-mobile .active-animal-pill,
+  .orientation-landscape.device-iphone .active-animal-pill {
+    padding: 1px 5px !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+  }
+
+  .orientation-landscape.device-mobile .hint-pill-btn,
+  .orientation-landscape.device-iphone .hint-pill-btn {
+    padding: 1px 5px !important;
+    font-size: 0.68rem !important;
+    white-space: nowrap !important;
+  }
+
+  .orientation-landscape.device-mobile .equation-display,
+  .orientation-landscape.device-iphone .equation-display {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 2px 4px !important;
+    border-radius: 6px !important;
+    gap: 3px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .orientation-landscape.device-mobile .keypad-grid,
@@ -3487,6 +3665,11 @@ body {
 
   .orientation-landscape.device-mobile .lower-left-stage,
   .orientation-landscape.device-iphone .lower-left-stage {
+    display: none !important;
+  }
+
+  .orientation-landscape.device-mobile .back-to-path-btn,
+  .orientation-landscape.device-iphone .back-to-path-btn {
     display: none !important;
   }
 }
