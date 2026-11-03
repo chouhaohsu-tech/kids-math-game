@@ -2696,9 +2696,10 @@
     const vh = Math.round(window.visualViewport ? window.visualViewport.height : window.innerHeight);
     const orientation = vw >= vh ? 'landscape' : 'portrait';
 
-    // A mobile phone is strictly an iPhone, an Android phone, or a small touchscreen device (<= 768px wide)
+    const isDesktopOS = /Windows|Macintosh|Linux/i.test(ua) && !/Android|iPhone|iPad/i.test(ua);
     const isMobile =
       !isIPad &&
+      !isDesktopOS &&
       (isIPhone ||
        (isAndroid && /Mobile/.test(ua)) ||
        (maxTouch > 0 && vw <= 768) ||
@@ -2706,7 +2707,7 @@
 
     const isTablet =
       isIPad ||
-      (!isMobile &&
+      (!isMobile && !isDesktopOS &&
         (isAndroid || (vw >= 768 && vw <= 1380 && maxTouch > 0)));
 
     const isDesktop = !isMobile && !isTablet;

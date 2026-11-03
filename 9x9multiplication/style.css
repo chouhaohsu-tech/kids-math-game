@@ -2426,7 +2426,7 @@ body {
 }
 
 /* --- 3. iPhone & Mobile (Both Vertical AND Horizontal: 100% Visible Buttons + Native Touch Scrolling!) --- */
-@media (max-width: 760px), (max-height: 520px) {
+@media (max-width: 760px), ((max-width: 920px) and (max-height: 520px)) {
   html, body {
     min-height: 100%;
     height: auto !important;
@@ -3019,7 +3019,7 @@ body {
 }
 
 /* --- 4. iPhone Horizontal / Landscape (Single-Screen Perfect Fit: All 11 Triangle Rows Visible + Zero Clipping!) --- */
-@media (orientation: landscape) and (max-height: 560px) {
+@media (orientation: landscape) and (max-width: 920px) and (max-height: 560px) {
   html, body {
     min-height: 100%;
     height: auto !important;
@@ -3234,9 +3234,10 @@ body {
   }
 
   .triangle-grid {
-    grid-template-columns: 16px repeat(9, minmax(0, 1fr)) 18px !important;
+    grid-template-columns: 16px repeat(9, var(--cell-h, 17px)) 18px !important;
     grid-template-rows: var(--top-row-h, 20px) var(--num-row-h, 15px) repeat(9, var(--cell-h, 17px)) !important;
-    width: 100% !important;
+    width: auto !important;
+    margin: 0 auto !important;
     height: auto !important;
     overflow: visible !important;
   }
@@ -3493,7 +3494,7 @@ body {
 /* ==========================================================================
    DESKTOP PC & LAPTOP BROWSERS: FITTED RIGHT IN BROWSER WINDOW WITHOUT SCROLLING!
    ========================================================================== */
-@media (min-width: 900px) and (min-height: 561px) {
+@media (min-width: 900px) {
   .app-shell {
     max-width: 1400px;
     width: 100%;
@@ -3618,7 +3619,7 @@ body {
 }
 
 /* --- 5. Compact 2-Column Celebration Modal for iPhone & Small Screens in Landscape --- */
-@media (orientation: landscape) and (max-height: 580px), (max-height: 520px) {
+@media (orientation: landscape) and (max-width: 920px) and (max-height: 580px), ((max-width: 920px) and (max-height: 520px)) {
   .celebration-overlay {
     padding: max(4px, env(safe-area-inset-top, 4px)) max(12px, env(safe-area-inset-right, 12px)) max(8px, env(safe-area-inset-bottom, 8px)) max(12px, env(safe-area-inset-left, 12px));
     align-items: center;
@@ -4342,3 +4343,83 @@ body {
   80% { opacity: 1; transform: translate(-50%, -14px) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -26px) scale(0.85); }
 }
+
+/* ==========================================================================
+   DESKTOP & IPAD HIGH-SPECIFICITY UNIFIED RULES
+   Guarantees that on Desktop (Chrome, Edge, Safari, Firefox) and iPad:
+   - Triangle is unified compact square grid with zero gaps between columns
+   - Keypad is standard 3x4 grid (never 6x2)
+   - Teacher Cat & Speech Bubble are ALWAYS visible
+   - Header title & all controls are properly sized and styled
+   ========================================================================== */
+html.device-desktop .main-workspace,
+html.device-ipad .main-workspace,
+html.device-tablet .main-workspace {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 340px) !important;
+  gap: clamp(10px, 1.5vw, 18px) !important;
+  align-items: center !important;
+}
+
+html.device-desktop .board-frame,
+html.device-ipad .board-frame,
+html.device-tablet .board-frame {
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+html.device-desktop .triangle-grid,
+html.device-ipad .triangle-grid,
+html.device-tablet .triangle-grid {
+  grid-template-columns: clamp(30px, 3.2vw, 44px) repeat(9, var(--cell-h, 38px)) clamp(44px, 4.5vw, 64px) !important;
+  grid-template-rows: var(--top-row-h, 46px) var(--num-row-h, 28px) repeat(9, var(--cell-h, 38px)) !important;
+  width: auto !important;
+  margin: 0 auto !important;
+}
+
+html.device-desktop .tri-cell,
+html.device-ipad .tri-cell,
+html.device-tablet .tri-cell {
+  width: var(--cell-h, 38px) !important;
+  height: var(--cell-h, 38px) !important;
+  min-height: 0 !important;
+}
+
+html.device-desktop .keypad-card,
+html.device-ipad .keypad-card,
+html.device-tablet .keypad-card {
+  padding: clamp(8px, 1.2vh, 12px) !important;
+  border-radius: 18px !important;
+}
+
+html.device-desktop .keypad-grid,
+html.device-ipad .keypad-grid,
+html.device-tablet .keypad-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: clamp(5px, 0.8vh, 8px) !important;
+}
+
+html.device-desktop .key-btn,
+html.device-ipad .key-btn,
+html.device-tablet .key-btn {
+  height: clamp(38px, 4.6vh, 52px) !important;
+  font-size: clamp(1.15rem, 1.8vh, 1.45rem) !important;
+  border-radius: 12px !important;
+}
+
+html.device-desktop .lower-left-stage,
+html.device-ipad .lower-left-stage,
+html.device-tablet .lower-left-stage {
+  display: flex !important;
+}
+
+html.device-desktop .brand-group,
+html.device-ipad .brand-group,
+html.device-tablet .brand-group {
+  display: flex !important;
+}
+
