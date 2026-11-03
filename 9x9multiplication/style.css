@@ -4943,20 +4943,50 @@ html:not(.mode-clue) .test-toolbar {
   display: none !important;
 }
 
-/* 2. Clean, Single-Row Top Header Bar (Never overflows page width) */
+/* 2. Lock App Shell to Single Viewport & Proportional Width (Zero Scrolling!) */
+html,
+body {
+  height: var(--app-height, 100dvh) !important;
+  max-height: var(--app-height, 100dvh) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body .app-shell {
+  height: var(--app-height, 100dvh) !important;
+  max-height: var(--app-height, 100dvh) !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: clamp(2px, 0.5vh, 6px) clamp(6px, 1vw, 14px) !important;
+  gap: clamp(2px, 0.5vh, 5px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Clean, Single-Row Top Header Bar (Matches proportional board width, never overflows) */
 html body .top-header {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 6px !important;
-  padding: 4px 10px !important;
-  min-height: 34px !important;
+  gap: 4px !important;
+  padding: 2px 8px !important;
+  min-height: 28px !important;
   height: auto !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   box-sizing: border-box !important;
   width: 100% !important;
+  max-width: max(var(--board-max-w, 860px), 680px) !important;
+  margin: 0 auto !important;
+  flex: 0 0 auto !important;
 }
 
 /* Hide bulky title text in Clue Mode or on screens <= 1180px so header buttons never overflow */
@@ -5023,19 +5053,20 @@ html.mode-clue body #testToolbar #btnNewTest {
   width: auto !important;
 }
 
-/* 3. Full-Width Workspace & Board Frame (100% of screen width for the 9x9 Triangle!) */
+/* 3. Proportional Workspace & Board Frame (Centered, never stretched too wide or cut off at bottom!) */
 html body #mainWorkspace {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: flex-start !important;
   width: 100% !important;
-  max-width: 1180px !important;
+  max-width: var(--board-max-w, 860px) !important;
   margin: 0 auto !important;
   padding: 0 !important;
-  gap: 6px !important;
+  gap: 4px !important;
   flex: 1 1 auto !important;
   min-width: 0 !important;
+  min-height: 0 !important;
   box-sizing: border-box !important;
 }
 
@@ -5043,6 +5074,7 @@ html body #mainWorkspace > .board-section {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
+  min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -5053,24 +5085,26 @@ html body #mainWorkspace > .board-section {
 html body #boardFrame:not(.hidden) {
   width: 100% !important;
   max-width: 100% !important;
-  padding: clamp(4px, 0.8vh, 10px) clamp(6px, 1vw, 14px) !important;
-  border-radius: 16px !important;
+  padding: clamp(3px, 0.5vh, 7px) clamp(5px, 0.8vw, 10px) !important;
+  border-radius: 14px !important;
+  border-width: 2px !important;
+  box-shadow: 0 3px 0 #9f8732, 0 6px 14px rgba(0, 0, 0, 0.08) !important;
   box-sizing: border-box !important;
   display: block !important;
   position: relative !important;
   overflow: hidden !important;
 }
 
-/* 4. The 11-Column Full-Width CSS Grid:
+/* 4. The 11-Column Proportional CSS Grid:
       Col 1: Left Row Number Badges (1..9)
       Cols 2..10: 9 Equal Fluid Columns (1fr each) for Multiplication Columns 1..9
       Col 11: Right Animal Home Badges (1..9)
 */
 html body #triangleGrid {
   display: grid !important;
-  grid-template-columns: clamp(22px, 3vw, 34px) repeat(9, minmax(0, 1fr)) clamp(28px, 3.8vw, 44px) !important;
-  grid-template-rows: var(--top-row-h, 36px) var(--num-row-h, 24px) repeat(9, var(--cell-h, 32px)) !important;
-  gap: clamp(2px, 0.35vw, 4px) !important;
+  grid-template-columns: clamp(20px, 2.6vw, 32px) repeat(9, minmax(0, 1fr)) clamp(24px, 3.4vw, 40px) !important;
+  grid-template-rows: var(--top-row-h, 30px) var(--num-row-h, 20px) repeat(9, var(--cell-h, 28px)) !important;
+  gap: var(--grid-gap, 3px) !important;
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 auto !important;
@@ -5232,15 +5266,15 @@ html body #triangleGrid > #controlSidebar {
   max-height: 100% !important;
   min-height: 0 !important;
   margin: 0 !important;
-  padding: clamp(4px, 0.7vh, 8px) clamp(5px, 0.8vw, 10px) !important;
+  padding: clamp(2px, 0.45vh, 6px) clamp(4px, 0.6vw, 8px) !important;
   background: #fffdf0 !important;
-  border: 2.5px solid #f59f00 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  border: 2px solid #f59f00 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12) !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  gap: clamp(3px, 0.5vh, 6px) !important;
+  gap: clamp(2px, 0.4vh, 5px) !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   z-index: 20 !important;
@@ -5256,7 +5290,7 @@ html body #triangleGrid > #controlSidebar #questionCard {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 6px !important;
+  gap: 4px !important;
   padding: 0 !important;
   margin: 0 !important;
   background: transparent !important;
@@ -5280,11 +5314,11 @@ html body #triangleGrid > #controlSidebar #equationDisplay {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: clamp(3px, 0.5vw, 6px) !important;
+  gap: clamp(2px, 0.4vw, 5px) !important;
   background: #f5ebd0 !important;
   border: 1.5px solid #e2cf7a !important;
-  border-radius: 8px !important;
-  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  padding: 1px 5px !important;
   width: auto !important;
   max-width: 56% !important;
   margin: 0 !important;
@@ -5292,9 +5326,9 @@ html body #triangleGrid > #controlSidebar #equationDisplay {
 }
 
 html body #triangleGrid > #controlSidebar .eq-num {
-  width: clamp(18px, calc(var(--cell-h, 28px) * 0.68), 28px) !important;
-  height: clamp(18px, calc(var(--cell-h, 28px) * 0.68), 28px) !important;
-  font-size: clamp(0.75rem, calc(var(--cell-h, 28px) * 0.42), 1.1rem) !important;
+  width: clamp(14px, calc(var(--cell-h, 24px) * 0.65), 24px) !important;
+  height: clamp(14px, calc(var(--cell-h, 24px) * 0.65), 24px) !important;
+  font-size: clamp(0.68rem, calc(var(--cell-h, 24px) * 0.4), 1rem) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -5303,18 +5337,18 @@ html body #triangleGrid > #controlSidebar .eq-num {
 
 html body #triangleGrid > #controlSidebar .eq-op,
 html body #triangleGrid > #controlSidebar .eq-eq {
-  font-size: clamp(0.75rem, calc(var(--cell-h, 28px) * 0.42), 1.1rem) !important;
+  font-size: clamp(0.68rem, calc(var(--cell-h, 24px) * 0.4), 1rem) !important;
   width: auto !important;
   height: auto !important;
   line-height: 1 !important;
 }
 
 html body #triangleGrid > #controlSidebar #eqAnswerBox {
-  min-width: clamp(24px, calc(var(--cell-h, 28px) * 0.85), 38px) !important;
-  height: clamp(20px, calc(var(--cell-h, 28px) * 0.72), 30px) !important;
-  font-size: clamp(0.8rem, calc(var(--cell-h, 28px) * 0.45), 1.15rem) !important;
-  padding: 0 4px !important;
-  border-radius: 6px !important;
+  min-width: clamp(20px, calc(var(--cell-h, 24px) * 0.8), 34px) !important;
+  height: clamp(15px, calc(var(--cell-h, 24px) * 0.68), 26px) !important;
+  font-size: clamp(0.72rem, calc(var(--cell-h, 24px) * 0.42), 1.05rem) !important;
+  padding: 0 3px !important;
+  border-radius: 5px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;

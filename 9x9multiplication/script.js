@@ -2719,42 +2719,40 @@
     root.style.setProperty('--app-height', `${vh}px`);
     root.style.setProperty('--app-width', `${vw}px`);
 
-    // Deterministically compute exact board row heights in pixels so the 11-row
-    // multiplication grid fills the screen cleanly with zero scrolling or overlap!
-    let cellH = 38;
-    let topRowH = 42;
-    let numRowH = 26;
+    // Deterministically compute exact board row heights and proportional board width
+    // so all 11 rows fit 100% inside the single screen height with ZERO vertical scrolling!
+    const headerEl = document.querySelector('.top-header');
+    const measuredHeaderH = headerEl ? Math.ceil(headerEl.getBoundingClientRect().height) : 0;
+    const headerH = measuredHeaderH > 10 ? measuredHeaderH : (isMobile && orientation === 'landscape' ? 30 : 40);
 
-    if (isMobile && orientation === 'landscape') {
-      // iPhone Horizontal: Full-width board (no right sidebar!), single slim top header (32px)
-      const availH = Math.max(185, vh - 40);
-      cellH = Math.max(21, Math.min(34, Math.floor(availH / 11.0)));
-      topRowH = Math.floor(cellH * 1.05);
-      numRowH = Math.floor(cellH * 0.76);
-    } else if (isMobile) {
-      // iPhone Vertical: Full-width board
-      const availH = Math.max(260, Math.min(vh - 90, Math.floor(vw * 1.08)));
-      cellH = Math.max(26, Math.min(38, Math.floor(availH / 11.0)));
-      topRowH = Math.floor(cellH * 1.1);
-      numRowH = Math.floor(cellH * 0.78);
-    } else if (orientation === 'portrait') {
-      // iPad / Tablet Portrait: Full-width board
-      const availH = Math.max(340, Math.min(vh - 90, Math.floor(vw * 0.92)));
-      cellH = Math.max(34, Math.min(56, Math.floor(availH / 11.0)));
-      topRowH = Math.floor(cellH * 1.12);
-      numRowH = Math.floor(cellH * 0.78);
-    } else {
-      // iPad Landscape & Desktop PC: Full-width board, zero right sidebar!
-      const reservedH = 66;
-      const availH = Math.max(260, vh - reservedH);
-      cellH = Math.max(28, Math.min(58, Math.floor(availH / 11.0)));
-      topRowH = Math.floor(cellH * 1.12);
-      numRowH = Math.floor(cellH * 0.78);
-    }
+    const gridGap = isMobile && orientation === 'landscape' ? 2 : 3;
+    const totalGridGaps = 10 * gridGap; // 10 gaps between 11 grid rows
+    const shellChrome = isMobile && orientation === 'landscape' ? 8 : 16;
+    const boardChrome = isMobile && orientation === 'landscape' ? 12 : 22;
+    const safetyBuffer = 8;
 
+    const availGridH = Math.max(
+      140,
+      vh - headerH - totalGridGaps - shellChrome - boardChrome - safetyBuffer
+    );
+
+    // 11 grid rows total: topRow (1.02 * cellH) + numRow (0.74 * cellH) + 9 * cellH = 10.76 * cellH
+    let cellH = Math.max(16, Math.min(48, Math.floor(availGridH / 10.8)));
+    let topRowH = Math.max(18, Math.floor(cellH * 1.02));
+    let numRowH = Math.max(14, Math.floor(cellH * 0.74));
+
+    // Proportional horizontal width so the board is never stretched too wide on PC or phone landscape
+    const widthRatio = isMobile && orientation === 'landscape' ? 20.5 : 17.5;
+    let boardMaxW =
+      orientation === 'portrait'
+        ? Math.min(vw - 12, 720)
+        : Math.min(vw - 20, Math.max(440, Math.round(cellH * widthRatio)));
+
+    root.style.setProperty('--grid-gap', `${gridGap}px`);
     root.style.setProperty('--cell-h', `${cellH}px`);
     root.style.setProperty('--top-row-h', `${topRowH}px`);
     root.style.setProperty('--num-row-h', `${numRowH}px`);
+    root.style.setProperty('--board-max-w', `${boardMaxW}px`);
 
     root.classList.toggle('mode-clue', state.mode === 'clue');
     document.body.classList.toggle('mode-clue', state.mode === 'clue');
@@ -2769,6 +2767,27 @@
 
     if (dom.triangleGrid && dom.triangleGrid.children.length > 0) {
       requestAnimationFrame(() => {
+        // Auto-fit verification pass: if board bottom is within 4px of viewport bottom, shrink cellH to fit 100%!
+        if (dom.boardFrame && !dom.boardFrame.classList.contains('hidden')) {
+          const curVh = Math.round(
+            window.visualViewport ? window.visualViewport.height : window.innerHeight
+          );
+          const rect = dom.boardFrame.getBoundingClientRect();
+          const overflowPx = rect.bottom - (curVh - 4);
+          if (overflowPx > 0) {
+            const shrink = Math.ceil(overflowPx / 10.6);
+            cellH = Math.max(15, cellH - shrink);
+            topRowH = Math.max(16, Math.floor(cellH * 1.02));
+            numRowH = Math.max(13, Math.floor(cellH * 0.74));
+            if (orientation === 'landscape') {
+              boardMaxW = Math.min(vw - 20, Math.max(430, Math.round(cellH * widthRatio)));
+              root.style.setProperty('--board-max-w', `${boardMaxW}px`);
+            }
+            root.style.setProperty('--cell-h', `${cellH}px`);
+            root.style.setProperty('--top-row-h', `${topRowH}px`);
+            root.style.setProperty('--num-row-h', `${numRowH}px`);
+          }
+        }
         updateJourneyCardAndWalker();
         updateFocusedPathStage();
       });
